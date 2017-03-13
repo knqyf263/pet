@@ -52,7 +52,7 @@ function prev() {
 <img src="doc/pet02.gif" width="700">
 
 
-## Select snippts at the current line (like C-r)
+## Select snippets at the current line (like C-r)
 By adding the following config to `.zshrc`, you can search snippets and output on the shell.
 ```
 $ cat .zshrc
@@ -67,7 +67,7 @@ bindkey '^s' pet-select
 
 <img src="doc/pet03.gif" width="700">
 
-## Copy snippts to clipboard
+## Copy snippets to clipboard
 By using `pbcopy` on OS X, you can copy snippets to clipboard.
 
 <img src="doc/pet06.gif" width="700">
@@ -130,7 +130,7 @@ run `pet configure`
 ```
 
 ## Sync
-You must obrain access token.
+You must obtain access token.
 Go https://github.com/settings/tokens/new and create access token (only need "gist" scope).
 Set that to `access_token` in `[Gist]`.
 
