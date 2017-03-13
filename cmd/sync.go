@@ -59,7 +59,7 @@ func upload() (err error) {
 	client := githubClient()
 	gist := github.Gist{
 		Description: github.String("description"),
-		Public:      github.Bool(true),
+		Public:      github.Bool(config.Conf.Gist.Public),
 		Files: map[github.GistFilename]github.GistFile{
 			github.GistFilename(config.Conf.Gist.FileName): github.GistFile{
 				Content: github.String(body),

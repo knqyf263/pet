@@ -29,6 +29,7 @@ type GistConfig struct {
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
 	GistID      string `toml:"gist_id"`
+	Public      bool   `toml:"public"`
 }
 
 // Flag is global flag variable
