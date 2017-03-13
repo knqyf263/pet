@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
@@ -34,15 +35,24 @@ func list(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, snippet := range snippets.Snippets {
-		description := runewidth.FillRight(runewidth.Truncate(snippet.Description, col, "..."), col)
-		command := runewidth.Truncate(snippet.Command, 100-4-col, "...")
-
-		fmt.Fprintf(color.Output, "%s : %s\n",
-			color.GreenString(description), color.YellowString(command))
+		if config.Flag.OneLine {
+			description := runewidth.FillRight(runewidth.Truncate(snippet.Description, col, "..."), col)
+			command := runewidth.Truncate(snippet.Command, 100-4-col, "...")
+			fmt.Fprintf(color.Output, "%s : %s\n",
+				color.GreenString(description), color.YellowString(command))
+		} else {
+			fmt.Fprintf(color.Output, "%12s %s\n",
+				color.GreenString("Description:"), snippet.Description)
+			fmt.Fprintf(color.Output, "%12s %s\n",
+				color.YellowString("    Command:"), snippet.Command)
+			fmt.Println(strings.Repeat("-", 30))
+		}
 	}
 	return nil
 }
 
 func init() {
 	RootCmd.AddCommand(listCmd)
+	listCmd.Flags().BoolVarP(&config.Flag.OneLine, "oneline", "", false,
+		`Display snippets in one line`)
 }
