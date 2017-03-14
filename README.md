@@ -150,7 +150,7 @@ Download success
 ```
 
 # Installation
-If [peco](https://github.com/peco/peco#installation) is not installed, please install first.
+If [peco](https://github.com/peco/peco#installation) is not installed, please install first (`homebrew` install `peco` automatically).
 
 ## Binaly
 Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
