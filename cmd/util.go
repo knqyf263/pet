@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -54,9 +53,6 @@ func filter(options []string) (commands []string, err error) {
 		return nil, nil
 	}
 
-	if buf.Len() == 0 {
-		return commands, errors.New("No line is selected")
-	}
 	lines := strings.Split(strings.TrimSpace(buf.String()), "\n")
 
 	for _, line := range lines {
