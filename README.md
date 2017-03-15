@@ -158,8 +158,7 @@ Go to [the releases page](https://github.com/knqyf263/pet/releases), find the ve
 ## Mac OS X / Homebrew
 You can homebrew on OS X.
 ```
-$ brew tap knqyf263/pet
-$ brew install pet
+$ brew install knqyf263/pet/pet
 ```
 
 ## Build
