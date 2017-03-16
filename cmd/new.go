@@ -1,11 +1,12 @@
 package cmd
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"os"
 	"strings"
+
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/snippet"
@@ -21,15 +22,21 @@ var newCmd = &cobra.Command{
 }
 
 func scan(message string) (string, error) {
-	fmt.Print(message)
-	scanner := bufio.NewScanner(os.Stdin)
-	if !scanner.Scan() {
+
+	oldState, err := terminal.MakeRaw(0)
+	if err != nil {
+		return "", err
+	}
+	defer terminal.Restore(0, oldState)
+
+	t := terminal.NewTerminal(os.Stdin, message)
+	s, err := t.ReadLine()
+
+	if s == "" {
 		return "", errors.New("canceled")
 	}
-	if scanner.Err() != nil {
-		return "", scanner.Err()
-	}
-	return scanner.Text(), nil
+
+	return s, err
 }
 
 func new(cmd *cobra.Command, args []string) (err error) {
