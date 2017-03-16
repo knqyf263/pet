@@ -30,6 +30,9 @@ func scan(message string) (string, error) {
 	if runtime.GOOS == "windows" {
 		fmt.Print(message)
 		scanner := bufio.NewScanner(os.Stdin)
+		if !scanner.Scan() || scanner.Text() == "" {
+			return "", errors.New("canceled")
+		}
 		if scanner.Err() != nil {
 			return "", scanner.Err()
 		}
@@ -43,14 +46,14 @@ func scan(message string) (string, error) {
 
 		t := terminal.NewTerminal(os.Stdin, message)
 		s, err = t.ReadLine()
+		if s == "" {
+			return "", errors.New("canceled")
+		}
 		if err != nil {
 			return "", err
 		}
 	}
 
-	if s == "" {
-		return "", errors.New("canceled")
-	}
 	return s, nil
 }
 
