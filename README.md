@@ -162,6 +162,12 @@ You can homebrew on OS X.
 $ brew install knqyf263/pet/pet
 ```
 
+## Archlinux
+A package is available in [AUR](https://aur.archlinux.org/packages/pet-git/).
+```
+$ yaourt -S pet-git
+```
+
 ## Build
 
 ```
