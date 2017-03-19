@@ -1,12 +1,15 @@
 package cmd
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/spf13/cobra"
@@ -21,15 +24,43 @@ var newCmd = &cobra.Command{
 }
 
 func scan(message string) (string, error) {
-	fmt.Print(message)
-	scanner := bufio.NewScanner(os.Stdin)
-	if !scanner.Scan() {
-		return "", errors.New("canceled")
+	tempFile := "/tmp/pet.tmp"
+	if runtime.GOOS == "windows" {
+		tempDir := os.Getenv("TEMP")
+		tempFile = filepath.Join(tempDir, "pet.tmp")
 	}
-	if scanner.Err() != nil {
-		return "", scanner.Err()
+	l, err := readline.NewEx(&readline.Config{
+		Prompt:          message,
+		HistoryFile:     tempFile,
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
+
+		HistorySearchFold: true,
+	})
+	if err != nil {
+		return "", err
 	}
-	return scanner.Text(), nil
+	defer l.Close()
+
+	for {
+		line, err := l.Readline()
+		if err == readline.ErrInterrupt {
+			if len(line) == 0 {
+				break
+			} else {
+				continue
+			}
+		} else if err == io.EOF {
+			break
+		}
+
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		return line, nil
+	}
+	return "", errors.New("canceled")
 }
 
 func new(cmd *cobra.Command, args []string) (err error) {
@@ -43,14 +74,14 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 	if len(args) > 0 {
 		command = strings.Join(args, " ")
-		fmt.Printf("%s %s\n", color.YellowString("Command:"), command)
+		fmt.Printf("%s %s\n", color.YellowString("Command>"), command)
 	} else {
-		command, err = scan(color.YellowString("Command: "))
+		command, err = scan(color.YellowString("Command> "))
 		if err != nil {
 			return err
 		}
 	}
-	description, err = scan(color.GreenString("Description: "))
+	description, err = scan(color.GreenString("Description> "))
 	if err != nil {
 		return err
 	}
