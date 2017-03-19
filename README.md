@@ -113,9 +113,33 @@ Flags:
 Use "pet [command] --help" for more information about a command.
 ```
 
+# Snippet
+Run `pet edit`  
+You can also register the output of command (but cannot search).
+
+```
+[[snippets]]
+  description = "echo | openssl s_client -connect example.com:443 2>/dev/null |openssl x509 -dates -noout"
+  command = "Show expiration date of SSL certificate"
+  output = """
+notBefore=Nov  3 00:00:00 2015 GMT
+notAfter=Nov 28 12:00:00 2018 GMT"""
+```
+
+Run `pet list`
+
+```
+Description: echo | openssl s_client -connect example.com:443 2>/dev/null |openssl x509 -dates -noout
+    Command: Show expiration date of SSL certificate
+     Output: notBefore=Nov  3 00:00:00 2015 GMT
+             notAfter=Nov 28 12:00:00 2018 GMT
+------------------------------
+```
+
+
 # Configuration
 
-run `pet configure`
+Run `pet configure`
 
 ```
 [General]

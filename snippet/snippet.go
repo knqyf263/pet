@@ -16,6 +16,7 @@ type Snippets struct {
 type SnippetInfo struct {
 	Description string `toml:"description"`
 	Command     string `toml:"command"`
+	Output      string `toml:"output"`
 }
 
 // Load reads toml file.
