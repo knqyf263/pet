@@ -74,7 +74,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 	if len(args) > 0 {
 		command = strings.Join(args, " ")
-		fmt.Printf("%s %s\n", color.YellowString("Command>"), command)
+		fmt.Fprintf(color.Output, "%s %s\n", color.YellowString("Command>"), command)
 	} else {
 		command, err = scan(color.YellowString("Command> "))
 		if err != nil {
