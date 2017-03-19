@@ -71,7 +71,7 @@ func (cfg *Config) Load(file string) error {
 	}
 
 	cfg.General.Editor = os.Getenv("EDITOR")
-	if cfg.General.Editor == "" {
+	if cfg.General.Editor == "" && runtime.GOOS != "windows" {
 		cfg.General.Editor = "vim"
 	}
 	cfg.General.Column = 40
