@@ -5,7 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
+	"syscall"
+
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/snippet"
@@ -21,15 +25,36 @@ var newCmd = &cobra.Command{
 }
 
 func scan(message string) (string, error) {
-	fmt.Print(message)
-	scanner := bufio.NewScanner(os.Stdin)
-	if !scanner.Scan() {
-		return "", errors.New("canceled")
+	var s string
+
+	if runtime.GOOS == "windows" {
+		fmt.Print(message)
+		scanner := bufio.NewScanner(os.Stdin)
+		if !scanner.Scan() || scanner.Text() == "" {
+			return "", errors.New("canceled")
+		}
+		if scanner.Err() != nil {
+			return "", scanner.Err()
+		}
+		s = scanner.Text()
+	} else {
+		oldState, err := terminal.MakeRaw(int(syscall.Stdin))
+		if err != nil {
+			return "", err
+		}
+		defer terminal.Restore(int(syscall.Stdin), oldState)
+
+		t := terminal.NewTerminal(os.Stdin, message)
+		s, err = t.ReadLine()
+		if s == "" {
+			return "", errors.New("canceled")
+		}
+		if err != nil {
+			return "", err
+		}
 	}
-	if scanner.Err() != nil {
-		return "", scanner.Err()
-	}
-	return scanner.Text(), nil
+
+	return s, nil
 }
 
 func new(cmd *cobra.Command, args []string) (err error) {
