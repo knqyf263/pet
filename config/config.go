@@ -39,6 +39,7 @@ var Flag FlagConfig
 type FlagConfig struct {
 	Debug     bool
 	Query     string
+	Layout    string
 	Delimiter string
 	Upload    bool
 	OneLine   bool
