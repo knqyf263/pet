@@ -1,64 +1,65 @@
 package dialog
 
 import (
-	"github.com/jroimartin/gocui"
 	"regexp"
 	"strings"
+
+	"github.com/jroimartin/gocui"
 )
 
-var re string = "<(.+?)>"
-
 var (
-	Params        = map[string]string{}
-	Views         = []string{}
-	Layout_step   = 3
-	Params_filled = map[string]string{}
-	curView       = -1
-	idxView       = 0
+	views      = []string{}
+	layoutStep = 3
+	curView    = -1
+	idxView    = 0
 
-	Current_command string
-	Final_command   string
+	//CurrentCommand is the command before assigning to variables
+	CurrentCommand string
+	//FinalCommand is the command after assigning to variables
+	FinalCommand string
 )
 
 func insertParams(command string, params map[string]string) string {
-	var result_command string = command
+	resultCommand := command
 	for k, v := range params {
-		result_command = strings.Replace(result_command, k, v, -1)
+		resultCommand = strings.Replace(resultCommand, k, v, -1)
 	}
-	return result_command
+	return resultCommand
 }
 
+// SearchForParams returns variables from a command
 func SearchForParams(lines []string) map[string]string {
+	re := "<(.+?)>"
 	if len(lines) == 1 {
-		first_line_only := lines[0]
 		r, _ := regexp.Compile(re)
 
-		params := r.FindAllStringSubmatch(first_line_only, -1)
+		params := r.FindAllStringSubmatch(lines[0], -1)
 		if len(params) == 0 {
 			return nil
-		} else {
-			extracted := map[string]string{}
-			for _, p := range params {
-				splitted := strings.Split(p[1], "=")
-				if len(splitted) == 1 {
-					extracted[p[0]] = ""
-				} else {
-					extracted[p[0]] = splitted[1]
-				}
-			}
-			return extracted
 		}
+
+		extracted := map[string]string{}
+		for _, p := range params {
+			splitted := strings.Split(p[1], "=")
+			if len(splitted) == 1 {
+				extracted[p[0]] = ""
+			} else {
+				extracted[p[0]] = splitted[1]
+			}
+		}
+		return extracted
 	}
 	return nil
 }
 
 func evaluateParams(g *gocui.Gui, _ *gocui.View) error {
-	for _, v := range Views {
+	paramsFilled := map[string]string{}
+	for _, v := range views {
 		view, _ := g.View(v)
 		res := view.Buffer()
 		res = strings.Replace(res, "\n", "", -1)
-		Params_filled[v] = string(res)
+		paramsFilled[v] = string(res)
 	}
-	Final_command = insertParams(Current_command, Params_filled)
+	FinalCommand = insertParams(CurrentCommand, paramsFilled)
 	return gocui.ErrQuit
 }
