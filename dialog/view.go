@@ -2,12 +2,13 @@ package dialog
 
 import (
 	"fmt"
-	"github.com/jroimartin/gocui"
 	"log"
+
+	"github.com/jroimartin/gocui"
 )
 
 func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
-	if StringInSlice(desc, Views) {
+	if StringInSlice(desc, views) {
 		return nil
 	}
 	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3]); err != nil {
@@ -22,13 +23,14 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	view.Autoscroll = true
 	view.Editable = editable
 
-	Views = append(Views, desc)
-	curView = len(Views) - 1
-	idxView += 1
+	views = append(views, desc)
+	curView = len(views) - 1
+	idxView++
 
 	return nil
 }
 
+// GenerateParamsLayout generates CUI to receive params
 func GenerateParamsLayout(params map[string]string, command string) {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
@@ -47,15 +49,9 @@ func GenerateParamsLayout(params map[string]string, command string) {
 		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
 	idx := 0
 	for k, v := range params {
-		if v == "" {
-			generateView(g, k, "", []int{maxX / 10, (maxY / 4) + (idx+1)*Layout_step,
-				maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*Layout_step}, true)
-			idx += 1
-		} else {
-			generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*Layout_step,
-				maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*Layout_step}, true)
-			idx += 1
-		}
+		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
+			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
+		idx++
 	}
 
 	initKeybindings(g)
@@ -67,11 +63,11 @@ func GenerateParamsLayout(params map[string]string, command string) {
 
 func nextView(g *gocui.Gui) error {
 	next := curView + 1
-	if next > len(Views)-1 {
+	if next > len(views)-1 {
 		next = 0
 	}
 
-	if _, err := g.SetCurrentView(Views[next]); err != nil {
+	if _, err := g.SetCurrentView(views[next]); err != nil {
 		return err
 	}
 
