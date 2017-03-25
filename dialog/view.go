@@ -24,7 +24,6 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	view.Editable = editable
 
 	views = append(views, desc)
-	curView = len(views) - 1
 	idxView++
 
 	return nil
@@ -55,6 +54,9 @@ func GenerateParamsLayout(params map[string]string, command string) {
 	}
 
 	initKeybindings(g)
+
+	curView = 0
+	g.SetCurrentView(views[0])
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
