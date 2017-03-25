@@ -9,6 +9,9 @@ Simple command-line snippet manager, written in Go
 
 <img src="doc/pet01.gif" width="700">
 
+You can use variables (`<param>` or `<param=default_value>` ) in snippets.
+
+<img src="doc/pet08.gif" width="700">
 
 # Abstract
 
@@ -32,6 +35,7 @@ So I made it possible to register snippets with description and search them easi
 `pet` has the following features.
 
 - Register your command snippets easily.
+- Use variables in snippets.
 - Search snippets interactively.
 - Run snippets directly.
 - Edit snippets easily (config is just a TOML file).
