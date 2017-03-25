@@ -58,7 +58,7 @@ func evaluateParams(g *gocui.Gui, _ *gocui.View) error {
 		view, _ := g.View(v)
 		res := view.Buffer()
 		res = strings.Replace(res, "\n", "", -1)
-		paramsFilled[v] = string(res)
+		paramsFilled[v] = strings.TrimSpace(res)
 	}
 	FinalCommand = insertParams(CurrentCommand, paramsFilled)
 	return gocui.ErrQuit
