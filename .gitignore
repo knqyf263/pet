@@ -27,3 +27,4 @@ out
 pkg
 .DS_Store
 .idea/
+.vscode/
