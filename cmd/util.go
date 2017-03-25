@@ -15,7 +15,6 @@ import (
 	"github.com/knqyf263/pet/dialog"
 )
 
-
 func editFile(command, file string) error {
 	command += " " + file
 	return run(command, os.Stdin, os.Stdout)
@@ -69,7 +68,6 @@ func filter(options []string) (commands []string, err error) {
 		snippetInfo := snippetTexts[lines[0]]
 		dialog.Current_command = snippetInfo.Command
 		dialog.GenerateParamsLayout(dialog.Params, dialog.Current_command)
-		fmt.Println(dialog.Final_command)
 		res := []string{dialog.Final_command}
 		return res, nil
 	}
