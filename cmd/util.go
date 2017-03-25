@@ -11,7 +11,10 @@ import (
 
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/snippet"
+
+	"github.com/knqyf263/pet/dialog"
 )
+
 
 func editFile(command, file string) error {
 	command += " " + file
@@ -55,9 +58,19 @@ func filter(options []string) (commands []string, err error) {
 
 	lines := strings.Split(strings.TrimSpace(buf.String()), "\n")
 
-	for _, line := range lines {
-		snippetInfo := snippetTexts[line]
-		commands = append(commands, fmt.Sprint(snippetInfo.Command))
+	dialog.Params = dialog.SearchForParams(lines)
+	if dialog.Params == nil {
+		for _, line := range lines {
+			snippetInfo := snippetTexts[line]
+			commands = append(commands, fmt.Sprint(snippetInfo.Command))
+		}
+		return commands, nil
+	} else {
+		snippetInfo := snippetTexts[lines[0]]
+		dialog.Current_command = snippetInfo.Command
+		dialog.GenerateParamsLayout(dialog.Params, dialog.Current_command)
+		fmt.Println(dialog.Final_command)
+		res := []string{dialog.Final_command}
+		return res, nil
 	}
-	return commands, nil
 }
