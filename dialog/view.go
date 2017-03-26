@@ -49,7 +49,7 @@ func GenerateParamsLayout(params map[string]string, command string) {
 	idx := 0
 	for k, v := range params {
 		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
-			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
+			(maxX / 2) + (maxX / 3), (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
 		idx++
 	}
 
