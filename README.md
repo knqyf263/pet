@@ -37,10 +37,11 @@ So I made it possible to register snippets with description and search them easi
 - [Main features](#main-features)
 - [Examples](#examples)
     - [Register the previous command easily](#register-the-previous-command-easily)
-        - [zsh](#zsh)
+        - [bash/zsh](#bashzsh)
         - [fish](#fish)
     - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
-        - [zsh](#zsh-1)
+        - [bash](#bash)
+        - [zsh](#zsh)
         - [fish](#fish-1)
     - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
 - [Features](#features)
@@ -51,11 +52,12 @@ So I made it possible to register snippets with description and search them easi
 - [Configuration](#configuration)
     - [Sync](#sync)
 - [Installation](#installation)
-    - [Binaly](#binaly)
+    - [Binary](#binary)
     - [Mac OS X / Homebrew](#mac-os-x--homebrew)
     - [Archlinux](#archlinux)
     - [Build](#build)
 - [Contribute](#contribute)
+
 
 # Main features
 `pet` has the following features.
@@ -83,24 +85,11 @@ function prev() {
 }
 ```
 
-<img src="doc/pet02.gif" width="700">
-
 ### fish
-If you use `fish`, you can install with the following command.
-
-```
-$ fisher otms61/fish-pet
-```
-
-or
-
-```
-$ omf install https://github.com/otms61/fish-pet
-```
-
 See below for details.  
 https://github.com/otms61/fish-pet
 
+<img src="doc/pet02.gif" width="700">
 
 ## Select snippets at the current line (like C-r)
 
@@ -131,10 +120,12 @@ stty -ixon
 bindkey '^s' pet-select
 ```
 
+### fish
+See below for details.  
+https://github.com/otms61/fish-pet
+
 <img src="doc/pet03.gif" width="700">
 
-### fish
-https://github.com/otms61/fish-pet
 
 ## Copy snippets to clipboard
 By using `pbcopy` on OS X, you can copy snippets to clipboard.
@@ -245,7 +236,7 @@ Download success
 # Installation
 If [peco](https://github.com/peco/peco#installation) is not installed, please install first (`homebrew` install `peco` automatically).
 
-## Binaly
+## Binary
 Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
 
 ## Mac OS X / Homebrew
