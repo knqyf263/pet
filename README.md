@@ -240,8 +240,16 @@ If [peco](https://github.com/peco/peco#installation) is not installed, please in
 Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
 
 ## Mac OS X / Homebrew
-You can homebrew on OS X.
+You can use homebrew on OS X.
 ```
+$ brew install knqyf263/pet/pet
+```
+
+If you receive an error (`Error: knqyf263/pet/pet 64 already installed`) during `brew upgrade`, try the following command
+
+```
+$ brew unlink pet && brew uninstall pet
+($ rm -rf /usr/local/Cellar/pet/64)
 $ brew install knqyf263/pet/pet
 ```
 
