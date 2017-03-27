@@ -72,8 +72,9 @@ Some examples are shown below.
 
 ## Register the previous command easily
 
-### zsh
-By adding the following config to `.zshrc`, you can easily register the previous command.
+### bash/zsh
+By adding the following config to `.bashrc` or `.zshrc`, you can easily register the previous command.
+
 ```
 $ cat .zshrc
 function prev() {
@@ -103,8 +104,21 @@ https://github.com/otms61/fish-pet
 
 ## Select snippets at the current line (like C-r)
 
+### bash
+By adding the following config to `.bashrc`, you can search snippets and output on the shell.
+
+```
+$ cat .bashrc
+function pet-select() {
+  BUFFER=$(pet search --query "$READLINE_LINE")
+  READLINE_LINE=$BUFFER
+  READLINE_POINT=${#BUFFER}
+}
+bind -x '"\C-x\C-r": pet-select'
+```
+
 ### zsh
-By adding the following config to `.zshrc`, you can search snippets and output on the shell.
+
 ```
 $ cat .zshrc
 function pet-select() {
@@ -113,6 +127,7 @@ function pet-select() {
   zle redisplay
 }
 zle -N pet-select
+stty -ixon
 bindkey '^s' pet-select
 ```
 
