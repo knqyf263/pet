@@ -1,0 +1,75 @@
+hash: ca446ace2f76e03a2393653d45025faf1c9e566dc34b64894b9636c0b60403c5
+updated: 2017-03-27T22:45:34.491755964-04:00
+imports:
+- name: github.com/BurntSushi/toml
+  version: bbd5bb678321a0d6e58f1099321dfa73391c1b6f
+- name: github.com/chzyer/readline
+  version: 41eea22f717c616615e1e59aa06cf831f9901f35
+- name: github.com/fatih/color
+  version: 9131ab34cf20d2f6d83fdc67168a5430d1c7dc23
+- name: github.com/golang/protobuf
+  version: c9c7427a2a70d2eb3bafa0ab2dc163e45f143317
+  subpackages:
+  - proto
+- name: github.com/google/go-github
+  version: d683a1c6198d75c6be7a7ab5e2f9834cb6408834
+  subpackages:
+  - github
+- name: github.com/google/go-querystring
+  version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
+  subpackages:
+  - query
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/jroimartin/gocui
+  version: 612b0b2987ec1a6af46d7008cef1efd4b3898346
+- name: github.com/knqyf263/pet
+  version: 8eddfdba41fd560211551fa727135ccf8ed104bb
+  subpackages:
+  - cmd
+  - config
+  - dialog
+  - snippet
+- name: github.com/mattn/go-colorable
+  version: 5411d3eea5978e6cdc258b30de592b60df6aba96
+  repo: https://github.com/mattn/go-colorable
+- name: github.com/mattn/go-isatty
+  version: 57fdcb988a5c543893cc61bce354a6e24ab70022
+  repo: https://github.com/mattn/go-isatty
+- name: github.com/mattn/go-runewidth
+  version: 9e777a8366cce605130a531d2cd6363d07ad7317
+- name: github.com/nsf/termbox-go
+  version: 7994c181db7761ca3c67a217068cf31826113f5f
+- name: github.com/spf13/cobra
+  version: 7be4beda01ec05d0b93d80b3facd2b6f44080d94
+- name: github.com/spf13/pflag
+  version: d16db1e50e33dff1b6cdf37596cef36742128670
+- name: golang.org/x/crypto
+  version: 459e26527287adbc2adcc5d0d49abff9a5f315a7
+  subpackages:
+  - ssh/terminal
+- name: golang.org/x/net
+  version: 6c23252515492caf9b228a9d5cabcdbde29f7f82
+  subpackages:
+  - context
+- name: golang.org/x/oauth2
+  version: 7fdf09982454086d5570c7db3e11f360194830ca
+  subpackages:
+  - internal
+- name: golang.org/x/sys
+  version: afadfcc7779c1f4db0f6f6438afcb108d9c9c7cd
+  subpackages:
+  - unix
+- name: google.golang.org/appengine
+  version: 56d253d1dd14aa01937e12c73a0971bcfd797ff2
+  subpackages:
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/modules
+  - internal/remote_api
+  - internal/urlfetch
+  - urlfetch
+testImports: []
