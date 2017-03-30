@@ -10,6 +10,7 @@ import (
 )
 
 var delimiter string
+var current_cmd_name string
 
 // searchCmd represents the search command
 var searchCmd = &cobra.Command{
@@ -20,6 +21,7 @@ var searchCmd = &cobra.Command{
 }
 
 func search(cmd *cobra.Command, args []string) (err error) {
+	current_cmd_name = cmd.Name()
 	flag := config.Flag
 
 	var options []string

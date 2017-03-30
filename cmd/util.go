@@ -58,7 +58,7 @@ func filter(options []string) (commands []string, err error) {
 	lines := strings.Split(strings.TrimSpace(buf.String()), "\n")
 
 	params := dialog.SearchForParams(lines)
-	if params != nil {
+	if params != nil && current_cmd_name == "exec" {
 		snippetInfo := snippetTexts[lines[0]]
 		dialog.CurrentCommand = snippetInfo.Command
 		dialog.GenerateParamsLayout(params, dialog.CurrentCommand)
