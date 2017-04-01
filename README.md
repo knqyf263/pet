@@ -262,7 +262,11 @@ $ yaourt -S pet-git
 ## Build
 
 ```
-$ go get github.com/knqyf263/pet
+$ mkdir -p $GOPATH/src/github.com/knqyf263
+$ cd $GOPATH/src/github.com/knqyf263
+$ git clone https://github.com/knqyf263/pet.git
+$ cd pet
+$ make install
 ```
 
 # Contribute
