@@ -9,13 +9,6 @@ import:
   subpackages:
   - github
 - package: github.com/jroimartin/gocui
-- package: github.com/knqyf263/pet
-  version: ^0.2.0
-  subpackages:
-  - cmd
-  - config
-  - dialog
-  - snippet
 - package: github.com/mattn/go-runewidth
   version: ^0.0.2
 - package: github.com/spf13/cobra

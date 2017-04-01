@@ -23,13 +23,6 @@ imports:
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/jroimartin/gocui
   version: 612b0b2987ec1a6af46d7008cef1efd4b3898346
-- name: github.com/knqyf263/pet
-  version: 8eddfdba41fd560211551fa727135ccf8ed104bb
-  subpackages:
-  - cmd
-  - config
-  - dialog
-  - snippet
 - name: github.com/mattn/go-colorable
   version: 5411d3eea5978e6cdc258b30de592b60df6aba96
   repo: https://github.com/mattn/go-colorable
