@@ -33,6 +33,8 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 
 func init() {
 	RootCmd.AddCommand(execCmd)
+	execCmd.Flags().BoolVarP(&config.Flag.Color, "color", "", false,
+		`Enable colorized output (only fzf)`)
 	execCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
 		`Initial value for query`)
 }

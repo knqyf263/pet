@@ -42,6 +42,7 @@ type FlagConfig struct {
 	Delimiter string
 	Upload    bool
 	OneLine   bool
+	Color     bool
 }
 
 func (cfg *Config) Load(file string) error {
