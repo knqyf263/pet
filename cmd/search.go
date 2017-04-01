@@ -26,7 +26,6 @@ func search(cmd *cobra.Command, args []string) (err error) {
 	if flag.Query != "" {
 		options = append(options, fmt.Sprintf("--query %s", flag.Query))
 	}
-	options = append(options, fmt.Sprintf("--layout %s", flag.Layout))
 	commands, err := filter(options)
 	if err != nil {
 		return err
@@ -43,8 +42,6 @@ func init() {
 	RootCmd.AddCommand(searchCmd)
 	searchCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
 		`Initial value for query`)
-	searchCmd.Flags().StringVarP(&config.Flag.Layout, "layout", "", "top-down",
-		`layout to be used. 'top-down' or 'bottom-up'`)
 	searchCmd.Flags().StringVarP(&config.Flag.Delimiter, "delimiter", "d", "; ",
 		`Use delim as the command delimiter character`)
 }
