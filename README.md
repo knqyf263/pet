@@ -50,6 +50,7 @@ So I made it possible to register snippets with description and search them easi
 - [Usage](#usage)
 - [Snippet](#snippet)
 - [Configuration](#configuration)
+    - [Selector option](#selector-option)
     - [Sync](#sync)
 - [Installation](#installation)
     - [Binary](#binary)
@@ -205,13 +206,35 @@ Run `pet configure`
   snippetfile = "path/to/snippet" # specify snippet directory
   editor = "vim"                  # your favorite text editor
   column = 40                     # column size for list command
-  selectcmd = "peco"              # selector command for edit command
+  selectcmd = "peco"              # selector command for edit command (peco or fzf)
 
 [Gist]
   file_name = "pet-snippet.toml"  # specify gist file name
   access_token = ""               # your access token
   gist_id = ""                    # Gist ID
 ```
+
+## Selector option
+Example1: Change layout (bottom up)
+
+```
+$ pet configure
+[General]
+...
+  selectcmd = "peco --layout=bottom-up"
+...
+```
+
+Example2: Enable colorized output
+```
+$ pet configure
+[General]
+...
+  selectcmd = "fzf --ansi"
+...
+$ pet search --color
+```
+
 
 ## Sync
 You must obtain access token.
@@ -234,7 +257,8 @@ Download success
 ```
 
 # Installation
-If [peco](https://github.com/peco/peco#installation) is not installed, please install first (`homebrew` install `peco` automatically).
+You need to install selector command ([fzf](https://github.com/junegunn/fzf) or [peco](https://github.com/peco/peco)).  
+`homebrew` install `peco` automatically.
 
 ## Binary
 Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 

@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/snippet"
 
@@ -42,8 +43,12 @@ func filter(options []string) (commands []string, err error) {
 	snippetTexts := map[string]snippet.SnippetInfo{}
 	var text string
 	for _, s := range snippets.Snippets {
-		t := fmt.Sprintf("[%s] %s", s.Description, s.Command)
+		t := fmt.Sprintf("[%s]: %s", s.Description, s.Command)
 		snippetTexts[t] = s
+		if config.Flag.Color {
+			t = fmt.Sprintf("[%s]: %s",
+				color.RedString(s.Description), s.Command)
+		}
 		text += t + "\n"
 	}
 
