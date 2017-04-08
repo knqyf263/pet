@@ -18,7 +18,12 @@ var execCmd = &cobra.Command{
 }
 
 func execute(cmd *cobra.Command, args []string) (err error) {
+	flag := config.Flag
+
 	var options []string
+	if flag.Query != "" {
+		options = append(options, fmt.Sprintf("--query %s", flag.Query))
+	}
 
 	commands, err := filter(options)
 	if err != nil {
