@@ -44,6 +44,13 @@ func filter(options []string) (commands []string, err error) {
 	var text string
 	for _, s := range snippets.Snippets {
 		t := fmt.Sprintf("[%s]: %s", s.Description, s.Command)
+
+		tags := ""
+		for _, tag := range s.Tag {
+			tags += fmt.Sprintf(" #%s", tag)
+		}
+		t += tags
+
 		snippetTexts[t] = s
 		if config.Flag.Color {
 			t = fmt.Sprintf("[%s]: %s",

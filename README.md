@@ -51,6 +51,7 @@ So I made it possible to register snippets with description and search them easi
 - [Snippet](#snippet)
 - [Configuration](#configuration)
     - [Selector option](#selector-option)
+    - [Tag](#tag)
     - [Sync](#sync)
 - [Installation](#installation)
     - [Binary](#binary)
@@ -58,7 +59,6 @@ So I made it possible to register snippets with description and search them easi
     - [Archlinux](#archlinux)
     - [Build](#build)
 - [Contribute](#contribute)
-
 
 # Main features
 `pet` has the following features.
@@ -235,6 +235,30 @@ $ pet configure
 $ pet search --color
 ```
 
+## Tag
+You can use tags (delimiter: space).
+```
+$ pet new -t
+Command> ping 8.8.8.8
+Description> ping
+Tag> network google
+```
+
+Or edit manually.
+```
+$ pet edit
+[[snippets]]
+  description = "ping"
+  command = "ping 8.8.8.8"
+  tag = ["network", "google"]
+  output = ""
+```
+
+They are displayed with snippets.
+```
+$ pet search
+[ping]: ping 8.8.8.8 #network #google
+```
 
 ## Sync
 You must obtain access token.

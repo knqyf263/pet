@@ -11,6 +11,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
+	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/spf13/cobra"
 )
@@ -66,6 +67,7 @@ func scan(message string) (string, error) {
 func new(cmd *cobra.Command, args []string) (err error) {
 	var command string
 	var description string
+	var tags []string
 
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
@@ -86,6 +88,14 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
+	if config.Flag.Tag {
+		var t string
+		if t, err = scan(color.CyanString("Tag> ")); err != nil {
+			return err
+		}
+		tags = strings.Fields(t)
+	}
+
 	for _, s := range snippets.Snippets {
 		if s.Description == description {
 			return fmt.Errorf("Snippet [%s] already exists", description)
@@ -95,6 +105,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 	newSnippet := snippet.SnippetInfo{
 		Description: description,
 		Command:     command,
+		Tag:         tags,
 	}
 	snippets.Snippets = append(snippets.Snippets, newSnippet)
 	if err = snippets.Save(); err != nil {
@@ -106,4 +117,6 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 func init() {
 	RootCmd.AddCommand(newCmd)
+	newCmd.Flags().BoolVarP(&config.Flag.Tag, "tag", "t", false,
+		`Display tag prompt (delimiter: space)`)
 }
