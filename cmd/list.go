@@ -45,6 +45,11 @@ func list(cmd *cobra.Command, args []string) error {
 				color.GreenString("Description:"), snippet.Description)
 			fmt.Fprintf(color.Output, "%12s %s\n",
 				color.YellowString("    Command:"), snippet.Command)
+			if snippet.Tag != nil {
+				tag := strings.Join(snippet.Tag, " ")
+				fmt.Fprintf(color.Output, "%12s %s\n",
+					color.CyanString("        Tag:"), tag)
+			}
 			if snippet.Output != "" {
 				output := strings.Replace(snippet.Output, "\n", "\n             ", -1)
 				fmt.Fprintf(color.Output, "%12s %s\n",

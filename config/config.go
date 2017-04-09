@@ -43,6 +43,7 @@ type FlagConfig struct {
 	Upload    bool
 	OneLine   bool
 	Color     bool
+	Tag       bool
 }
 
 func (cfg *Config) Load(file string) error {
