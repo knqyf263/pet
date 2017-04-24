@@ -1,4 +1,4 @@
-package: github.com/wadeg/pet
+package: github.com/knqyf263/pet
 import:
 - package: github.com/BurntSushi/toml
   version: ^0.2.0
