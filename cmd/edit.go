@@ -17,7 +17,11 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	editor := config.Conf.General.Editor
 	snippetFile := config.Conf.General.SnippetFile
 
-	return editFile(editor, snippetFile)
+	err = editFile(editor, snippetFile)
+	if err == nil && config.Conf.Gist.AutoSync {
+		return autoSync(snippetFile)
+	}
+	return err
 }
 
 func init() {
