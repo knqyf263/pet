@@ -30,6 +30,7 @@ type GistConfig struct {
 	AccessToken string `toml:"access_token"`
 	GistID      string `toml:"gist_id"`
 	Public      bool   `toml:"public"`
+	AutoSync    bool   `toml:"auto_sync"`
 }
 
 // Flag is global flag variable
