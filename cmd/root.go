@@ -37,10 +37,11 @@ var configFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:          "pet",
-	Short:        "Simple command-line snippet manager.",
-	Long:         `pet - Simple command-line snippet manager.`,
-	SilenceUsage: true,
+	Use:           "pet",
+	Short:         "Simple command-line snippet manager.",
+	Long:          `pet - Simple command-line snippet manager.`,
+	SilenceErrors: true,
+	SilenceUsage:  true,
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
