@@ -95,10 +95,20 @@ func download() error {
 	if err != nil {
 		return fmt.Errorf("Failed to download gist: %v", err)
 	}
-	content := resGist.Files[github.GistFilename(config.Conf.Gist.FileName)].Content
+	var content string
+	for _, f := range resGist.Files {
+		if *f.Filename == config.Conf.Gist.FileName {
+			content = *f.Content
+			break
+		}
+	}
+	if content == "" {
+		return fmt.Errorf("%s: no such file in gist %s",
+			config.Conf.Gist.FileName, config.Conf.Gist.GistID)
+	}
 
 	var snippets snippet.Snippets
-	toml.Decode(*content, &snippets)
+	toml.Decode(content, &snippets)
 	if err := snippets.Save(); err != nil {
 		return err
 	}
