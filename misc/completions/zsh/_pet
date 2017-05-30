@@ -1,0 +1,75 @@
+#compdef pet
+# vim: ft=zsh
+
+_pet () {
+    local -a _1st_arguments
+    _1st_arguments=(
+    'configure:Edit config file'
+    'edit:Edit snippet file'
+    'exec:Run the selected commands'
+    'help:Help about any command'
+    'list:Show all snippets'
+    'new:Create a new snippet'
+    'search:Search snippets'
+    'sync:Sync snippets'
+    'version:Print the version number'
+    )
+
+    _arguments \
+        '(--help)--help[show this help message]' \
+        '(--config)--config=[config file (default is $HOME/.config/pet/config.toml)]' \
+        '(--debug)--debug[debug mode]' \
+        '*:: :->subcmds' \
+        && return 0
+
+    if (( CURRENT == 1 )); then
+        _describe -t commands "pet subcommand" _1st_arguments
+        return
+    fi
+
+    case "$words[1]" in
+        ("configure"|"edit"|"version")
+            _arguments \
+                '(- :)'{-h,--help}'[Show this help and exit]' \
+                && return 0
+            ;;
+        ("exec")
+            _arguments \
+                '(- :)'{-h,--help}'[Show this help and exit]' \
+                '(--color)--color[Enable colorized output (only fzf)]' \
+                '(-q --query)'{-q,--query}'=[Initial value for query]' \
+                && return 0
+            ;;
+        ("list")
+            _arguments \
+                '(- :)'{-h,--help}'[Show this help and exit]' \
+                '(--oneline)--oneline[Display snippets in one line]' \
+                && return 0
+            ;;
+        ("new")
+            _arguments \
+                '(- :)'{-h,--help}'[Show this help and exit]' \
+                '(-t --tag)'{-t,--tag}'=[Display tag prompt (delimiter: space)]' \
+                && return 0
+            ;;
+        ("search")
+            _arguments \
+                '(- :)'{-h,--help}'[Show this help and exit]' \
+                '(--color)--color[Enable colorized output (only fzf)]' \
+                '(-d --delimiter)'{-d,--delimiter}'[Use delim as the command delimiter character (default "; ")]' \
+                '(-q --query)'{-q,--query}'=[Initial value for query]' \
+                && return 0
+            ;;
+        ("sync")
+            _arguments \
+                '(- :)'{-h,--help}'[Show this help and exit]' \
+                '(-u --upload)'{-u,--upload}'[Upload snippets to gist]' \
+                && return 0
+            ;;
+        ("help")
+            _values 'help message' ${_1st_arguments[@]%:*} && return 0
+            ;;
+    esac
+}
+
+_pet "$@"
