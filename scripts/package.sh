@@ -16,6 +16,7 @@ for PLATFORM in $(find ./out -mindepth 1 -maxdepth 1 -type d); do
         PLATFORM_NAME=$(basename ${PLATFORM})
 
         pushd ${PLATFORM}
-        zip ../../pkg/${PLATFORM_NAME}.zip ./*
+        cp -r ../../misc ./
+        zip -r ../../pkg/${PLATFORM_NAME}.zip ./*
         popd
 done
