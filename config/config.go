@@ -41,7 +41,6 @@ type FlagConfig struct {
 	Debug     bool
 	Query     string
 	Delimiter string
-	Upload    bool
 	OneLine   bool
 	Color     bool
 	Tag       bool
