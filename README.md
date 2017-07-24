@@ -302,9 +302,14 @@ $ brew install knqyf263/pet/pet
 ```
 
 ## Archlinux
-A package is available in [AUR](https://aur.archlinux.org/packages/pet-git/).
+Two packages are available in [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository).
+You can install the package [from source](https://aur.archlinux.org/packages/pet-git):
 ```
 $ yaourt -S pet-git
+```
+Or [from the binary](https://aur.archlinux.org/packages/pet-bin):
+```
+$ yaourt -S pet-bin
 ```
 
 ## Build
