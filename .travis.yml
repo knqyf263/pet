@@ -6,3 +6,5 @@ go:
 script:
   - make dep
   - make test
+after_success:
+  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
