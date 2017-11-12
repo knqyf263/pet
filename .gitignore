@@ -32,3 +32,4 @@ pkg
 .glide/
 vendor/
 pet
+dist/

@@ -10,7 +10,6 @@ brew:
   commit_author:
     name: goreleaserbot
     email: goreleaser@carlosbecker.com
-  install: bin.install ""
   description: "Simple command-line snippet manager"
   homepage: "https://github.com/knqyf263/pet"
   dependencies:
