@@ -1,44 +1,56 @@
 .PHONY: \
 	all \
-	glide \
-	deps \
+	dep \
+	depup \
 	update \
 	build \
 	install \
 	lint \
 	vet \
 	fmt \
-	clean
+	fmtcheck \
+	clean \
+	pretest \
+	test
 
 VERSION := $(shell git describe --tags --abbrev=0)
+SRCS = $(shell git ls-files '*.go')
+PKGS = $(shell go list ./... | grep -v /vendor/)
 
-all: glide deps build 
+all: dep build test
 
-glide:
-	go get github.com/Masterminds/glide
+dep:
+	go get -u github.com/golang/dep/...
+	dep ensure
 
-deps: glide
-	glide install
+depup:
+	go get -u github.com/golang/dep/...
+	dep ensure -u
 
-update: glide
-	glide update
-
-build: main.go deps
+build: main.go dep
 	go build -o pet $<
 
 install: main.go deps
 	go install
 
-
 lint:
 	@ go get -v github.com/golang/lint/golint
-	golint $(shell glide nv)
+	$(foreach file,$(SRCS),golint $(file) || exit;)
 
 vet:
-	go vet $(shell glide nv)
+	go vet $(PKGS) || exit;
 
 fmt:
-	go fmt $(shell glide nv)
+	gofmt -w $(SRCS)
+
+fmtcheck:
+	@ $(foreach file,$(SRCS),gofmt -s -l $(file);)
 
 clean:
 	go clean $(shell glide nv)
+
+pretest: vet fmtcheck
+
+test: pretest
+	go install
+	@ $(foreach pkg,$(PKGS), go test $(pkg) || exit;)
