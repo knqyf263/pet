@@ -77,7 +77,7 @@ func (cfg *Config) Load(file string) error {
 		cfg.General.Editor = "vim"
 	}
 	cfg.General.Column = 40
-	cfg.General.SelectCmd = "peco"
+	cfg.General.SelectCmd = "fzf"
 
 	cfg.Gist.FileName = "pet-snippet.toml"
 
