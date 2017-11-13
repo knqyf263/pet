@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/knqyf263/pet/config"
+	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +24,7 @@ Write access_token in config file (pet configure).
 		`)
 	}
 
-	return autoSync(config.Conf.General.SnippetFile)
+	return petSync.AutoSync(config.Conf.General.SnippetFile)
 }
 
 func init() {

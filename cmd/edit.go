@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 
 	"github.com/knqyf263/pet/config"
+	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +37,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if config.Conf.Gist.AutoSync {
-		return autoSync(snippetFile)
+		return petSync.AutoSync(snippetFile)
 	}
 
 	return nil
