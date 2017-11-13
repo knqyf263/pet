@@ -30,7 +30,7 @@ depup:
 build: main.go dep
 	go build -o pet $<
 
-install: main.go deps
+install: main.go dep
 	go install
 
 lint:
