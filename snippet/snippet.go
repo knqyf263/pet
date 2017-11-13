@@ -23,12 +23,16 @@ type SnippetInfo struct {
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
 	snippetFile := config.Conf.General.SnippetFile
+	if _, err := os.Stat(snippetFile); os.IsNotExist(err) {
+		return nil
+	}
 	if _, err := toml.DecodeFile(snippetFile, snippets); err != nil {
 		return fmt.Errorf("Failed to load snippet file. %v", err)
 	}
 	return nil
 }
 
+// Save saves the snippets to toml file.
 func (snippets *Snippets) Save() error {
 	snippetFile := config.Conf.General.SnippetFile
 	f, err := os.Create(snippetFile)
@@ -39,6 +43,7 @@ func (snippets *Snippets) Save() error {
 	return toml.NewEncoder(f).Encode(snippets)
 }
 
+// ToString returns the contents of toml file.
 func (snippets *Snippets) ToString() (string, error) {
 	var buffer bytes.Buffer
 	err := toml.NewEncoder(&buffer).Encode(snippets)

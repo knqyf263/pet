@@ -8,6 +8,12 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "github.com/briandowns/spinner"
+  packages = ["."]
+  revision = "48dbb65d7bd5c74ab50d53d04c949f20e3d14944"
+  version = "1.0"
+
+[[projects]]
   name = "github.com/chzyer/readline"
   packages = ["."]
   revision = "41eea22f717c616615e1e59aa06cf831f9901f35"
@@ -104,6 +110,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b7d985e3f37d3a3f5d4429a0405b2b7be1298739f78f0794b94969392b916d09"
+  inputs-digest = "cc2acc68430cee44c5c34030b6a4f1727b5f61099bf0e0db15e537b830264196"
   solver-name = "gps-cdcl"
   solver-version = 1
