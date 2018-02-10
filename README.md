@@ -57,6 +57,8 @@ So I made it possible to register snippets with description and search them easi
 - [Installation](#installation)
     - [Binary](#binary)
     - [Mac OS X / Homebrew](#mac-os-x--homebrew)
+    - [RedHat, CentOS](#redhat-centos)
+    - [Debian, Ubuntu](#debian-ubuntu)
     - [Archlinux](#archlinux)
     - [Build](#build)
 - [Contribute](#contribute)
@@ -207,7 +209,7 @@ Run `pet configure`
   snippetfile = "path/to/snippet" # specify snippet directory
   editor = "vim"                  # your favorite text editor
   column = 40                     # column size for list command
-  selectcmd = "peco"              # selector command for edit command (peco or fzf)
+  selectcmd = "fzf"              # selector command for edit command (fzf or peco)
 
 [Gist]
   file_name = "pet-snippet.toml"  # specify gist file name
@@ -222,7 +224,7 @@ Example1: Change layout (bottom up)
 $ pet configure
 [General]
 ...
-  selectcmd = "peco --layout=bottom-up"
+  selectcmd = "fzf"
 ...
 ```
 
@@ -305,7 +307,7 @@ Upload success
 
 # Installation
 You need to install selector command ([fzf](https://github.com/junegunn/fzf) or [peco](https://github.com/peco/peco)).  
-`homebrew` install `peco` automatically.
+`homebrew` install `fzf` automatically.
 
 ## Binary
 Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
@@ -322,6 +324,19 @@ If you receive an error (`Error: knqyf263/pet/pet 64 already installed`) during 
 $ brew unlink pet && brew uninstall pet
 ($ rm -rf /usr/local/Cellar/pet/64)
 $ brew install knqyf263/pet/pet
+```
+
+## RedHat, CentOS
+Download rpm package from [the releases page](https://github.com/knqyf263/pet/releases)
+```
+$ sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
+```
+
+## Debian, Ubuntu
+Download deb package from [the releases page](https://github.com/knqyf263/pet/releases)
+```
+$ wget https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.deb
+dpkg -i pet_0.3.0_linux_amd64.deb
 ```
 
 ## Archlinux
