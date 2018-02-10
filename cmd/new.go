@@ -13,6 +13,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/snippet"
+	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
 )
 
@@ -110,6 +111,11 @@ func new(cmd *cobra.Command, args []string) (err error) {
 	snippets.Snippets = append(snippets.Snippets, newSnippet)
 	if err = snippets.Save(); err != nil {
 		return err
+	}
+
+	snippetFile := config.Conf.General.SnippetFile
+	if config.Conf.Gist.AutoSync {
+		return petSync.AutoSync(snippetFile)
 	}
 
 	return nil
