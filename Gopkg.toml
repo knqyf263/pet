@@ -22,33 +22,17 @@
 
 
 [[constraint]]
-  name = "github.com/BurntSushi/toml"
-
-[[constraint]]
-  name = "github.com/chzyer/readline"
-
-[[constraint]]
   name = "github.com/fatih/color"
   version = "1.4.1"
-
-[[constraint]]
-  name = "github.com/google/go-github"
-
-[[constraint]]
-  name = "github.com/jroimartin/gocui"
 
 [[constraint]]
   name = "github.com/mattn/go-runewidth"
   version = "0.0.2"
 
 [[constraint]]
-  name = "github.com/spf13/cobra"
+  name = "github.com/jroimartin/gocui"
+  branch = "master"
 
 [[constraint]]
-  name = "golang.org/x/crypto"
-
-[[constraint]]
-  name = "golang.org/x/oauth2"
-
-[[constraint]]
-  name = "github.com/briandowns/spinner"
+  name = "github.com/chzyer/readline"
+  branch = "master"
