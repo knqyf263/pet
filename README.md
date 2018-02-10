@@ -53,6 +53,7 @@ So I made it possible to register snippets with description and search them easi
     - [Selector option](#selector-option)
     - [Tag](#tag)
     - [Sync](#sync)
+    - [Auto Sync](#auto-sync)
 - [Installation](#installation)
     - [Binary](#binary)
     - [Mac OS X / Homebrew](#mac-os-x--homebrew)
@@ -68,7 +69,7 @@ So I made it possible to register snippets with description and search them easi
 - Search snippets interactively.
 - Run snippets directly.
 - Edit snippets easily (config is just a TOML file).
-- Sync snippets via Gist.
+- Sync snippets via Gist automatically.
 
 # Examples
 Some examples are shown below.
@@ -265,19 +266,41 @@ You must obtain access token.
 Go https://github.com/settings/tokens/new and create access token (only need "gist" scope).
 Set that to `access_token` in `[Gist]`.
 
-After setting, you can upload snippets to Gist.
+After setting, you can upload snippets to Gist.  
+If `gist_id` is not set, new gist will be created.
 ```
-$ pet sync -u
+$ pet sync
 Gist ID: 1cedddf4e06d1170bf0c5612fb31a758
 Upload success
 ```
 
 Set `Gist ID` to `gist_id` in `[Gist]`.
+`pet sync` compares the local file and gist with the update date and automatically download or upload.
 
-You can download snippets on another PC.
+If the local file is older than gist, `pet sync` download snippets.
 ```
 $ pet sync
 Download success
+```
+
+If gist is older than the local file, `pet sync` upload snippets.
+```
+$ pet sync
+Upload success
+```
+
+*Note: `-u` option is deprecated*
+
+## Auto Sync
+You can sync snippets automatically.  
+Set `true` to `auto_sync` in `[Gist]`.  
+Then, your snippets sync automatically when `pet new` or `pet edit`.
+
+```
+$ pet edit
+Getting Gist...
+Updating Gist...
+Upload success
 ```
 
 # Installation
