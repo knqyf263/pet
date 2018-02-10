@@ -1,5 +1,6 @@
 language: go
 
+sudo: false
 go:
   - 1.8
   - 1.9
@@ -7,4 +8,5 @@ script:
   - make dep
   - make test
 after_success:
+  - gem install --no-ri --no-rdoc fpm
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
