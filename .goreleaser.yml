@@ -40,10 +40,5 @@ archive:
   - README*
   - CHANGELOG*
   - misc/completions/zsh/_pet
-fpm:
-  bindir: /usr/local/bin
-  formats:
-  - deb
-  - rpm
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'

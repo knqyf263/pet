@@ -10,11 +10,16 @@ addons:
     - rpm
 
 go:
-  - 1.8
-  - 1.9
+  - "1.10"
 script:
   - make dep
   - make test
-after_success:
-  - gem install --no-ri --no-rdoc fpm
-  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
+
+# calls goreleaser
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    tags: true
+    condition: $TRAVIS_OS_NAME = linux
