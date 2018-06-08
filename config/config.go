@@ -7,6 +7,7 @@ import (
 	"runtime"
 
 	"github.com/BurntSushi/toml"
+	"github.com/pkg/errors"
 )
 
 // Conf is global config variable
@@ -16,20 +17,33 @@ var Conf Config
 type Config struct {
 	General GeneralConfig
 	Gist    GistConfig
+	GitLab  GitLabConfig
 }
 
+// GeneralConfig is a struct of general config
 type GeneralConfig struct {
 	SnippetFile string `toml:"snippetfile"`
 	Editor      string `toml:"editor"`
 	Column      int    `toml:"column"`
 	SelectCmd   string `toml:"selectcmd"`
+	Backend     string `toml:"backend"`
 }
 
+// GistConfig is a struct of config for Gist
 type GistConfig struct {
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
 	GistID      string `toml:"gist_id"`
 	Public      bool   `toml:"public"`
+	AutoSync    bool   `toml:"auto_sync"`
+}
+
+// GitLabConfig is a struct of config for GitLabSnippet
+type GitLabConfig struct {
+	FileName    string `toml:"file_name"`
+	AccessToken string `toml:"access_token"`
+	ID          string `toml:"id"`
+	Visibility  string `toml:"visibility"`
 	AutoSync    bool   `toml:"auto_sync"`
 }
 
@@ -46,6 +60,7 @@ type FlagConfig struct {
 	Tag       bool
 }
 
+// Load loads a config toml
 func (cfg *Config) Load(file string) error {
 	_, err := os.Stat(file)
 	if err == nil {
@@ -65,11 +80,14 @@ func (cfg *Config) Load(file string) error {
 		return err
 	}
 
-	dir, _ := GetDefaultConfigDir()
+	dir, err := GetDefaultConfigDir()
+	if err != nil {
+		return errors.Wrap(err, "Failed to get the default config directory")
+	}
 	cfg.General.SnippetFile = filepath.Join(dir, "snippet.toml")
 	_, err = os.Create(cfg.General.SnippetFile)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Failed to create a config file")
 	}
 
 	cfg.General.Editor = os.Getenv("EDITOR")
@@ -78,12 +96,17 @@ func (cfg *Config) Load(file string) error {
 	}
 	cfg.General.Column = 40
 	cfg.General.SelectCmd = "fzf"
+	cfg.General.Backend = "gist"
 
 	cfg.Gist.FileName = "pet-snippet.toml"
+
+	cfg.GitLab.FileName = "pet-snippet.toml"
+	cfg.GitLab.Visibility = "private"
 
 	return toml.NewEncoder(f).Encode(cfg)
 }
 
+// GetDefaultConfigDir returns the default config directory
 func GetDefaultConfigDir() (dir string, err error) {
 	if runtime.GOOS == "windows" {
 		dir = os.Getenv("APPDATA")
