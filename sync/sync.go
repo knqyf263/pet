@@ -1,76 +1,80 @@
 package sync
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
 
-	"github.com/briandowns/spinner"
-	"github.com/google/go-github/github"
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/pkg/errors"
-	"golang.org/x/oauth2"
 )
+
+// Client manages communication with the remote Snippet repository
+type Client interface {
+	GetSnippet() (*Snippet, error)
+	UploadSnippet(string) error
+}
+
+// Snippet is the remote snippet
+type Snippet struct {
+	Content   string
+	UpdatedAt time.Time
+}
 
 // AutoSync syncs snippets automatically
 func AutoSync(file string) error {
-	gistID := config.Conf.Gist.GistID
-	if config.Conf.Gist.GistID == "" {
-		upload()
-		return nil
+	client, err := NewSyncClient()
+	if err != nil {
+		return errors.Wrap(err, "Failed to initialize API client")
 	}
 
-	gist, err := getGist(gistID)
+	snippet, err := client.GetSnippet()
 	if err != nil {
 		return err
 	}
 
 	fi, err := os.Stat(file)
 	if os.IsNotExist(err) {
-		return download(gist)
+		return download(snippet.Content)
 	} else if err != nil {
 		return errors.Wrap(err, "Failed to get a FileInfo")
 	}
 
 	local := fi.ModTime().UTC()
-	remote := gist.UpdatedAt.UTC()
+	remote := snippet.UpdatedAt.UTC()
 
 	switch {
 	case local.After(remote):
-		return upload()
+		return upload(client)
 	case remote.After(local):
-		return download(gist)
+		return download(snippet.Content)
 	default:
 		return nil
 	}
 }
 
-func getGist(gistID string) (*github.Gist, error) {
-	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
-	s.Start()
-	s.Suffix = " Getting Gist..."
-	defer s.Stop()
-
-	client := githubClient()
-	gist, res, err := client.Gists.Get(context.Background(), gistID)
-	if err != nil {
-		if res.StatusCode == 404 {
-			return nil, errors.Wrapf(err, "No gist ID (%s)", gistID)
+// NewSyncClient returns Client
+func NewSyncClient() (Client, error) {
+	if config.Conf.General.Backend == "gitlab" {
+		client, err := NewGitLabClient()
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to initialize GitLab client")
 		}
-		return nil, errors.Wrapf(err, "Failed to get gist")
+		return client, nil
 	}
-	return gist, nil
+	client, err := NewGistClient()
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to initialize Gist client")
+	}
+	return client, nil
 }
 
-func upload() (err error) {
-	ctx := context.Background()
-
+func upload(client Client) (err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
-		return err
+		return errors.Wrap(err, "Failed to load the local snippets")
 	}
 
 	body, err := snippets.ToString()
@@ -78,47 +82,16 @@ func upload() (err error) {
 		return err
 	}
 
-	client := githubClient()
-	gist := &github.Gist{
-		Description: github.String("description"),
-		Public:      github.Bool(config.Conf.Gist.Public),
-		Files: map[github.GistFilename]github.GistFile{
-			github.GistFilename(config.Conf.Gist.FileName): github.GistFile{
-				Content: github.String(body),
-			},
-		},
+	if err = client.UploadSnippet(body); err != nil {
+		return errors.Wrap(err, "Failed to upload snippet")
 	}
 
-	gistID := config.Conf.Gist.GistID
-	if gistID == "" {
-		retGist, err := createGist(ctx, client, gist)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("Gist ID: %s\n", retGist.GetID())
-	} else {
-		if err = updateGist(ctx, gistID, client, gist); err != nil {
-			return err
-		}
-	}
 	fmt.Println("Upload success")
 	return nil
 }
 
-func download(gist *github.Gist) error {
-	var (
-		content     = ""
-		snippetFile = config.Conf.General.SnippetFile
-		filename    = config.Conf.Gist.FileName
-	)
-	for _, file := range gist.Files {
-		if *file.Filename == filename {
-			content = *file.Content
-		}
-	}
-	if content == "" {
-		return fmt.Errorf("%s is empty", filename)
-	}
+func download(content string) error {
+	snippetFile := config.Conf.General.SnippetFile
 
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
@@ -136,38 +109,4 @@ func download(gist *github.Gist) error {
 
 	fmt.Println("Download success")
 	return ioutil.WriteFile(snippetFile, []byte(content), os.ModePerm)
-}
-
-func githubClient() *github.Client {
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: config.Conf.Gist.AccessToken},
-	)
-	tc := oauth2.NewClient(oauth2.NoContext, ts)
-	client := github.NewClient(tc)
-	return client
-}
-
-func createGist(ctx context.Context, client *github.Client, gist *github.Gist) (*github.Gist, error) {
-	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
-	s.Start()
-	s.Suffix = " Creating Gist..."
-	defer s.Stop()
-
-	retGist, _, err := client.Gists.Create(ctx, gist)
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to create gist")
-	}
-	return retGist, nil
-}
-
-func updateGist(ctx context.Context, gistID string, client *github.Client, gist *github.Gist) (err error) {
-	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
-	s.Start()
-	s.Suffix = " Updating Gist..."
-	defer s.Stop()
-
-	if _, _, err = client.Gists.Edit(ctx, gistID, gist); err != nil {
-		return errors.Wrap(err, "Failed to edit gist")
-	}
-	return nil
 }
