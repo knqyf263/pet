@@ -42,6 +42,7 @@ type GistConfig struct {
 type GitLabConfig struct {
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
+	Url         string `toml:"url"`
 	ID          string `toml:"id"`
 	Visibility  string `toml:"visibility"`
 	AutoSync    bool   `toml:"auto_sync"`

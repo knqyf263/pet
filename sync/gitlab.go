@@ -26,9 +26,14 @@ Go https://gitlab.com/profile/personal_access_tokens and create access_token.
 Write access_token in config file (pet configure).
 		`)
 	}
+
 	client := GitLabClient{
 		Client: gitlab.NewClient(nil, config.Conf.GitLab.AccessToken),
 		ID:     0,
+	}
+
+	if config.Conf.GitLab.Url != "" {
+		client.Client.SetBaseURL(config.Conf.GitLab.Url)
 	}
 
 	if config.Conf.GitLab.ID == "" {
