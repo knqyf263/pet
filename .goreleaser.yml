@@ -40,5 +40,14 @@ archive:
   - README*
   - CHANGELOG*
   - misc/completions/zsh/_pet
+nfpm:   
+  homepage: https://github.com/knqyf263/pet 
+  maintainer: Teppei Fukuda <knqyf263@gmail.com>
+  description: "Simple command-line snippet manager"
+  bindir: /usr/local/bin     
+  license: MIT
+  formats:   
+  - deb      
+  - rpm
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
