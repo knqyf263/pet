@@ -37,7 +37,8 @@ So I made it possible to register snippets with description and search them easi
 - [Main features](#main-features)
 - [Examples](#examples)
     - [Register the previous command easily](#register-the-previous-command-easily)
-        - [bash/zsh](#bashzsh)
+        - [bash](#bash-prev-function)
+        - [zsh](#zsh-prev-function)
         - [fish](#fish)
     - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
         - [bash](#bash)
@@ -77,9 +78,18 @@ So I made it possible to register snippets with description and search them easi
 Some examples are shown below.
 
 ## Register the previous command easily
-
-### bash/zsh
 By adding the following config to `.bashrc` or `.zshrc`, you can easily register the previous command.
+
+### bash prev function
+
+```
+function prev() {
+  PREV=$(echo `history | tail -n2 | head -n1` | sed 's/[0-9]* //')
+  sh -c "pet new `printf %q "$PREV"`"
+}
+```
+
+### zsh prev function
 
 ```
 $ cat .zshrc
