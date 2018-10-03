@@ -37,7 +37,8 @@ So I made it possible to register snippets with description and search them easi
 - [Main features](#main-features)
 - [Examples](#examples)
     - [Register the previous command easily](#register-the-previous-command-easily)
-        - [bash/zsh](#bashzsh)
+        - [bash](#bash-prev-function)
+        - [zsh](#zsh-prev-function)
         - [fish](#fish)
     - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
         - [bash](#bash)
@@ -79,7 +80,7 @@ Some examples are shown below.
 ## Register the previous command easily
 By adding the following config to `.bashrc` or `.zshrc`, you can easily register the previous command.
 
-### bash
+### bash prev function
 
 ```
 function prev() {
@@ -88,7 +89,7 @@ function prev() {
 }
 ```
 
-### zsh
+### zsh prev function
 
 ```
 $ cat .zshrc
