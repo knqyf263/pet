@@ -87,7 +87,7 @@ func (g GistClient) UploadSnippet(content string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Gist ID: %d\n", gistID)
+		fmt.Printf("Gist ID: %s\n", *gistID)
 	} else {
 		if err := g.updateGist(context.Background(), gist); err != nil {
 			return errors.Wrap(err, "Failed to update gist")
