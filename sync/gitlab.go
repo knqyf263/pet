@@ -42,7 +42,7 @@ Write access_token in config file (pet configure).
 
 	id, err := strconv.Atoi(config.Conf.GitLab.ID)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Invalid GitLab Snippet ID: %s", id)
+		return nil, errors.Wrapf(err, "Invalid GitLab Snippet ID: %d", id)
 	}
 	client.ID = id
 	return client, nil
