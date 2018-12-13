@@ -62,6 +62,7 @@ So I made it possible to register snippets with description and search them easi
     - [Debian, Ubuntu](#debian-ubuntu)
     - [Archlinux](#archlinux)
     - [Build](#build)
+- [Migration](#migration)
 - [Contribute](#contribute)
 
 # Main features
@@ -409,6 +410,10 @@ $ git clone https://github.com/knqyf263/pet.git
 $ cd pet
 $ make install
 ```
+
+# Migration
+## From Keep
+https://blog.saltedbrain.org/2018/12/converting-keep-to-pet-snippets.html
 
 # Contribute
 
