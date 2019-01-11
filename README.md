@@ -222,6 +222,7 @@ Run `pet configure`
   column = 40                     # column size for list command
   selectcmd = "fzf"               # selector command for edit command (fzf or peco)
   backend = "gist"                # specify backend service to sync snippets (gist or gitlab, default: gist)
+  sortby  = "description"         # specify how snippets get sorted (recency (default), -recency, description, -description, command, -command, output, -output)
 
 [Gist]
   file_name = "pet-snippet.toml"  # specify gist file name
