@@ -3,6 +3,7 @@ package sync
 import (
 	"context"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -10,6 +11,10 @@ import (
 	"github.com/knqyf263/pet/config"
 	"github.com/pkg/errors"
 	"github.com/xanzy/go-gitlab"
+)
+
+const (
+	gitlabTokenEnvVariable = "PET_GITLAB_ACCESS_TOKEN"
 )
 
 // GitLabClient manages communication with GitLab Snippets
@@ -20,15 +25,16 @@ type GitLabClient struct {
 
 // NewGitLabClient returns GitLabClient
 func NewGitLabClient() (Client, error) {
-	if config.Conf.GitLab.AccessToken == "" {
+	accessToken, err := getGitlabAccessToken()
+	if err != nil {
 		return nil, fmt.Errorf(`access_token is empty.
 Go https://gitlab.com/profile/personal_access_tokens and create access_token.
-Write access_token in config file (pet configure).
-		`)
+Write access_token in config file (pet configure) or export $%v.
+		`, gitlabTokenEnvVariable)
 	}
 
 	client := GitLabClient{
-		Client: gitlab.NewClient(nil, config.Conf.GitLab.AccessToken),
+		Client: gitlab.NewClient(nil, accessToken),
 		ID:     0,
 	}
 
@@ -46,6 +52,15 @@ Write access_token in config file (pet configure).
 	}
 	client.ID = id
 	return client, nil
+}
+
+func getGitlabAccessToken() (string, error) {
+	if config.Conf.GitLab.AccessToken != "" {
+		return config.Conf.GitLab.AccessToken, nil
+	} else if os.Getenv(gitlabTokenEnvVariable) != "" {
+		return os.Getenv(gitlabTokenEnvVariable), nil
+	}
+	return "", errors.New("GitLab AccessToken not found in any source")
 }
 
 // GetSnippet returns the remote snippet
