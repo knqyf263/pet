@@ -193,8 +193,8 @@ You can also register the output of command (but cannot search).
 
 ```
 [[snippets]]
-  description = "echo | openssl s_client -connect example.com:443 2>/dev/null |openssl x509 -dates -noout"
-  command = "Show expiration date of SSL certificate"
+  command = "echo | openssl s_client -connect example.com:443 2>/dev/null |openssl x509 -dates -noout"
+  description = "Show expiration date of SSL certificate"
   output = """
 notBefore=Nov  3 00:00:00 2015 GMT
 notAfter=Nov 28 12:00:00 2018 GMT"""
@@ -203,8 +203,8 @@ notAfter=Nov 28 12:00:00 2018 GMT"""
 Run `pet list`
 
 ```
-Description: echo | openssl s_client -connect example.com:443 2>/dev/null |openssl x509 -dates -noout
-    Command: Show expiration date of SSL certificate
+    Command: echo | openssl s_client -connect example.com:443 2>/dev/null |openssl x509 -dates -noout
+Description: Show expiration date of SSL certificate
      Output: notBefore=Nov  3 00:00:00 2015 GMT
              notAfter=Nov 28 12:00:00 2018 GMT
 ------------------------------
