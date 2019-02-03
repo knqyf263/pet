@@ -57,6 +57,7 @@ var Flag FlagConfig
 type FlagConfig struct {
 	Debug     bool
 	Query     string
+	Command   bool
 	Delimiter string
 	OneLine   bool
 	Color     bool
