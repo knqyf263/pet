@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 
@@ -94,7 +95,11 @@ func (cfg *Config) Load(file string) error {
 
 	cfg.General.Editor = os.Getenv("EDITOR")
 	if cfg.General.Editor == "" && runtime.GOOS != "windows" {
-		cfg.General.Editor = "vim"
+		if isCommandAvailable("sensible-editor") {
+			cfg.General.Editor = "sensible-editor"
+		} else {
+			cfg.General.Editor = "vim"
+		}
 	}
 	cfg.General.Column = 40
 	cfg.General.SelectCmd = "fzf"
@@ -134,4 +139,12 @@ func expandPath(s string) string {
 		}
 	}
 	return os.Expand(s, os.Getenv)
+}
+
+func isCommandAvailable(name string) bool {
+	cmd := exec.Command("/bin/sh", "-c", "command -v "+name)
+	if err := cmd.Run(); err != nil {
+		return false
+	}
+	return true
 }
