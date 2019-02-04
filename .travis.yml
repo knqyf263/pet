@@ -10,14 +10,12 @@ addons:
     - rpm
 
 go:
-  - "1.10.x"
   - "1.11.x"
 
 script:
-  - make dep
-  - make test
-
-# calls goreleaser
+  - env GO111MODULE=on go mod vendor
+  - env GO111MODULE=on go build
+install: true
 deploy:
 - provider: script
   skip_cleanup: true

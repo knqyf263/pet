@@ -21,7 +21,7 @@ all: dep build test
 
 dep:
 	go get -u github.com/golang/dep/...
-	dep ensure
+	dep ensure -vendor-only
 
 depup:
 	go get -u github.com/golang/dep/...
