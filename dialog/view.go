@@ -56,7 +56,10 @@ func GenerateParamsLayout(params map[string]string, command string) {
 	initKeybindings(g)
 
 	curView = 0
-	g.SetCurrentView(views[0])
+	if idx > 0 {
+		curView = 1
+	}
+	g.SetCurrentView(views[curView])
 
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
