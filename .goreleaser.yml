@@ -30,7 +30,7 @@ builds:
   goarm:
   - "6"
   main: .
-  ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  ldflags: -s -w -X github.com/knqyf263/pet/cmd.version={{.Version}}
 archive:
   format: tar.gz
   name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
