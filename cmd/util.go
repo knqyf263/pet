@@ -44,7 +44,7 @@ func filter(options []string) (commands []string, err error) {
 	for _, s := range snippets.Snippets {
 		command := s.Command
 		if strings.ContainsAny(command, "\n") {
-			command = strings.ReplaceAll(command, "\n", "\\n")
+			command = strings.Replace(command, "\n", "\\n", -1)
 		}
 		t := fmt.Sprintf("[%s]: %s", s.Description, command)
 
