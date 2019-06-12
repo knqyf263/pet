@@ -42,7 +42,11 @@ func filter(options []string) (commands []string, err error) {
 	snippetTexts := map[string]snippet.SnippetInfo{}
 	var text string
 	for _, s := range snippets.Snippets {
-		t := fmt.Sprintf("[%s]: %s", s.Description, s.Command)
+		command := s.Command
+		if strings.ContainsAny(command, "\n") {
+			command = strings.ReplaceAll(command, "\n", "\\n")
+		}
+		t := fmt.Sprintf("[%s]: %s", s.Description, command)
 
 		tags := ""
 		for _, tag := range s.Tag {
@@ -53,7 +57,7 @@ func filter(options []string) (commands []string, err error) {
 		snippetTexts[t] = s
 		if config.Flag.Color {
 			t = fmt.Sprintf("[%s]: %s",
-				color.RedString(s.Description), s.Command)
+				color.RedString(s.Description), command)
 		}
 		text += t + "\n"
 	}

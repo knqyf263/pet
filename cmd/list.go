@@ -38,13 +38,26 @@ func list(cmd *cobra.Command, args []string) error {
 		if config.Flag.OneLine {
 			description := runewidth.FillRight(runewidth.Truncate(snippet.Description, col, "..."), col)
 			command := runewidth.Truncate(snippet.Command, 100-4-col, "...")
+			// make sure multiline command printed as oneline
+			command = strings.ReplaceAll(command, "\n", "\\n")
 			fmt.Fprintf(color.Output, "%s : %s\n",
 				color.GreenString(description), color.YellowString(command))
 		} else {
 			fmt.Fprintf(color.Output, "%12s %s\n",
 				color.GreenString("Description:"), snippet.Description)
-			fmt.Fprintf(color.Output, "%12s %s\n",
-				color.YellowString("    Command:"), snippet.Command)
+			if strings.Contains(snippet.Command, "\n") {
+				lines := strings.Split(snippet.Command, "\n")
+				firstLine, restLines := lines[0], lines[1:]
+				fmt.Fprintf(color.Output, "%12s %s\n",
+					color.YellowString("    Command:"), firstLine)
+				for _, line := range restLines {
+					fmt.Fprintf(color.Output, "%12s %s\n",
+						" ", line)
+				}
+			} else {
+				fmt.Fprintf(color.Output, "%12s %s\n",
+					color.YellowString("    Command:"), snippet.Command)
+			}
 			if snippet.Tag != nil {
 				tag := strings.Join(snippet.Tag, " ")
 				fmt.Fprintf(color.Output, "%12s %s\n",
