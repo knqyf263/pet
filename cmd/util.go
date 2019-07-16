@@ -70,7 +70,7 @@ func filter(options []string) (commands []string, err error) {
 		return nil, nil
 	}
 
-	lines := strings.Split(strings.TrimSpace(buf.String()), "\n")
+	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
 
 	params := dialog.SearchForParams(lines)
 	if params != nil {
