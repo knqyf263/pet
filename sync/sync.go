@@ -36,7 +36,7 @@ func AutoSync(file string) error {
 	}
 
 	fi, err := os.Stat(file)
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || fi.Size() == 0 {
 		return download(snippet.Content)
 	} else if err != nil {
 		return errors.Wrap(err, "Failed to get a FileInfo")
