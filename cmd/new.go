@@ -11,7 +11,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/snippet"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
@@ -89,7 +89,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	if config.Flag.Tag {
+	if viper.GetBool("tag") {
 		var t string
 		if t, err = scan(color.CyanString("Tag> ")); err != nil {
 			return err
@@ -113,8 +113,8 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	snippetFile := config.Conf.General.SnippetFile
-	if config.Conf.Gist.AutoSync {
+	snippetFile := viper.GetString("general.snippetfile")
+	if viper.GetBool("gist.autoSync") {
 		return petSync.AutoSync(snippetFile)
 	}
 
@@ -122,7 +122,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 }
 
 func init() {
-	RootCmd.AddCommand(newCmd)
-	newCmd.Flags().BoolVarP(&config.Flag.Tag, "tag", "t", false,
-		`Display tag prompt (delimiter: space)`)
+	rootCmd.AddCommand(newCmd)
+	newCmd.Flags().BoolP("tag", "t", false, `Display tag prompt (delimiter: space)`)
+	viper.BindPFlag("tag", newCmd.Flags().Lookup("tag"))
 }

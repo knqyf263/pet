@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/spf13/cobra"
 )
 
@@ -19,11 +19,10 @@ var execCmd = &cobra.Command{
 }
 
 func execute(cmd *cobra.Command, args []string) (err error) {
-	flag := config.Flag
 
 	var options []string
-	if flag.Query != "" {
-		options = append(options, fmt.Sprintf("--query %s", flag.Query))
+	if viper.GetString("query") != "" {
+		options = append(options, fmt.Sprintf("--query %s", viper.GetString("query")))
 	}
 
 	commands, err := filter(options)
@@ -31,21 +30,21 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 	command := strings.Join(commands, "; ")
-	if config.Flag.Debug {
+	if debug {
 		fmt.Printf("Command: %s\n", command)
 	}
-	if config.Flag.Command {
+	if viper.GetBool("command") {
 		fmt.Printf("%s: %s\n", color.YellowString("Command"), command)
 	}
 	return run(command, os.Stdin, os.Stdout)
 }
 
 func init() {
-	RootCmd.AddCommand(execCmd)
-	execCmd.Flags().BoolVarP(&config.Flag.Color, "color", "", false,
-		`Enable colorized output (only fzf)`)
-	execCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
-		`Initial value for query`)
-	execCmd.Flags().BoolVarP(&config.Flag.Command, "command", "c", false,
-		`Show the command with the plain text before executing`)
+	rootCmd.AddCommand(execCmd)
+	execCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
+	execCmd.Flags().StringP("query", "q", "", `Initial value for query`)
+	execCmd.Flags().BoolP("command", "c", false, `Show the command with the plain text before executing`)
+	viper.BindPFlag("color", execCmd.Flags().Lookup("color"))
+	viper.BindPFlag("query", execCmd.Flags().Lookup("query"))
+	viper.BindPFlag("command", execCmd.Flags().Lookup("command"))
 }

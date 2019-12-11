@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/snippet"
 	runewidth "github.com/mattn/go-runewidth"
 	"github.com/spf13/cobra"
@@ -29,13 +29,13 @@ func list(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	col := config.Conf.General.Column
+	col := viper.GetInt("general.column")
 	if col == 0 {
 		col = column
 	}
 
 	for _, snippet := range snippets.Snippets {
-		if config.Flag.OneLine {
+		if viper.GetBool("oneline") {
 			description := runewidth.FillRight(runewidth.Truncate(snippet.Description, col, "..."), col)
 			command := runewidth.Truncate(snippet.Command, 100-4-col, "...")
 			// make sure multiline command printed as oneline
@@ -75,7 +75,7 @@ func list(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	RootCmd.AddCommand(listCmd)
-	listCmd.Flags().BoolVarP(&config.Flag.OneLine, "oneline", "", false,
-		`Display snippets in one line`)
+	rootCmd.AddCommand(listCmd)
+	listCmd.Flags().BoolP("oneline", "", false, `Display snippets in one line`)
+	viper.BindPFlag("oneline", listCmd.Flags().Lookup("oneline"))
 }

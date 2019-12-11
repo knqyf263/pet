@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/spf13/cobra"
 )
 
@@ -14,10 +14,10 @@ var configureCmd = &cobra.Command{
 }
 
 func configure(cmd *cobra.Command, args []string) (err error) {
-	editor := config.Conf.General.Editor
-	return editFile(editor, configFile)
+	editor := viper.GetString("general.editor")
+	return editFile(editor, viper.ConfigFileUsed())
 }
 
 func init() {
-	RootCmd.AddCommand(configureCmd)
+	rootCmd.AddCommand(configureCmd)
 }

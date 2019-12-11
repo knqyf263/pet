@@ -8,7 +8,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/google/go-github/github"
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 )
@@ -34,14 +34,14 @@ Write access_token in config file (pet configure) or export $%v.
 
 	client := GistClient{
 		Client: githubClient(accessToken),
-		ID:     config.Conf.Gist.GistID,
+		ID:     viper.GetString("gist.gist_id"),
 	}
 	return client, nil
 }
 
 func getGithubAccessToken() (string, error) {
-	if config.Conf.Gist.AccessToken != "" {
-		return config.Conf.Gist.AccessToken, nil
+	if viper.GetString("gist.access_token") != "" {
+		return viper.GetString("gist.access_token"), nil
 	} else if os.Getenv(githubTokenEnvVariable) != "" {
 		return os.Getenv(githubTokenEnvVariable), nil
 	}
@@ -68,7 +68,7 @@ func (g GistClient) GetSnippet() (*Snippet, error) {
 	}
 
 	content := ""
-	filename := config.Conf.Gist.FileName
+	filename := viper.GetString("gist.file_name")
 	for _, file := range gist.Files {
 		if *file.Filename == filename {
 			content = *file.Content
@@ -88,9 +88,9 @@ func (g GistClient) GetSnippet() (*Snippet, error) {
 func (g GistClient) UploadSnippet(content string) error {
 	gist := &github.Gist{
 		Description: github.String("description"),
-		Public:      github.Bool(config.Conf.Gist.Public),
+		Public:      github.Bool(viper.GetBool("gist.public")),
 		Files: map[github.GistFilename]github.GistFile{
-			github.GistFilename(config.Conf.Gist.FileName): github.GistFile{
+			github.GistFilename(viper.GetString("gist.file_name")): github.GistFile{
 				Content: github.String(content),
 			},
 		},

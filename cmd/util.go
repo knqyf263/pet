@@ -6,11 +6,12 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/dialog"
 	"github.com/knqyf263/pet/snippet"
 )
@@ -55,7 +56,7 @@ func filter(options []string) (commands []string, err error) {
 		t += tags
 
 		snippetTexts[t] = s
-		if config.Flag.Color {
+		if viper.GetBool("color") {
 			t = fmt.Sprintf("[%s]: %s",
 				color.RedString(s.Description), command)
 		}
@@ -64,7 +65,7 @@ func filter(options []string) (commands []string, err error) {
 
 	var buf bytes.Buffer
 	selectCmd := fmt.Sprintf("%s %s",
-		config.Conf.General.SelectCmd, strings.Join(options, " "))
+		viper.GetString("general.selectCmd"), strings.Join(options, " "))
 	err = run(selectCmd, strings.NewReader(text), &buf)
 	if err != nil {
 		return nil, nil
@@ -85,4 +86,21 @@ func filter(options []string) (commands []string, err error) {
 		commands = append(commands, fmt.Sprint(snippetInfo.Command))
 	}
 	return commands, nil
+}
+
+// GetDefaultConfigDir returns the default config directory
+func getDefaultConfigDir() (dir string, err error) {
+	if runtime.GOOS == "windows" {
+		dir = os.Getenv("APPDATA")
+		if dir == "" {
+			dir = filepath.Join(os.Getenv("USERPROFILE"), "Application Data", "pet")
+		}
+		dir = filepath.Join(dir, "pet")
+	} else {
+		dir = filepath.Join(os.Getenv("HOME"), ".config", "pet")
+	}
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		return "", fmt.Errorf("cannot create directory: %v", err)
+	}
+	return dir, nil
 }

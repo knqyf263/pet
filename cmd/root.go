@@ -1,5 +1,5 @@
 // Copyright © 2017 Teppei Fukuda
-//
+
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -23,19 +23,19 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/spf13/cobra"
 )
 
 var (
-	configFile string
+	cfgFile string
 	version    = "dev"
+	debug bool
 )
 
 // RootCmd represents the base command when called without any subcommands
-var RootCmd = &cobra.Command{
+var rootCmd = &cobra.Command{
 	Use:           "pet",
 	Short:         "Simple command-line snippet manager.",
 	Long:          `pet - Simple command-line snippet manager.`,
@@ -45,7 +45,7 @@ var RootCmd = &cobra.Command{
 
 // Execute adds all child commands to the root command sets flags appropriately.
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
@@ -53,10 +53,10 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	RootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(versionCmd)
 
-	RootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is $HOME/.config/pet/config.toml)")
-	RootCmd.PersistentFlags().BoolVarP(&config.Flag.Debug, "debug", "", false, "debug mode")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/pet/config.toml)")
+	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug mode")
 }
 
 var versionCmd = &cobra.Command{
@@ -70,17 +70,22 @@ var versionCmd = &cobra.Command{
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if configFile == "" {
-		dir, err := config.GetDefaultConfigDir()
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	} else {
+		dir, err := getDefaultConfigDir()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err)
 			os.Exit(1)
 		}
-		configFile = filepath.Join(dir, "config.toml")
+		viper.AddConfigPath(dir)
+		viper.SetConfigName("config")
 	}
 
-	if err := config.Conf.Load(configFile); err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
-		os.Exit(1)
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("error reading config file: %s", err)
 	}
 }

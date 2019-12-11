@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
 )
@@ -15,9 +15,9 @@ var syncCmd = &cobra.Command{
 }
 
 func sync(cmd *cobra.Command, args []string) (err error) {
-	return petSync.AutoSync(config.Conf.General.SnippetFile)
+	return petSync.AutoSync(viper.GetString("general.snippetFile"))
 }
 
 func init() {
-	RootCmd.AddCommand(syncCmd)
+	rootCmd.AddCommand(syncCmd)
 }

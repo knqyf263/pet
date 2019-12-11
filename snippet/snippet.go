@@ -7,7 +7,7 @@ import (
 	"sort"
 
 	"github.com/BurntSushi/toml"
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 )
 
 type Snippets struct {
@@ -23,7 +23,7 @@ type SnippetInfo struct {
 
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
-	snippetFile := config.Conf.General.SnippetFile
+	snippetFile := viper.GetString("general.snippetfile")
 	if _, err := os.Stat(snippetFile); os.IsNotExist(err) {
 		return nil
 	}
@@ -36,7 +36,7 @@ func (snippets *Snippets) Load() error {
 
 // Save saves the snippets to toml file.
 func (snippets *Snippets) Save() error {
-	snippetFile := config.Conf.General.SnippetFile
+	snippetFile := viper.GetString("general.snippetfile")
 	f, err := os.Create(snippetFile)
 	defer f.Close()
 	if err != nil {
@@ -58,7 +58,7 @@ func (snippets *Snippets) ToString() (string, error) {
 // Order snippets regarding SortBy option defined in config toml
 // Prefix "-" reverses the order, default is "recency", "+<expressions>" is the same as "<expression>"
 func (snippets *Snippets) Order() {
-	sortBy := config.Conf.General.SortBy
+	sortBy := viper.GetString("general.sortby")
 	switch {
 	case sortBy == "command" || sortBy == "+command":
 		sort.Sort(ByCommand(snippets.Snippets))

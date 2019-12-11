@@ -3,7 +3,7 @@ package cmd
 import (
 	"io/ioutil"
 
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
 )
@@ -17,8 +17,8 @@ var editCmd = &cobra.Command{
 }
 
 func edit(cmd *cobra.Command, args []string) (err error) {
-	editor := config.Conf.General.Editor
-	snippetFile := config.Conf.General.SnippetFile
+	editor := viper.GetString("general.editor")
+	snippetFile := viper.GetString("general.snippetfile")
 
 	// file content before editing
 	before := fileContent(snippetFile)
@@ -36,7 +36,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 		return nil
 	}
 
-	if config.Conf.Gist.AutoSync {
+	if viper.GetBool("gist.auto_sync") {
 		return petSync.AutoSync(snippetFile)
 	}
 
@@ -49,5 +49,5 @@ func fileContent(fname string) string {
 }
 
 func init() {
-	RootCmd.AddCommand(editCmd)
+	rootCmd.AddCommand(editCmd)
 }

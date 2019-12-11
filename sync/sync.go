@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/pkg/errors"
 )
@@ -57,7 +57,7 @@ func AutoSync(file string) error {
 
 // NewSyncClient returns Client
 func NewSyncClient() (Client, error) {
-	if config.Conf.General.Backend == "gitlab" {
+	if viper.GetString("general.backend") == "gitlab" {
 		client, err := NewGitLabClient()
 		if err != nil {
 			return nil, errors.Wrap(err, "Failed to initialize GitLab client")
@@ -91,7 +91,7 @@ func upload(client Client) (err error) {
 }
 
 func download(content string) error {
-	snippetFile := config.Conf.General.SnippetFile
+	snippetFile := viper.GetString("general.snippetfile")
 
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {

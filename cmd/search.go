@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/knqyf263/pet/config"
+	"github.com/spf13/viper"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
 )
-
-var delimiter string
 
 // searchCmd represents the search command
 var searchCmd = &cobra.Command{
@@ -20,18 +18,16 @@ var searchCmd = &cobra.Command{
 }
 
 func search(cmd *cobra.Command, args []string) (err error) {
-	flag := config.Flag
-
 	var options []string
-	if flag.Query != "" {
-		options = append(options, fmt.Sprintf("--query %s", flag.Query))
+	if viper.GetString("query") != "" {
+		options = append(options, fmt.Sprintf("--query %s", viper.GetString("query")))
 	}
 	commands, err := filter(options)
 	if err != nil {
 		return err
 	}
 
-	fmt.Print(strings.Join(commands, flag.Delimiter))
+	fmt.Print(strings.Join(commands, viper.GetString("delimiter")))
 	if terminal.IsTerminal(1) {
 		fmt.Print("\n")
 	}
@@ -39,11 +35,11 @@ func search(cmd *cobra.Command, args []string) (err error) {
 }
 
 func init() {
-	RootCmd.AddCommand(searchCmd)
-	searchCmd.Flags().BoolVarP(&config.Flag.Color, "color", "", false,
-		`Enable colorized output (only fzf)`)
-	searchCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
-		`Initial value for query`)
-	searchCmd.Flags().StringVarP(&config.Flag.Delimiter, "delimiter", "d", "; ",
-		`Use delim as the command delimiter character`)
+	rootCmd.AddCommand(searchCmd)
+	searchCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
+	searchCmd.Flags().StringP("query", "q", "", `Initial value for query`)
+	searchCmd.Flags().StringP("delimiter", "d", "; ", `Use delim as the command delimiter character`)
+	viper.BindPFlag("color", searchCmd.Flags().Lookup("color"))
+	viper.BindPFlag("query", searchCmd.Flags().Lookup("query"))
+	viper.BindPFlag("delimiter", searchCmd.Flags().Lookup("delimiter"))
 }
