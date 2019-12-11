@@ -21,6 +21,6 @@ require (
 	golang.org/x/crypto v0.0.0-20180608092829-8ac0e0d97ce4
 	golang.org/x/net v0.0.0-20180530234432-1e491301e022 // indirect
 	golang.org/x/oauth2 v0.0.0-20180603041954-1e0a3fa8ba9a
-	golang.org/x/sys v0.0.0-20180606202747-9527bec2660b // indirect
+	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
 	google.golang.org/appengine v1.0.0 // indirect
 )
