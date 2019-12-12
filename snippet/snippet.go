@@ -51,7 +51,7 @@ func (snippets *Snippets) Save() error {
 	var newSnippets Snippets
 	for _, snippet := range snippets.Snippets {
 		if snippet.Filename == "" {
-			snippetFile = viper.GetString("general.snippetdir") + fmt.Sprintf("%d.toml", time.Now().UnixNano())
+			snippetFile = viper.GetStringSlice("general.snippetdirs")[0] + fmt.Sprintf("%d.toml", time.Now().UnixNano())
 			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
 		}
 	}
