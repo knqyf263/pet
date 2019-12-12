@@ -25,9 +25,9 @@ type SnippetInfo struct {
 
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
-	files, err := getFiles(viper.GetString("general.snippetdir"))
-	if err != nil {
-		return fmt.Errorf("err: %v", err)
+	var files []string
+	for _, dir := range viper.GetStringSlice("general.snippetdirs") {
+		files = append(files, getFiles(dir)...)
 	}
 
 	for _, file := range files {
