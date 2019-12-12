@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/spf13/viper"
@@ -18,7 +19,16 @@ var editCmd = &cobra.Command{
 
 func edit(cmd *cobra.Command, args []string) (err error) {
 	editor := viper.GetString("general.editor")
-	snippetFile := viper.GetString("general.snippetfile")
+
+	var options []string
+	if viper.GetString("query") != "" {
+		options = append(options, fmt.Sprintf("--query %s", viper.GetString("query")))
+	}
+
+	snippetFile, err := selectFile(options)
+	if err != nil {
+		return err
+	}
 
 	// file content before editing
 	before := fileContent(snippetFile)
@@ -50,4 +60,6 @@ func fileContent(fname string) string {
 
 func init() {
 	rootCmd.AddCommand(editCmd)
+	editCmd.Flags().StringP("query", "q", "", `Initial value for query`)
+	viper.BindPFlag("query", editCmd.Flags().Lookup("query"))
 }

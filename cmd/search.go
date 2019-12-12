@@ -22,6 +22,7 @@ func search(cmd *cobra.Command, args []string) (err error) {
 	if viper.GetString("query") != "" {
 		options = append(options, fmt.Sprintf("--query %s", viper.GetString("query")))
 	}
+
 	commands, err := filter(options)
 	if err != nil {
 		return err
@@ -38,7 +39,7 @@ func init() {
 	rootCmd.AddCommand(searchCmd)
 	searchCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
 	searchCmd.Flags().StringP("query", "q", "", `Initial value for query`)
-	searchCmd.Flags().StringP("delimiter", "d", "; ", `Use delim as the command delimiter character`)
+	searchCmd.Flags().StringP("delimiter", "", "; ", `Use delim as the command delimiter character`)
 	viper.BindPFlag("color", searchCmd.Flags().Lookup("color"))
 	viper.BindPFlag("query", searchCmd.Flags().Lookup("query"))
 	viper.BindPFlag("delimiter", searchCmd.Flags().Lookup("delimiter"))

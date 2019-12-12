@@ -88,6 +88,52 @@ func filter(options []string) (commands []string, err error) {
 	return commands, nil
 }
 
+func selectFile(options []string) (snippetFile string, err error) {
+	var snippets snippet.Snippets
+	if err := snippets.Load(); err != nil {
+		return snippetFile, fmt.Errorf("Load snippet failed: %v", err)
+	}
+
+	snippetTexts := map[string]snippet.SnippetInfo{}
+	var text string
+	for _, s := range snippets.Snippets {
+		command := s.Command
+		if strings.ContainsAny(command, "\n") {
+			command = strings.Replace(command, "\n", "\\n", -1)
+		}
+		t := fmt.Sprintf("[%s]: %s", s.Description, command)
+
+		tags := ""
+		for _, tag := range s.Tag {
+			tags += fmt.Sprintf(" #%s", tag)
+		}
+		t += tags
+
+		snippetTexts[t] = s
+		if viper.GetBool("color") {
+			t = fmt.Sprintf("[%s]: %s",
+				color.RedString(s.Description), command)
+		}
+		text += t + "\n"
+	}
+
+	var buf bytes.Buffer
+	selectCmd := fmt.Sprintf("%s %s",
+		viper.GetString("general.selectCmd"), strings.Join(options, " "))
+	err = run(selectCmd, strings.NewReader(text), &buf)
+	if err != nil {
+		return snippetFile, nil
+	}
+
+	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
+
+	for _, line := range lines {
+		snippetInfo := snippetTexts[line]
+		snippetFile = fmt.Sprint(snippetInfo.Filename)
+	}
+	return snippetFile, nil
+}
+
 // GetDefaultConfigDir returns the default config directory
 func getDefaultConfigDir() (dir string, err error) {
 	if runtime.GOOS == "windows" {

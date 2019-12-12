@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/spf13/viper"
@@ -15,6 +16,7 @@ type Snippets struct {
 }
 
 type SnippetInfo struct {
+	Filename    string   `toml:"-"`
 	Description string   `toml:"description"`
 	Command     string   `toml:"command"`
 	Tag         []string `toml:"tag"`
@@ -23,26 +25,42 @@ type SnippetInfo struct {
 
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
-	snippetFile := viper.GetString("general.snippetfile")
-	if _, err := os.Stat(snippetFile); os.IsNotExist(err) {
-		return nil
+	files, err := getFiles(viper.GetString("general.snippetdir"))
+	if err != nil {
+		return fmt.Errorf("err: %v", err)
 	}
-	if _, err := toml.DecodeFile(snippetFile, snippets); err != nil {
-		return fmt.Errorf("Failed to load snippet file. %v", err)
+
+	for _, file := range files {
+		tmp := Snippets{}
+		if _, err := toml.DecodeFile(file, &tmp); err != nil {
+			return fmt.Errorf("Failed to load snippet file. %v", err)
+		}
+		for _, snippet := range tmp.Snippets {
+			snippet.Filename = file
+			snippets.Snippets = append(snippets.Snippets, snippet)
+		}
 	}
+
 	snippets.Order()
 	return nil
 }
 
 // Save saves the snippets to toml file.
 func (snippets *Snippets) Save() error {
-	snippetFile := viper.GetString("general.snippetfile")
+	var snippetFile string
+	var newSnippets Snippets
+	for _, snippet := range snippets.Snippets {
+		if snippet.Filename == "" {
+			snippetFile = viper.GetString("general.snippetdir") + fmt.Sprintf("%d.toml", time.Now().UnixNano())
+			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
+		}
+	}
 	f, err := os.Create(snippetFile)
 	defer f.Close()
 	if err != nil {
 		return fmt.Errorf("Failed to save snippet file. err: %s", err)
 	}
-	return toml.NewEncoder(f).Encode(snippets)
+	return toml.NewEncoder(f).Encode(newSnippets)
 }
 
 // ToString returns the contents of toml file.
