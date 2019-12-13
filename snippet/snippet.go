@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"time"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/spf13/viper"
+	"github.com/kennygrant/sanitize"
 )
 
 type Snippets struct {
@@ -51,7 +52,7 @@ func (snippets *Snippets) Save() error {
 	var newSnippets Snippets
 	for _, snippet := range snippets.Snippets {
 		if snippet.Filename == "" {
-			snippetFile = viper.GetStringSlice("general.snippetdirs")[0] + fmt.Sprintf("%d.toml", time.Now().UnixNano())
+			snippetFile = viper.GetStringSlice("general.snippetdirs")[0] + fmt.Sprintf("%s.toml", strings.ToLower(sanitize.BaseName(snippet.Description)))
 			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
 		}
 	}
