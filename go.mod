@@ -2,6 +2,7 @@ module github.com/knqyf263/pet
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/atotto/clipboard v0.1.2 // indirect
 	github.com/briandowns/spinner v0.0.0-20170614154858-48dbb65d7bd5
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
@@ -11,6 +12,7 @@ require (
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jroimartin/gocui v0.4.0
+	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.3 // indirect
 	github.com/mattn/go-runewidth v0.0.2
