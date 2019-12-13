@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/spf13/viper"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // syncCmd represents the sync command

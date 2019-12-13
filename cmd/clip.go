@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/atotto/clipboard"
 )
 
 // clipCmd represents the clip command
 var clipCmd = &cobra.Command{
 	Use:   "clip",
 	Short: "Copy the selected commands",
-	Long: `Copy the selected commands to clipboard`,
-	RunE: clip,
+	Long:  `Copy the selected commands to clipboard`,
+	RunE:  clip,
 }
 
 func clip(cmd *cobra.Command, args []string) (err error) {

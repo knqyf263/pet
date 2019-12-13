@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
 // Client manages communication with the remote Snippet repository

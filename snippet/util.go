@@ -1,11 +1,10 @@
 package snippet
 
-
 import (
-	"os"
 	"log"
-	"regexp"
+	"os"
 	"path/filepath"
+	"regexp"
 )
 
 func getFiles(path string) (fileList []string) {
@@ -20,7 +19,7 @@ func getFiles(path string) (fileList []string) {
 		}
 		return nil
 	})
-	
+
 	if err != nil {
 		panic(err)
 	}

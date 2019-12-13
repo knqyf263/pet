@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/snippet"
 	runewidth "github.com/mattn/go-runewidth"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const (

@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/spf13/viper"
 	"github.com/kennygrant/sanitize"
+	"github.com/spf13/viper"
 )
 
 type Snippets struct {

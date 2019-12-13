@@ -11,10 +11,10 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
-	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/snippet"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // newCmd represents the new command

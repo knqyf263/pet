@@ -11,9 +11,9 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/spf13/viper"
 	"github.com/knqyf263/pet/dialog"
 	"github.com/knqyf263/pet/snippet"
+	"github.com/spf13/viper"
 )
 
 func editFile(command, file string) error {

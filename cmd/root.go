@@ -24,14 +24,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/viper"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
 	cfgFile string
-	version    = "dev"
-	debug bool
+	version = "dev"
+	debug   bool
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -82,7 +82,6 @@ func initConfig() {
 		viper.AddConfigPath(dir)
 		viper.SetConfigName("config")
 	}
-
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {

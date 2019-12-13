@@ -8,10 +8,11 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/google/go-github/github"
-	"github.com/spf13/viper"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 )
+
 const (
 	githubTokenEnvVariable = "PET_GITHUB_ACCESS_TOKEN"
 )

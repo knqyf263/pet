@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/spf13/viper"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // editCmd represents the edit command

@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
-	"github.com/spf13/viper"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"github.com/xanzy/go-gitlab"
 )
 
