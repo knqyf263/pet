@@ -10,7 +10,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/knqyf263/pet/dialog"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/spf13/viper"
@@ -56,10 +55,6 @@ func filter(options []string) (commands []string, err error) {
 		t += tags
 
 		snippetTexts[t] = s
-		if viper.GetBool("color") {
-			t = fmt.Sprintf("[%s]: %s",
-				color.RedString(s.Description), command)
-		}
 		text += t + "\n"
 	}
 
@@ -110,10 +105,6 @@ func selectFile(options []string) (snippetFile string, err error) {
 		t += tags
 
 		snippetTexts[t] = s
-		if viper.GetBool("color") {
-			t = fmt.Sprintf("[%s]: %s",
-				color.RedString(s.Description), command)
-		}
 		text += t + "\n"
 	}
 
