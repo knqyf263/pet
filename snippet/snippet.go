@@ -21,7 +21,7 @@ type SnippetInfo struct {
 	Description string   `toml:"description"`
 	Command     string   `toml:"command"`
 	Tag         []string `toml:"tag"`
-	Output      string   `toml:"output"`
+	Output      string   `toml:"output,omitempty"`
 }
 
 // Load reads toml file.
