@@ -14,7 +14,11 @@ var editCmd = &cobra.Command{
 	Use:   "edit",
 	Short: "Edit snippet file",
 	Long:  `Edit snippet file (default: opened by vim)`,
-	RunE:  edit,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("color", cmd.Flags().Lookup("color"))
+		viper.BindPFlag("query", cmd.Flags().Lookup("query"))
+	},
+	RunE: edit,
 }
 
 func edit(cmd *cobra.Command, args []string) (err error) {
@@ -60,6 +64,6 @@ func fileContent(fname string) string {
 
 func init() {
 	rootCmd.AddCommand(editCmd)
+	editCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
 	editCmd.Flags().StringP("query", "q", "", `Initial value for query`)
-	viper.BindPFlag("query", editCmd.Flags().Lookup("query"))
 }

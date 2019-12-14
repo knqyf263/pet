@@ -20,7 +20,10 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Show all snippets",
 	Long:  `Show all snippets`,
-	RunE:  list,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("oneline", cmd.Flags().Lookup("oneline"))
+	},
+	RunE: list,
 }
 
 func list(cmd *cobra.Command, args []string) error {
@@ -43,7 +46,7 @@ func list(cmd *cobra.Command, args []string) error {
 			fmt.Fprintf(color.Output, "%s : %s\n",
 				color.GreenString(description), color.YellowString(command))
 		} else {
-			if debug {
+			if viper.GetBool("debug") {
 				fmt.Fprintf(color.Output, "%12s %s\n",
 					color.RedString("   Filename:"), snippet.Filename)
 			}
@@ -81,5 +84,4 @@ func list(cmd *cobra.Command, args []string) error {
 func init() {
 	rootCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolP("oneline", "", false, `Display snippets in one line`)
-	viper.BindPFlag("oneline", listCmd.Flags().Lookup("oneline"))
 }

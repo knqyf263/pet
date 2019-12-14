@@ -14,7 +14,11 @@ var clipCmd = &cobra.Command{
 	Use:   "clip",
 	Short: "Copy the selected commands",
 	Long:  `Copy the selected commands to clipboard`,
-	RunE:  clip,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("color", cmd.Flags().Lookup("color"))
+		viper.BindPFlag("query", cmd.Flags().Lookup("query"))
+	},
+	RunE: clip,
 }
 
 func clip(cmd *cobra.Command, args []string) (err error) {
@@ -28,7 +32,7 @@ func clip(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 	command := strings.Join(commands, "; ")
-	if debug {
+	if viper.GetBool("debug") {
 		fmt.Printf("Command: %s\n", command)
 	}
 	return clipboard.WriteAll(command)
@@ -36,6 +40,6 @@ func clip(cmd *cobra.Command, args []string) (err error) {
 
 func init() {
 	rootCmd.AddCommand(clipCmd)
+	clipCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
 	clipCmd.Flags().StringP("query", "q", "", `Initial value for query`)
-	viper.BindPFlag("query", clipCmd.Flags().Lookup("query"))
 }

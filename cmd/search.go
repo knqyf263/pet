@@ -14,7 +14,12 @@ var searchCmd = &cobra.Command{
 	Use:   "search",
 	Short: "Search snippets",
 	Long:  `Search snippets interactively (default filtering tool: peco)`,
-	RunE:  search,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("color", cmd.Flags().Lookup("color"))
+		viper.BindPFlag("query", cmd.Flags().Lookup("query"))
+		viper.BindPFlag("delimiter", cmd.Flags().Lookup("delimiter"))
+	},
+	RunE: search,
 }
 
 func search(cmd *cobra.Command, args []string) (err error) {
@@ -40,7 +45,4 @@ func init() {
 	searchCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
 	searchCmd.Flags().StringP("query", "q", "", `Initial value for query`)
 	searchCmd.Flags().StringP("delimiter", "", "; ", `Use delim as the command delimiter character`)
-	viper.BindPFlag("color", searchCmd.Flags().Lookup("color"))
-	viper.BindPFlag("query", searchCmd.Flags().Lookup("query"))
-	viper.BindPFlag("delimiter", searchCmd.Flags().Lookup("delimiter"))
 }

@@ -31,7 +31,6 @@ import (
 var (
 	cfgFile string
 	version = "dev"
-	debug   bool
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -56,7 +55,8 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/pet/config.toml)")
-	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug mode")
+	rootCmd.PersistentFlags().BoolP("debug", "d", false, "debug mode")
+	viper.BindPFlag("debug", rootCmd.Flags().Lookup("debug"))
 }
 
 var versionCmd = &cobra.Command{

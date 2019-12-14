@@ -15,7 +15,12 @@ var execCmd = &cobra.Command{
 	Use:   "exec",
 	Short: "Run the selected commands",
 	Long:  `Run the selected commands directly`,
-	RunE:  execute,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("color", cmd.Flags().Lookup("color"))
+		viper.BindPFlag("query", cmd.Flags().Lookup("query"))
+		viper.BindPFlag("command", cmd.Flags().Lookup("command"))
+	},
+	RunE: execute,
 }
 
 func execute(cmd *cobra.Command, args []string) (err error) {
@@ -30,10 +35,7 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 	command := strings.Join(commands, "; ")
-	if debug {
-		fmt.Printf("Command: %s\n", command)
-	}
-	if viper.GetBool("command") {
+	if viper.GetBool("command") && command != "" {
 		fmt.Printf("%s: %s\n", color.YellowString("Command"), command)
 	}
 	return run(command, os.Stdin, os.Stdout)
@@ -44,7 +46,4 @@ func init() {
 	execCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
 	execCmd.Flags().StringP("query", "q", "", `Initial value for query`)
 	execCmd.Flags().BoolP("command", "c", false, `Show the command with the plain text before executing`)
-	viper.BindPFlag("color", execCmd.Flags().Lookup("color"))
-	viper.BindPFlag("query", execCmd.Flags().Lookup("query"))
-	viper.BindPFlag("command", execCmd.Flags().Lookup("command"))
 }

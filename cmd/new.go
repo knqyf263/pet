@@ -22,7 +22,10 @@ var newCmd = &cobra.Command{
 	Use:   "new COMMAND",
 	Short: "Create a new snippet",
 	Long:  `Create a new snippet (default: $HOME/.config/pet/snippet.toml)`,
-	RunE:  new,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("tag", cmd.Flags().Lookup("tag"))
+	},
+	RunE: new,
 }
 
 func scan(message string) (string, error) {
@@ -124,5 +127,4 @@ func new(cmd *cobra.Command, args []string) (err error) {
 func init() {
 	rootCmd.AddCommand(newCmd)
 	newCmd.Flags().BoolP("tag", "t", false, `Display tag prompt (delimiter: space)`)
-	viper.BindPFlag("tag", newCmd.Flags().Lookup("tag"))
 }
