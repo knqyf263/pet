@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 
 	petSync "github.com/knqyf263/pet/sync"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,15 +24,22 @@ var editCmd = &cobra.Command{
 
 func edit(cmd *cobra.Command, args []string) (err error) {
 	editor := viper.GetString("general.editor")
+	snippetFile := viper.GetString("general.snippetfile")
 
 	var options []string
 	if viper.GetString("query") != "" {
 		options = append(options, fmt.Sprintf("--query %s", viper.GetString("query")))
 	}
 
-	snippetFile, err := selectFile(options)
-	if err != nil {
-		return err
+	if len(viper.GetStringSlice("general.snippetdirs")) > 0 {
+		snippetFile, err = selectFile(options)
+		if err != nil {
+			return err
+		}
+	}
+
+	if snippetFile == "" {
+		return errors.New("No sippet file seleted")
 	}
 
 	// file content before editing
