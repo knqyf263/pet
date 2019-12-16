@@ -44,5 +44,5 @@ func init() {
 	rootCmd.AddCommand(searchCmd)
 	searchCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
 	searchCmd.Flags().StringP("query", "q", "", `Initial value for query`)
-	searchCmd.Flags().StringP("delimiter", "", "; ", `Use delim as the command delimiter character`)
+	searchCmd.Flags().StringP("delimiter", "d", "; ", `Use delim as the command delimiter character`)
 }

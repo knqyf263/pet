@@ -19,6 +19,7 @@ var execCmd = &cobra.Command{
 		viper.BindPFlag("color", cmd.Flags().Lookup("color"))
 		viper.BindPFlag("query", cmd.Flags().Lookup("query"))
 		viper.BindPFlag("command", cmd.Flags().Lookup("command"))
+		viper.BindPFlag("delimiter", cmd.Flags().Lookup("delimiter"))
 	},
 	RunE: execute,
 }
@@ -34,7 +35,7 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	command := strings.Join(commands, "; ")
+	command := strings.Join(commands, viper.GetString("delimiter"))
 	if viper.GetBool("command") && command != "" {
 		fmt.Printf("%s: %s\n", color.YellowString("Command"), command)
 	}
@@ -46,4 +47,5 @@ func init() {
 	execCmd.Flags().BoolP("color", "", false, `Enable colorized output (only fzf)`)
 	execCmd.Flags().StringP("query", "q", "", `Initial value for query`)
 	execCmd.Flags().BoolP("command", "c", false, `Show the command with the plain text before executing`)
+	execCmd.Flags().StringP("delimiter", "d", "; ", `Use delim as the command delimiter character`)
 }
