@@ -56,7 +56,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/pet/config.toml)")
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "debug mode")
-	viper.BindPFlag("debug", rootCmd.Flags().Lookup("debug"))
+	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 }
 
 var versionCmd = &cobra.Command{
