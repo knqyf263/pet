@@ -3,7 +3,6 @@ package cmd
 import (
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // syncCmd represents the sync command
@@ -15,7 +14,7 @@ var syncCmd = &cobra.Command{
 }
 
 func sync(cmd *cobra.Command, args []string) (err error) {
-	return petSync.AutoSync(viper.GetString("general.snippetFile"))
+	return petSync.AutoSync()
 }
 
 func init() {

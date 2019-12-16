@@ -51,7 +51,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if viper.GetBool("gist.auto_sync") {
-		return petSync.AutoSync(snippetFile)
+		return petSync.AutoSync()
 	}
 
 	return nil

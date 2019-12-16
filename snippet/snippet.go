@@ -27,6 +27,9 @@ type SnippetInfo struct {
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
 	var files []string
+	if viper.GetString("general.snippetfile") != "" {
+		files = append(files, viper.GetString("general.snippetfile"))
+	}
 	for _, dir := range viper.GetStringSlice("general.snippetdirs") {
 		files = append(files, getFiles(dir)...)
 	}
@@ -53,6 +56,9 @@ func (snippets *Snippets) Save() error {
 	for _, snippet := range snippets.Snippets {
 		if snippet.Filename == "" {
 			snippetFile = viper.GetStringSlice("general.snippetdirs")[0] + fmt.Sprintf("%s.toml", strings.ToLower(sanitize.BaseName(snippet.Description)))
+			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
+		} else if snippet.Filename == viper.GetString("general.snippetfile") {
+			snippetFile = viper.GetString("general.snippetfile")
 			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
 		}
 	}

@@ -24,7 +24,12 @@ type Snippet struct {
 }
 
 // AutoSync syncs snippets automatically
-func AutoSync(file string) error {
+func AutoSync() error {
+	if viper.GetString("general.snippetfile") == "" {
+		return errors.New("Sync failed: Snippet file not set in config")
+	}
+	file := viper.GetString("general.snippetfile")
+
 	client, err := NewSyncClient()
 	if err != nil {
 		return errors.Wrap(err, "Failed to initialize API client")
