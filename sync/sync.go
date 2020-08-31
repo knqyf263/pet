@@ -64,6 +64,13 @@ func NewSyncClient() (Client, error) {
 		}
 		return client, nil
 	}
+	if config.Conf.General.Backend == "git" {
+		client, err := NewGitClient()
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to initialize GitLab client")
+		}
+		return client, nil
+	}
 	client, err := NewGistClient()
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to initialize Gist client")

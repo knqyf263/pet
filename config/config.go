@@ -19,6 +19,7 @@ type Config struct {
 	General GeneralConfig
 	Gist    GistConfig
 	GitLab  GitLabConfig
+	Git     GitConfig
 }
 
 // GeneralConfig is a struct of general config
@@ -47,6 +48,15 @@ type GitLabConfig struct {
 	Url         string `toml:"url"`
 	ID          string `toml:"id"`
 	Visibility  string `toml:"visibility"`
+	AutoSync    bool   `toml:"auto_sync"`
+}
+
+// GitConfig is a struct of config for GitSnippet
+type GitConfig struct {
+	Author      string `toml:"author"`
+	AuthorEmail string `toml:"author_email"`
+	Directory   string `toml:"directory"`
+	Repo        string `toml:"repository"`
 	AutoSync    bool   `toml:"auto_sync"`
 }
 
