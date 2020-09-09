@@ -1,6 +1,7 @@
 package sync
 
 import (
+	"fmt"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/knqyf263/pet/config"
@@ -18,17 +19,39 @@ func NewGitClient() (Client, error) {
 
 func (g GitClient) GetSnippet() (*Snippet, error) {
 	directory, err := getDirectory()
+	if err != nil {
+		return nil, err
+	}
+
 	r, err := getRepository(directory)
+	if err != nil {
+		return nil, err
+	}
+
 	w, err := r.Worktree()
+	if err != nil {
+		return nil, fmt.Errorf("unable to open git work tree: %w", err)
+	}
 
 	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+	if err != nil {
+		return nil, fmt.Errorf("unable to pull: %w", err)
+	}
+
 	filename := filepath.Join(directory, "snippet.toml")
 	ref, err := r.Head()
-	commit, err := r.CommitObject(ref.Hash())
-	content, err := ioutil.ReadFile(filename)
-
 	if err != nil {
-		return nil, errors.Wrapf(err, "snippet.toml")
+		return nil, fmt.Errorf("unable to find HEAD ref: %w", err)
+	}
+
+	commit, err := r.CommitObject(ref.Hash())
+	if err != nil {
+		return nil, fmt.Errorf("unable to create commit: %w", err)
+	}
+
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("unabled to read file snippet.toml: %w", err)
 	}
 
 	return &Snippet{
@@ -39,15 +62,30 @@ func (g GitClient) GetSnippet() (*Snippet, error) {
 
 func (g GitClient) UploadSnippet(body string) error {
 	directory, err := getDirectory()
-	author, authorEmail, err := getGitSignature()
-	r, err := getRepository(directory)
-	w, err := r.Worktree()
-
 	if err != nil {
-		return errors.Wrapf(err, "Failed to load repository")
+		return err
+	}
+
+	author, authorEmail, err := getGitSignature()
+	if err != nil {
+		return err
+	}
+
+	r, err := getRepository(directory)
+	if err != nil {
+		return err
+	}
+
+	w, err := r.Worktree()
+	if err != nil {
+		return fmt.Errorf("unable to open git work tree: %w", err)
 	}
 
 	_, err = w.Add("snippet.toml")
+	if err != nil {
+		return fmt.Errorf("unable to add snippet.toml to index: %w", err)
+	}
+
 	_, err = w.Commit("update snippets", &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  author,
@@ -55,6 +93,9 @@ func (g GitClient) UploadSnippet(body string) error {
 			When:  time.Now(),
 		},
 	})
+	if err != nil {
+		return fmt.Errorf("unable to create commit: %w", err)
+	}
 
 	return r.Push(&git.PushOptions{})
 }
@@ -63,7 +104,7 @@ func getDirectory() (string, error) {
 	if config.Conf.Git.Directory != "" {
 		return config.Conf.Git.Directory, nil
 	}
-	return "", errors.New("Git Directory not found")
+	return "", errors.New("git directory not found")
 }
 
 func getRepository(directory string) (*git.Repository, error) {
@@ -87,5 +128,5 @@ func getGitSignature() (string, string, error) {
 	if config.Conf.Git.Author != "" && config.Conf.Git.AuthorEmail != "" {
 		return config.Conf.Git.Author, config.Conf.Git.AuthorEmail, nil
 	}
-	return "", "", errors.New("Git Signature (Author, AuthorEmail) not found")
+	return "", "", errors.New("git signature (Author, AuthorEmail) not found")
 }

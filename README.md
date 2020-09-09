@@ -238,6 +238,11 @@ Run `pet configure`
   visibility = "private"          # public or internal or private
   auto_sync = false               # sync automatically when editing snippets
 
+[Git]
+  author = "Person Name"
+  author_email = "person@example.com"
+  directory = "/path/to/a/git/repo"
+  auto_sync = true
 ```
 
 ## Selector option
@@ -344,6 +349,12 @@ If gitlab is older than the local file, `pet sync` upload snippets.
 $ pet sync
 Upload success
 ```
+
+### Git
+You can also choose to sync via a git repository. To use this, you must configure pet
+to look at a git repository. It will then attempt to create commits and use git pull
+and git push to sync. The idea here is that you can share snippets with a team or with
+more granular access controls than a typical gist.
 
 ## Auto Sync
 You can sync snippets automatically.
