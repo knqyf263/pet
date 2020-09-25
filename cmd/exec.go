@@ -34,9 +34,10 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 	if config.Flag.Debug {
 		fmt.Printf("Command: %s\n", command)
 	}
-	if config.Flag.Command {
+	if config.Flag.Command || config.Conf.General.ShowCommand {
 		fmt.Printf("%s: %s\n", color.YellowString("Command"), command)
 	}
+
 	return run(command, os.Stdin, os.Stdout)
 }
 

@@ -29,6 +29,7 @@ type GeneralConfig struct {
 	SelectCmd   string `toml:"selectcmd"`
 	Backend     string `toml:"backend"`
 	SortBy      string `toml:"sortby"`
+	ShowCommand bool   `toml:"show_command"`
 }
 
 // GistConfig is a struct of config for Gist
