@@ -387,8 +387,8 @@ $ sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3
 ## Debian, Ubuntu
 Download deb package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-$ wget https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.deb
-dpkg -i pet_0.3.0_linux_amd64.deb
+$ wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
+dpkg -i pet_0.3.6_linux_amd64.deb
 ```
 
 ## Archlinux
