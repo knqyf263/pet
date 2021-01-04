@@ -160,11 +160,9 @@ You can share snippets via Gist.
 
 <img src="doc/pet05.gif" width="700">
 
-
 # Hands-on Tutorial
 
-To experience `pet` in action, try it out in this free O'Reilly Katacoda scenario [Pet, a CLI Snippet Manager](https://katacoda.com/javajon/courses/kubernetes-tools). Because `pet` offers a technique to currate a library of snippets, in this example you'll see how this tool may enhance your productivity with the Kubernete's `kubectl` tool.
-
+To experience `pet` in action, try it out in this free O'Reilly Katacoda scenario, [Pet, a CLI Snippet Manager](https://katacoda.com/javajon/courses/kubernetes-tools). As an example, you'll see how `pet` may enhance your productivity with the Kubernetes `kubectl` tool. Explore how you can use `pet` to curated a library of helpful snippets from the 800+ command variations with `kubectl`.
 
 # Usage
 
