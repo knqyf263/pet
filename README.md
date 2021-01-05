@@ -48,6 +48,7 @@ So I made it possible to register snippets with description and search them easi
 - [Features](#features)
     - [Edit snippets](#edit-snippets)
     - [Sync snippets](#sync-snippets)
+- [Hands-on Tutorial](#hands-on-tutorial)
 - [Usage](#usage)
 - [Snippet](#snippet)
 - [Configuration](#configuration)
@@ -162,7 +163,7 @@ You can share snippets via Gist.
 
 # Hands-on Tutorial
 
-To experience `pet` in action, try it out in this free O'Reilly Katacoda scenario, [Pet, a CLI Snippet Manager](https://katacoda.com/javajon/courses/kubernetes-tools). As an example, you'll see how `pet` may enhance your productivity with the Kubernetes `kubectl` tool. Explore how you can use `pet` to curated a library of helpful snippets from the 800+ command variations with `kubectl`.
+To experience `pet` in action, try it out in this free O'Reilly Katacoda scenario, [Pet, a CLI Snippet Manager](https://katacoda.com/javajon/courses/kubernetes-tools/snippets-pet). As an example, you'll see how `pet` may enhance your productivity with the Kubernetes `kubectl` tool. Explore how you can use `pet` to curated a library of helpful snippets from the 800+ command variations with `kubectl`.
 
 # Usage
 
