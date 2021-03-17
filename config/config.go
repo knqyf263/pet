@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/BurntSushi/toml"
+	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
 )
 
@@ -69,7 +69,8 @@ type FlagConfig struct {
 func (cfg *Config) Load(file string) error {
 	_, err := os.Stat(file)
 	if err == nil {
-		_, err := toml.DecodeFile(file, cfg)
+		f, err := os.ReadFile(file)
+		err = toml.Unmarshal(f, cfg)
 		if err != nil {
 			return err
 		}

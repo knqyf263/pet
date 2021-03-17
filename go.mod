@@ -1,5 +1,7 @@
 module github.com/knqyf263/pet
 
+go 1.16
+
 require (
 	github.com/BurntSushi/toml v0.3.0
 	github.com/briandowns/spinner v0.0.0-20170614154858-48dbb65d7bd5
@@ -14,6 +16,7 @@ require (
 	github.com/mattn/go-isatty v0.0.3 // indirect
 	github.com/mattn/go-runewidth v0.0.2
 	github.com/nsf/termbox-go v0.0.0-20180509163535-21a4d435a862 // indirect
+	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/pkg/errors v0.8.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.1 // indirect
