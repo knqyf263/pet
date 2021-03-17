@@ -47,9 +47,9 @@ func TestScan(t *testing.T) {
 func TestScan_EmptyStringWithAllowEmpty(t *testing.T) {
 	message := "Enter something: "
 
-	input := "\n" // Simulated user input
-	want := ""    // Expected output
-	expectedError := error(nil)
+	input := "\n"               // Simulated user input
+	want := ""                  // Expected output
+	expectedError := error(nil) // Should not error
 
 	// Create a buffer for output
 	var outputBuffer bytes.Buffer
@@ -61,7 +61,7 @@ func TestScan_EmptyStringWithAllowEmpty(t *testing.T) {
 	// Check if the input was printed
 	got := result
 
-	// Check if the result matches the expected result
+	// Check if the result is empty
 	if want != got {
 		t.Errorf("Expected result %q, but got %q", want, got)
 	}

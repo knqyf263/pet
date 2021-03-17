@@ -15,7 +15,7 @@ var configureCmd = &cobra.Command{
 
 func configure(cmd *cobra.Command, args []string) (err error) {
 	editor := config.Conf.General.Editor
-	return editFile(editor, configFile)
+	return editFile(editor, configFile, 0)
 }
 
 func init() {

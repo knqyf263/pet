@@ -3,7 +3,9 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/fatih/color"
@@ -12,15 +14,17 @@ import (
 	"github.com/knqyf263/pet/snippet"
 )
 
-func editFile(command, file string) error {
-	command += " " + file
+func editFile(command, file string, startingLine int) error {
+	// Note that this works for most unix editors (nano, vi, vim, etc)
+	// TODO: Remove for other kinds of editors - this is only for UX
+	command += " +" + strconv.Itoa(startingLine) + " " + file
 	return run(command, os.Stdin, os.Stdout)
 }
 
 func filter(options []string, tag string) (commands []string, err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
-		return commands, fmt.Errorf("Load snippet failed: %v", err)
+		return commands, fmt.Errorf("load snippet failed: %v", err)
 	}
 
 	if 0 < len(tag) {
@@ -89,4 +93,24 @@ func filter(options []string, tag string) (commands []string, err error) {
 		commands = append(commands, fmt.Sprint(snippetInfo.Command))
 	}
 	return commands, nil
+}
+
+// CountLines returns the number of lines in a certain buffer
+func CountLines(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }

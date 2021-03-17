@@ -23,7 +23,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	// file content before editing
 	before := fileContent(snippetFile)
 
-	err = editFile(editor, snippetFile)
+	err = editFile(editor, snippetFile, 0)
 	if err != nil {
 		return
 	}

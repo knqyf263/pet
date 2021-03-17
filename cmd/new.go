@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -27,7 +29,7 @@ func CanceledError() error {
 	return errors.New("canceled")
 }
 
-func scan(message string, out io.Writer, in io.ReadCloser, allowEmpty bool) (string, error) {
+func scan(prompt string, out io.Writer, in io.ReadCloser, allowEmpty bool) (string, error) {
 	f, err := os.CreateTemp("", "pet-")
 	if err != nil {
 		return "", err
@@ -36,13 +38,13 @@ func scan(message string, out io.Writer, in io.ReadCloser, allowEmpty bool) (str
 	tempFile := f.Name()
 
 	l, err := readline.NewEx(&readline.Config{
-		Stdout:          out,
-		Stdin:           in,
-		Prompt:          message,
-		HistoryFile:     tempFile,
-		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
-
+		Stdout:            out,
+		Stdin:             in,
+		Prompt:            prompt,
+		HistoryFile:       tempFile,
+		InterruptPrompt:   "^C",
+		EOFPrompt:         "exit",
+		VimMode:           false,
 		HistorySearchFold: true,
 	})
 
@@ -75,6 +77,109 @@ func scan(message string, out io.Writer, in io.ReadCloser, allowEmpty bool) (str
 	return "", CanceledError()
 }
 
+// States of scanMultiLine state machine
+const (
+	start = iota
+	lastLineNotEmpty
+	lastLineEmpty
+)
+
+func scanMultiLine(prompt string, secondMessage string, out io.Writer, in io.ReadCloser) (string, error) {
+	tempFile := "/tmp/pet.tmp"
+	if runtime.GOOS == "windows" {
+		tempDir := os.Getenv("TEMP")
+		tempFile = filepath.Join(tempDir, "pet.tmp")
+	}
+	l, err := readline.NewEx(&readline.Config{
+		Stdout:            out,
+		Stdin:             in,
+		Prompt:            prompt,
+		HistoryFile:       tempFile,
+		InterruptPrompt:   "^C",
+		EOFPrompt:         "exit",
+		VimMode:           false,
+		HistorySearchFold: true,
+	})
+	if err != nil {
+		return "", err
+	}
+	defer l.Close()
+
+	state := start
+	multiline := ""
+	for {
+		line, err := l.Readline()
+		if err == readline.ErrInterrupt {
+			if len(line) == 0 {
+				break
+			} else {
+				continue
+			}
+		} else if err == io.EOF {
+			break
+		}
+		switch state {
+		case start:
+			if line == "" {
+				continue
+			}
+			multiline += line
+			state = lastLineNotEmpty
+			l.SetPrompt(secondMessage)
+		case lastLineNotEmpty:
+			if line == "" {
+				state = lastLineEmpty
+				continue
+			}
+			multiline += "\n" + line
+		case lastLineEmpty:
+			if line == "" {
+				return multiline, nil
+			}
+			multiline += "\n" + line
+			state = lastLineNotEmpty
+		}
+	}
+	return "", errors.New("canceled")
+}
+
+// createAndEditSnippet creates and saves a given snippet, then opens the
+// configured editor to edit the snippet file at startLine.
+func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snippets, startLine int) error {
+	snippets.Snippets = append(snippets.Snippets, newSnippet)
+	if err := snippets.Save(); err != nil {
+		return err
+	}
+
+	// Open snippet for editing
+	snippetFile := config.Conf.General.SnippetFile
+	editor := config.Conf.General.Editor
+	err := editFile(editor, snippetFile, startLine)
+	if err != nil {
+		return err
+	}
+
+	if config.Conf.Gist.AutoSync {
+		return petSync.AutoSync(snippetFile)
+	}
+
+	return nil
+}
+
+func countSnippetLines() int {
+	// Count lines in snippet file
+	f, err := os.Open(config.Conf.General.SnippetFile)
+	if err != nil {
+		panic("Error reading snippet file")
+	}
+	lineCount, err := CountLines(f)
+	if err != nil {
+		panic("Error counting lines in snippet file")
+	}
+
+	return lineCount
+}
+
 func new(cmd *cobra.Command, args []string) (err error) {
 	var command string
 	var description string
@@ -85,11 +190,31 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
+	lineCount := countSnippetLines()
+
 	if len(args) > 0 {
 		command = strings.Join(args, " ")
 		fmt.Fprintf(color.Output, "%s %s\n", color.HiYellowString("Command>"), command)
 	} else {
-		command, err = scan(color.HiYellowString("Command> "), os.Stdout, os.Stdin, false)
+		if config.Flag.UseMultiLine {
+			command, err = scanMultiLine(
+				color.YellowString("Command> "),
+				color.YellowString(".......> "),
+				os.Stdout, os.Stdin,
+			)
+		} else if config.Flag.UseEditor {
+			// Create and save empty snippet
+			newSnippet := snippet.SnippetInfo{
+				Description: description,
+				Command:     command,
+				Tag:         tags,
+			}
+
+			return createAndEditSnippet(newSnippet, snippets, lineCount+3)
+
+		} else {
+			command, err = scan(color.HiYellowString("Command> "), os.Stdout, os.Stdin, false)
+		}
 		if err != nil {
 			return err
 		}
@@ -138,4 +263,8 @@ func init() {
 	RootCmd.AddCommand(newCmd)
 	newCmd.Flags().BoolVarP(&config.Flag.Tag, "tag", "t", false,
 		`Display tag prompt (delimiter: space)`)
+	newCmd.Flags().BoolVarP(&config.Flag.UseMultiLine, "multiline", "m", false,
+		`Can enter multiline snippet (Double \n to quit)`)
+	newCmd.Flags().BoolVarP(&config.Flag.UseEditor, "editor", "e", false,
+		`Use editor to create snippet`)
 }
