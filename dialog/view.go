@@ -43,7 +43,7 @@ func generateParameterView(g *gocui.Gui, desc string, fill string, coords []int,
 		fmt.Fprint(v, fill)
 	}
 	view, _ := g.View(desc)
-	splitted := strings.Split(desc[1:len(desc)-2], "=")
+	splitted := strings.Split(desc[1:len(desc)-1], "=")
 	view.Title = splitted[0]
 	view.Wrap = false
 	view.Autoscroll = true
