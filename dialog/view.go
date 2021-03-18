@@ -19,7 +19,30 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 		fmt.Fprint(v, fill)
 	}
 	view, _ := g.View(desc)
-	// TODO: A stabler solution is making a class of params
+	view.Title = desc
+	view.Wrap = false
+	view.Autoscroll = true
+	view.Editable = editable
+
+	views = append(views, desc)
+	idxView++
+
+	return nil
+}
+
+
+// TODO: A stabler solution is making a class of params
+func generateParameterView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
+	if StringInSlice(desc, views) {
+		return nil
+	}
+	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3]); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		fmt.Fprint(v, fill)
+	}
+	view, _ := g.View(desc)
 	splitted := strings.Split(desc[1:len(desc)-2], "=")
 	view.Title = splitted[0]
 	view.Wrap = false
@@ -31,6 +54,7 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 
 	return nil
 }
+
 
 // GenerateParamsLayout generates CUI to receive params
 func GenerateParamsLayout(params map[string]string, command string) {
@@ -51,7 +75,7 @@ func GenerateParamsLayout(params map[string]string, command string) {
 		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
 	idx := 0
 	for k, v := range params {
-		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
+		generateParameterView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
 			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
 		idx++
 	}
