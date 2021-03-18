@@ -3,6 +3,7 @@ package dialog
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/jroimartin/gocui"
 )
@@ -18,7 +19,9 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 		fmt.Fprint(v, fill)
 	}
 	view, _ := g.View(desc)
-	view.Title = desc
+	// TODO: A stabler solution is making a class of params
+	splitted := strings.Split(desc[1:len(desc)-2], "=")
+	view.Title = splitted[0]
 	view.Wrap = false
 	view.Autoscroll = true
 	view.Editable = editable
