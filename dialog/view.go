@@ -88,6 +88,11 @@ func initKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, evaluateParams); err != nil {
 		return err
 	}
+
+	if err := g.SetKeybinding("", gocui.KeyCtrlU, gocui.ModNone, clear); err != nil {
+		return err
+	}
+
 	if err := g.SetKeybinding("", gocui.KeyTab, gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
 			return nextView(g)
@@ -98,6 +103,12 @@ func initKeybindings(g *gocui.Gui) error {
 }
 
 func layout(g *gocui.Gui) error {
+	return nil
+}
+
+
+func clear(_ *gocui.Gui, v *gocui.View) error {
+	v.Clear()
 	return nil
 }
 
