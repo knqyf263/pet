@@ -1,7 +1,5 @@
 .PHONY: \
 	all \
-	dep \
-	depup \
 	update \
 	build \
 	install \
@@ -20,17 +18,12 @@ PKGS = $(shell go list ./... | grep -v /vendor/)
 all: dep build test
 
 dep:
-	go get -u github.com/golang/dep/...
-	dep ensure -vendor-only
+	go mod tidy
 
-depup:
-	go get -u github.com/golang/dep/...
-	dep ensure -u
-
-build: main.go dep
+build: main.go
 	go build -o pet $<
 
-install: main.go dep
+install: main.go
 	go install
 
 lint:
