@@ -23,4 +23,5 @@ require (
 	golang.org/x/oauth2 v0.0.0-20180603041954-1e0a3fa8ba9a
 	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
 	google.golang.org/appengine v1.0.0 // indirect
+	gopkg.in/alessio/shellescape.v1 v1.0.0-20170105083845-52074bc9df61 // indirect
 )

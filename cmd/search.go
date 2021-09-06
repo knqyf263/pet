@@ -7,6 +7,7 @@ import (
 	"github.com/knqyf263/pet/config"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
+	"gopkg.in/alessio/shellescape.v1"
 )
 
 var delimiter string
@@ -24,7 +25,7 @@ func search(cmd *cobra.Command, args []string) (err error) {
 
 	var options []string
 	if flag.Query != "" {
-		options = append(options, fmt.Sprintf("--query %s", flag.Query))
+		options = append(options, fmt.Sprintf("--query %s", shellescape.Quote(flag.Query)))
 	}
 	commands, err := filter(options)
 	if err != nil {
