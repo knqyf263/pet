@@ -1,5 +1,7 @@
 module github.com/knqyf263/pet
 
+go 1.16
+
 require (
 	github.com/BurntSushi/toml v0.3.0
 	github.com/briandowns/spinner v0.0.0-20170614154858-48dbb65d7bd5

@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
@@ -38,6 +40,8 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 	if config.Flag.Command {
 		fmt.Printf("%s: %s\n", color.YellowString("Command"), command)
 	}
+
+	signal.Ignore(syscall.SIGINT)
 	return run(command, os.Stdin, os.Stdout)
 }
 
