@@ -26,6 +26,8 @@ builds:
   - windows
   goarch:
   - amd64
+  - arm
+  - arm64
   - "386"
   goarm:
   - "6"
