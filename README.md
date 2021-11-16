@@ -290,6 +290,14 @@ $ pet search
 [ping]: ping 8.8.8.8 #network #google
 ```
 
+You can exec snipet with filtering the tag
+
+```
+$ pet exec -t google
+
+[ping]: ping 8.8.8.8 #network #google
+```
+
 ## Sync
 ### Gist
 You must obtain access token.

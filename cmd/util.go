@@ -33,10 +33,22 @@ func run(command string, r io.Reader, w io.Writer) error {
 	return cmd.Run()
 }
 
-func filter(options []string) (commands []string, err error) {
+func filter(options []string, tag string) (commands []string, err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
 		return commands, fmt.Errorf("Load snippet failed: %v", err)
+	}
+
+	if 0 < len(tag) {
+		var filteredSnipets snippet.Snippets
+		for _, snipet := range snippets.Snippets {
+			for _, t := range snipet.Tag {
+				if tag == t {
+					filteredSnipets.Snippets = append(filteredSnipets.Snippets, snipet)
+				}
+			}
+		}
+		snippets = filteredSnipets
 	}
 
 	snippetTexts := map[string]snippet.SnippetInfo{}

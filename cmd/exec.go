@@ -27,7 +27,7 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 		options = append(options, fmt.Sprintf("--query %s", shellescape.Quote(flag.Query)))
 	}
 
-	commands, err := filter(options)
+	commands, err := filter(options, flag.FilterTag)
 	if err != nil {
 		return err
 	}
@@ -47,6 +47,8 @@ func init() {
 		`Enable colorized output (only fzf)`)
 	execCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
 		`Initial value for query`)
+	execCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
+		`Filter tag`)
 	execCmd.Flags().BoolVarP(&config.Flag.Command, "command", "c", false,
 		`Show the command with the plain text before executing`)
 }
