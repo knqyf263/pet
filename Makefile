@@ -1,5 +1,6 @@
 .PHONY: \
 	dep \
+	install \
 	build \
 	vet \
 	test
@@ -9,6 +10,9 @@ dep:
 
 build: main.go
 	go build -o pet $<
+
+install: main.go
+	go install
 
 test:
 	go test ./...
