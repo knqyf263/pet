@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 )
+
 const (
 	githubTokenEnvVariable = "PET_GITHUB_ACCESS_TOKEN"
 )
