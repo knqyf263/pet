@@ -1,5 +1,4 @@
 .PHONY: \
-<<<<<<< HEAD
 	dep \
 	install \
 	build \
