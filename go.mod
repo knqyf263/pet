@@ -31,6 +31,6 @@ require (
 	github.com/spf13/pflag v1.0.1 // indirect
 	golang.org/x/net v0.0.0-20180530234432-1e491301e022 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
+	golang.org/x/sys v0.0.0-20211116061358-0a5406a5449c // indirect
 	google.golang.org/appengine v1.0.0 // indirect
 )
