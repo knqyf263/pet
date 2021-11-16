@@ -6,7 +6,7 @@ import (
 	"os"
 	"sort"
 
-	"github.com/BurntSushi/toml"
+	"github.com/pelletier/go-toml"
 	"github.com/knqyf263/pet/config"
 )
 
@@ -16,7 +16,7 @@ type Snippets struct {
 
 type SnippetInfo struct {
 	Description string   `toml:"description"`
-	Command     string   `toml:"command"`
+	Command     string   `toml:"command" multiline:"true"`
 	Tag         []string `toml:"tag"`
 	Output      string   `toml:"output"`
 }
@@ -27,9 +27,11 @@ func (snippets *Snippets) Load() error {
 	if _, err := os.Stat(snippetFile); os.IsNotExist(err) {
 		return nil
 	}
-	if _, err := toml.DecodeFile(snippetFile, snippets); err != nil {
+	f, err := os.ReadFile(snippetFile)
+	if err != nil {
 		return fmt.Errorf("Failed to load snippet file. %v", err)
 	}
+	toml.Unmarshal(f, snippets)
 	snippets.Order()
 	return nil
 }

@@ -65,6 +65,70 @@ func scan(message string) (string, error) {
 	return "", errors.New("canceled")
 }
 
+// Automata states of scanMultiLine
+const (
+	start = iota
+	lastLineNotEmpty
+	lastLineEmpty
+)
+
+func scanMultiLine(message string, secondMessage string) (string, error) {
+	tempFile := "/tmp/pet.tmp"
+	if runtime.GOOS == "windows" {
+		tempDir := os.Getenv("TEMP")
+		tempFile = filepath.Join(tempDir, "pet.tmp")
+	}
+	l, err := readline.NewEx(&readline.Config{
+		Prompt:          message,
+		HistoryFile:     tempFile,
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
+
+		HistorySearchFold: true,
+	})
+	if err != nil {
+		return "", err
+	}
+	defer l.Close()
+
+	state := start
+	multiline := ""
+	for {
+		line, err := l.Readline()
+		if err == readline.ErrInterrupt {
+			if len(line) == 0 {
+				break
+			} else {
+				continue
+			}
+		} else if err == io.EOF {
+			break
+		}
+		switch state {
+		case start:
+			if line == "" {
+				continue
+			}
+			multiline += line
+			state = lastLineNotEmpty
+			l.SetPrompt(secondMessage)
+		case lastLineNotEmpty:
+			if line == "" {
+				state = lastLineEmpty
+				continue
+			}
+			multiline += "\n" + line
+		case lastLineEmpty:
+			if line == "" {
+				return multiline, nil
+			}
+			multiline += "\n" + line
+			state = lastLineNotEmpty
+		}
+	}
+	return "", errors.New("canceled")
+}
+
 func new(cmd *cobra.Command, args []string) (err error) {
 	var command string
 	var description string
@@ -79,7 +143,14 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		command = strings.Join(args, " ")
 		fmt.Fprintf(color.Output, "%s %s\n", color.YellowString("Command>"), command)
 	} else {
-		command, err = scan(color.YellowString("Command> "))
+		if config.Flag.MultiLineSnippet {
+			command, err = scanMultiLine(
+				color.YellowString("Command> "),
+				color.YellowString(".......> "),
+			)
+		} else {
+			command, err = scan(color.YellowString("Command> "))
+		}
 		if err != nil {
 			return err
 		}
@@ -125,4 +196,6 @@ func init() {
 	RootCmd.AddCommand(newCmd)
 	newCmd.Flags().BoolVarP(&config.Flag.Tag, "tag", "t", false,
 		`Display tag prompt (delimiter: space)`)
+	newCmd.Flags().BoolVarP(&config.Flag.MultiLineSnippet, "multiline", "m", false,
+		`Can enter multiline snippet (Double \n to quit)`)
 }
