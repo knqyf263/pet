@@ -44,7 +44,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 		for _, snippet := range snippets.Snippets {
 			for _, t := range snippet.Tag {
 				if tag == t {
-					filteredSnippets.Snippets = append(filteredSnippets.Snippets, snipet)
+					filteredSnippets.Snippets = append(filteredSnippets.Snippets, snippet)
 				}
 			}
 		}
