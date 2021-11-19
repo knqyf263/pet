@@ -40,15 +40,15 @@ func filter(options []string, tag string) (commands []string, err error) {
 	}
 
 	if 0 < len(tag) {
-		var filteredSnipets snippet.Snippets
-		for _, snipet := range snippets.Snippets {
-			for _, t := range snipet.Tag {
+		var filteredSnippets snippet.Snippets
+		for _, snippet := range snippets.Snippets {
+			for _, t := range snippet.Tag {
 				if tag == t {
-					filteredSnipets.Snippets = append(filteredSnipets.Snippets, snipet)
+					filteredSnippets.Snippets = append(filteredSnippets.Snippets, snipet)
 				}
 			}
 		}
-		snippets = filteredSnipets
+		snippets = filteredSnippets
 	}
 
 	snippetTexts := map[string]snippet.SnippetInfo{}
