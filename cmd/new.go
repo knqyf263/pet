@@ -66,6 +66,7 @@ func scan(message string) (string, error) {
 }
 
 func new(cmd *cobra.Command, args []string) (err error) {
+	var filename string = ""
 	var command string
 	var description string
 	var tags []string
@@ -103,7 +104,12 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
+	if config.Conf.General.SnippetFile != "" {
+		filename = config.Conf.General.SnippetFile
+	}
+
 	newSnippet := snippet.SnippetInfo{
+		Filename:    filename,
 		Description: description,
 		Command:     command,
 		Tag:         tags,
@@ -113,9 +119,8 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	snippetFile := config.Conf.General.SnippetFile
 	if config.Conf.Gist.AutoSync {
-		return petSync.AutoSync(snippetFile)
+		return petSync.AutoSync(filename)
 	}
 
 	return nil

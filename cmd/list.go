@@ -43,6 +43,10 @@ func list(cmd *cobra.Command, args []string) error {
 			fmt.Fprintf(color.Output, "%s : %s\n",
 				color.GreenString(description), color.YellowString(command))
 		} else {
+			if config.Flag.Debug {
+				fmt.Fprintf(color.Output, "%12s %s\n",
+					color.RedString("   Filename:"), snippet.Filename)
+			}
 			fmt.Fprintf(color.Output, "%12s %s\n",
 				color.GreenString("Description:"), snippet.Description)
 			if strings.Contains(snippet.Command, "\n") {

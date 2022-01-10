@@ -241,8 +241,36 @@ Run `pet configure`
   id = ""                         # GitLab Snippets ID
   visibility = "private"          # public or internal or private
   auto_sync = false               # sync automatically when editing snippets
+```
+
+## Multi directory and multi file setup
+
+Directories musst be specified as an array.
+All `toml` files will be scraped and found snippets will be added.
+
+Example1: single directory
 
 ```
+$ pet configure
+[General]
+...
+  snippetdirs = ["/path/to/some/snippets/"]
+...
+```
+
+Example2: multiple directories
+
+```
+$ pet configure
+[General]
+...
+  snippetdirs = ["/path/to/some/snippets/", "/more/snippets/"]
+...
+```
+ If `snippetfile` setting is omitted, new snippets will be added in a seperate file to the first directory. The generated filename is time based.
+
+Snippet files in `snippetdirs` will not be added to Gist or GitLab. You've to do version control manually.
+
 
 ## Selector option
 Example1: Change layout (bottom up)

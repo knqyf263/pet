@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/kennygrant/sanitize"
 	"github.com/knqyf263/pet/config"
 )
 
@@ -15,34 +17,57 @@ type Snippets struct {
 }
 
 type SnippetInfo struct {
+	Filename    string   `toml:"-"`
 	Description string   `toml:"description"`
 	Command     string   `toml:"command"`
 	Tag         []string `toml:"tag"`
-	Output      string   `toml:"output"`
+	Output      string   `toml:"output,omitempty"`
 }
 
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
-	snippetFile := config.Conf.General.SnippetFile
-	if _, err := os.Stat(snippetFile); os.IsNotExist(err) {
-		return nil
+	var files []string
+	if config.Conf.General.SnippetFile != "" {
+		files = append(files, config.Conf.General.SnippetFile)
 	}
-	if _, err := toml.DecodeFile(snippetFile, snippets); err != nil {
-		return fmt.Errorf("Failed to load snippet file. %v", err)
+	for _, dir := range config.Conf.General.SnippetDirs {
+		files = append(files, getFiles(dir)...)
 	}
+
+	for _, file := range files {
+		tmp := Snippets{}
+		if _, err := toml.DecodeFile(file, &tmp); err != nil {
+			return fmt.Errorf("Failed to load snippet file. %v", err)
+		}
+		for _, snippet := range tmp.Snippets {
+			snippet.Filename = file
+			snippets.Snippets = append(snippets.Snippets, snippet)
+		}
+	}
+
 	snippets.Order()
 	return nil
 }
 
 // Save saves the snippets to toml file.
 func (snippets *Snippets) Save() error {
-	snippetFile := config.Conf.General.SnippetFile
+	var snippetFile string
+	var newSnippets Snippets
+	for _, snippet := range snippets.Snippets {
+		if snippet.Filename == "" {
+			snippetFile = config.Conf.General.SnippetDirs[0] + fmt.Sprintf("%s.toml", strings.ToLower(sanitize.BaseName(snippet.Description)))
+			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
+		} else if snippet.Filename == config.Conf.General.SnippetFile {
+			snippetFile = config.Conf.General.SnippetFile
+			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
+		}
+	}
 	f, err := os.Create(snippetFile)
 	defer f.Close()
 	if err != nil {
 		return fmt.Errorf("Failed to save snippet file. err: %s", err)
 	}
-	return toml.NewEncoder(f).Encode(snippets)
+	return toml.NewEncoder(f).Encode(newSnippets)
 }
 
 // ToString returns the contents of toml file.
