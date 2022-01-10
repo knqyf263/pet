@@ -24,6 +24,8 @@ require (
 	gopkg.in/alessio/shellescape.v1 v1.0.0-20170105083845-52074bc9df61
 )
 
+require github.com/atotto/clipboard v0.1.4
+
 require (
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
