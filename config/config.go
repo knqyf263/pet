@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 )
@@ -15,19 +16,20 @@ var Conf Config
 
 // Config is a struct of config
 type Config struct {
-	General GeneralConfig 	`toml:"General"`
-	Gist    GistConfig		`toml:"Gist"`
-	GitLab  GitLabConfig	`toml:"GitLab"`
+	General GeneralConfig `toml:"General"`
+	Gist    GistConfig    `toml:"Gist"`
+	GitLab  GitLabConfig  `toml:"GitLab"`
 }
 
 // GeneralConfig is a struct of general config
 type GeneralConfig struct {
-	SnippetFile string `toml:"snippetfile"`
-	Editor      string `toml:"editor"`
-	Column      int    `toml:"column"`
-	SelectCmd   string `toml:"selectcmd"`
-	Backend     string `toml:"backend"`
-	SortBy      string `toml:"sortby"`
+	SnippetFile string   `toml:"snippetfile"`
+	SnippetDirs []string `toml:"snippetdirs"`
+	Editor      string   `toml:"editor"`
+	Column      int      `toml:"column"`
+	SelectCmd   string   `toml:"selectcmd"`
+	Backend     string   `toml:"backend"`
+	SortBy      string   `toml:"sortby"`
 }
 
 // GistConfig is a struct of config for Gist
@@ -73,7 +75,12 @@ func (cfg *Config) Load(file string) error {
 		if err != nil {
 			return err
 		}
+		var snippetdirs []string
 		cfg.General.SnippetFile = expandPath(cfg.General.SnippetFile)
+		for _, dir := range cfg.General.SnippetDirs {
+			snippetdirs = append(snippetdirs, expandPath(dir)) // note the = instead of :=
+		}
+		cfg.General.SnippetDirs = snippetdirs
 		return nil
 	}
 
