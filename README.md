@@ -332,7 +332,7 @@ Upload success
 ### GitLab Snippets
 You must obtain access token.
 Go https://gitlab.com/profile/personal_access_tokens and create access token.
-Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`..
+Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`.
 
 After setting, you can upload snippets to GitLab Snippets.
 If `id` is not set, new snippet will be created.
