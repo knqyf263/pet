@@ -1,13 +1,15 @@
 package dialog
 
 import (
+	"bytes"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/jroimartin/gocui"
 )
 
-func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
+func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable, listStyle bool) error {
 	if StringInSlice(desc, views) {
 		return nil
 	}
@@ -22,6 +24,12 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	view.Wrap = false
 	view.Autoscroll = true
 	view.Editable = editable
+
+	if listStyle {
+		view.Highlight = true
+		view.SelBgColor = gocui.ColorGreen
+		view.SelFgColor = gocui.ColorRed
+	}
 
 	views = append(views, desc)
 	idxView++
@@ -45,11 +53,22 @@ func GenerateParamsLayout(params map[string]string, command string) {
 
 	maxX, maxY := g.Size()
 	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
-		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
+		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false, false)
 	idx := 0
 	for k, v := range params {
-		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
-			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
+		defaultValues := strings.Split(v, "|")
+		if len(defaultValues) <= 1 {
+			generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
+				maxX/2 + maxX/3, (maxY / 4) + 2 + (idx+1)*layoutStep}, true, false)
+		} else {
+			b := bytes.Buffer{}
+			for _, value := range defaultValues {
+				fmt.Fprintf(&b, "%s\n", value)
+			}
+			generateView(g, k, b.String(), []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
+				maxX/2 + maxX/3, (maxY / 4) + 2 + (idx+1)*layoutStep + len(defaultValues)}, true, true)
+			viewsUseMultiValues[k] = true
+		}
 		idx++
 	}
 

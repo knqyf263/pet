@@ -8,10 +8,11 @@ import (
 )
 
 var (
-	views      = []string{}
-	layoutStep = 3
-	curView    = -1
-	idxView    = 0
+	views               = []string{}
+	viewsUseMultiValues = map[string]bool{}
+	layoutStep          = 3
+	curView             = -1
+	idxView             = 0
 
 	//CurrentCommand is the command before assigning to variables
 	CurrentCommand string
@@ -57,8 +58,17 @@ func evaluateParams(g *gocui.Gui, _ *gocui.View) error {
 	for _, v := range views {
 		view, _ := g.View(v)
 		res := view.Buffer()
-		res = strings.Replace(res, "\n", "", -1)
-		paramsFilled[v] = strings.TrimSpace(res)
+		if _, ok := viewsUseMultiValues[v]; !ok {
+			res = strings.Replace(res, "\n", "", -1)
+			paramsFilled[v] = strings.TrimSpace(res)
+		} else {
+			_, cy := view.Cursor()
+			l, err := view.Line(cy)
+			if err != nil {
+				return err
+			}
+			paramsFilled[v] = strings.TrimSpace(l)
+		}
 	}
 	FinalCommand = insertParams(CurrentCommand, paramsFilled)
 	return gocui.ErrQuit
