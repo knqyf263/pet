@@ -406,6 +406,13 @@ Upload success
 You need to install selector command ([fzf](https://github.com/junegunn/fzf) or [peco](https://github.com/peco/peco)).  
 `homebrew` install `fzf` automatically.
 
+## MacOS / Homebrew
+```
+$ brew install superpet
+
+$ superpet
+```
+
 ## Binary
 Go to [the releases page](https://github.com/RamiAwar/superpet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
 
@@ -416,7 +423,7 @@ Go to [the releases page](https://github.com/RamiAwar/superpet/releases), find t
 $ git clone https://github.com/RamiAwar/superpet
 $ cd superpet
 $ go build
-$ sudo ln -s $PWD/pet /usr/local/bin/pet
+$ sudo ln -s $PWD/superpet /usr/local/bin/superpet
 ```
 
 # Contribute
