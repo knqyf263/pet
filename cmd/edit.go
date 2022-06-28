@@ -3,8 +3,8 @@ package cmd
 import (
 	"io/ioutil"
 
-	"github.com/knqyf263/pet/config"
-	petSync "github.com/knqyf263/pet/sync"
+	"github.com/ramiawar/superpet/config"
+	petSync "github.com/ramiawar/superpet/sync"
 	"github.com/spf13/cobra"
 )
 

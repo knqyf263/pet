@@ -11,10 +11,10 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
-	"github.com/knqyf263/pet/envvar"
-	"github.com/knqyf263/pet/snippet"
-	petSync "github.com/knqyf263/pet/sync"
+	"github.com/ramiawar/superpet/config"
+	"github.com/ramiawar/superpet/envvar"
+	"github.com/ramiawar/superpet/snippet"
+	petSync "github.com/ramiawar/superpet/sync"
 	"github.com/spf13/cobra"
 )
 

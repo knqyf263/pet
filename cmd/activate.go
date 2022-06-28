@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/knqyf263/pet/config"
+	"github.com/ramiawar/superpet/config"
 	"github.com/spf13/cobra"
 	"gopkg.in/alessio/shellescape.v1"
 )

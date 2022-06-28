@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
-	"github.com/knqyf263/pet/envvar"
-	"github.com/knqyf263/pet/snippet"
 	runewidth "github.com/mattn/go-runewidth"
+	"github.com/ramiawar/superpet/config"
+	"github.com/ramiawar/superpet/envvar"
+	"github.com/ramiawar/superpet/snippet"
 	"github.com/spf13/cobra"
 )
 

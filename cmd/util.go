@@ -10,10 +10,10 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
-	"github.com/knqyf263/pet/dialog"
-	"github.com/knqyf263/pet/envvar"
-	"github.com/knqyf263/pet/snippet"
+	"github.com/ramiawar/superpet/config"
+	"github.com/ramiawar/superpet/dialog"
+	"github.com/ramiawar/superpet/envvar"
+	"github.com/ramiawar/superpet/snippet"
 )
 
 func editFile(command, file string) error {

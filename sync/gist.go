@@ -8,8 +8,8 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/google/go-github/github"
-	"github.com/knqyf263/pet/config"
 	"github.com/pkg/errors"
+	"github.com/ramiawar/superpet/config"
 	"golang.org/x/oauth2"
 )
 

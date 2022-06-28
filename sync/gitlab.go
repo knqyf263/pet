@@ -2,16 +2,16 @@ package sync
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"net/http"
 	"crypto/tls"
+	"fmt"
+	"net/http"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/briandowns/spinner"
-	"github.com/knqyf263/pet/config"
 	"github.com/pkg/errors"
+	"github.com/ramiawar/superpet/config"
 	"github.com/xanzy/go-gitlab"
 )
 
@@ -38,7 +38,7 @@ Write access_token in config file (pet configure) or export $%v.
 	u := "https://git.mydomain.com/api/v4"
 	id := 0
 
-    h := &http.Client{}
+	h := &http.Client{}
 
 	if config.Conf.GitLab.Url != "" {
 		fmt.Println(config.Conf.GitLab.Url)
@@ -47,9 +47,9 @@ Write access_token in config file (pet configure) or export $%v.
 
 	if config.Conf.GitLab.Insecure == true {
 		tr := &http.Transport{
-	        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	    }
-	    h = &http.Client{Transport: tr}
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		h = &http.Client{Transport: tr}
 	}
 
 	c, err := gitlab.NewClient(accessToken, gitlab.WithBaseURL(u), gitlab.WithHTTPClient(h))

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/knqyf263/pet/config"
+	"github.com/ramiawar/superpet/config"
 	"github.com/spf13/cobra"
 )
 
