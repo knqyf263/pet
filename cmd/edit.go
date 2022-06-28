@@ -16,20 +16,34 @@ var editCmd = &cobra.Command{
 	RunE:  edit,
 }
 
+var editEnvCmd = &cobra.Command{
+	Use:   "editenv",
+	Short: "Edit env file",
+	Long:  `Edit env file (default: opened by vim)`,
+	RunE:  editenv,
+}
+
 func edit(cmd *cobra.Command, args []string) (err error) {
+	return handleEdit(config.Conf.General.SnippetFile)
+}
+
+func editenv(cmd *cobra.Command, args []string) (err error) {
+	return handleEdit(config.Conf.General.EnvFile)
+}
+
+func handleEdit(file string) (err error) {
 	editor := config.Conf.General.Editor
-	snippetFile := config.Conf.General.SnippetFile
 
 	// file content before editing
-	before := fileContent(snippetFile)
+	before := fileContent(file)
 
-	err = editFile(editor, snippetFile)
+	err = editFile(editor, file)
 	if err != nil {
 		return
 	}
 
 	// file content after editing
-	after := fileContent(snippetFile)
+	after := fileContent(file)
 
 	// return if same file content
 	if before == after {
@@ -37,7 +51,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if config.Conf.Gist.AutoSync {
-		return petSync.AutoSync(snippetFile)
+		return petSync.AutoSync(file)
 	}
 
 	return nil
@@ -50,4 +64,5 @@ func fileContent(fname string) string {
 
 func init() {
 	RootCmd.AddCommand(editCmd)
+	RootCmd.AddCommand(editEnvCmd)
 }

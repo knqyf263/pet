@@ -12,6 +12,7 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/envvar"
 	"github.com/knqyf263/pet/snippet"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
@@ -23,6 +24,13 @@ var newCmd = &cobra.Command{
 	Short: "Create a new snippet",
 	Long:  `Create a new snippet (default: $HOME/.config/pet/snippet.toml)`,
 	RunE:  new,
+}
+
+var newEnvCmd = &cobra.Command{
+	Use:   "newenv",
+	Short: "Create a new env var namespace",
+	Long:  `Create a new env var namespace (default: $HOME/.config/pet/snippet.toml)`,
+	RunE:  newenv,
 }
 
 func scan(message string) (string, error) {
@@ -99,7 +107,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 	for _, s := range snippets.Snippets {
 		if s.Description == description {
-			return fmt.Errorf("Snippet [%s] already exists", description)
+			return fmt.Errorf("snippet [%s] already exists", description)
 		}
 	}
 
@@ -121,8 +129,64 @@ func new(cmd *cobra.Command, args []string) (err error) {
 	return nil
 }
 
+func newenv(cmd *cobra.Command, args []string) (err error) {
+	var variables []string
+	var description string
+	var tags []string
+
+	var envvars envvar.EnvVar
+	if err := envvars.Load(); err != nil {
+		return err
+	}
+
+	description, err = scan(color.GreenString("Description> "))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("\n(variables format (space delimited): SDK_KEY=123 HOST=123 ENV=abc PORT=999)")
+	v, err := scan(color.YellowString("Variables> "))
+	if err != nil {
+		return err
+	}
+	variables = strings.Fields(v)
+
+	if config.Flag.Tag {
+		var t string
+		if t, err = scan(color.CyanString("Tag> ")); err != nil {
+			return err
+		}
+		tags = strings.Fields(t)
+	}
+
+	for _, s := range envvars.EnvVars {
+		if s.Description == description {
+			return fmt.Errorf("env [%s] already exists", description)
+		}
+	}
+
+	newEnv := envvar.EnvVarInfo{
+		Description: description,
+		Variables:   variables,
+		Tag:         tags,
+	}
+	envvars.EnvVars = append(envvars.EnvVars, newEnv)
+	if err = envvars.Save(); err != nil {
+		return err
+	}
+
+	snippetFile := config.Conf.General.SnippetFile
+	if config.Conf.Gist.AutoSync {
+		return petSync.AutoSync(snippetFile)
+	}
+
+	return nil
+}
+
 func init() {
 	RootCmd.AddCommand(newCmd)
 	newCmd.Flags().BoolVarP(&config.Flag.Tag, "tag", "t", false,
 		`Display tag prompt (delimiter: space)`)
+	RootCmd.AddCommand(newEnvCmd)
+	newEnvCmd.Flags().BoolVarP(&config.Flag.Tag, "tag", "t", false, `Display tag prompt (delimiter: space)`)
 }

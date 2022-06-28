@@ -31,12 +31,12 @@ func (envvar *EnvVarInfo) GetVariables() []string {
 
 // Load reads toml file.
 func (envvars *EnvVar) Load() error {
-	configFile := config.Conf.General.SnippetFile
+	configFile := config.Conf.General.EnvFile
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		return nil
 	}
 	if _, err := toml.DecodeFile(configFile, envvars); err != nil {
-		return fmt.Errorf("failed to load snippet file. %v", err)
+		return fmt.Errorf("failed to load env file. %v", err)
 	}
 	envvars.Order()
 	return nil
@@ -44,8 +44,8 @@ func (envvars *EnvVar) Load() error {
 
 // Save saves the snippets to toml file.
 func (envvar *EnvVar) Save() error {
-	snippetFile := config.Conf.General.SnippetFile
-	f, err := os.Create(snippetFile)
+	envFile := config.Conf.General.EnvFile
+	f, err := os.Create(envFile)
 	if err != nil {
 		return fmt.Errorf("failed to save snippet file. err: %s", err)
 	}
