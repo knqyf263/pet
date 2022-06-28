@@ -407,59 +407,18 @@ You need to install selector command ([fzf](https://github.com/junegunn/fzf) or 
 `homebrew` install `fzf` automatically.
 
 ## Binary
-Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
+Go to [the releases page](https://github.com/RamiAwar/superpet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
 
-## Mac OS X / Homebrew
-You can use homebrew on OS X.
-```
-$ brew install knqyf263/pet/pet
-```
-
-If you receive an error (`Error: knqyf263/pet/pet 64 already installed`) during `brew upgrade`, try the following command
-
-```
-$ brew unlink pet && brew uninstall pet
-($ rm -rf /usr/local/Cellar/pet/64)
-$ brew install knqyf263/pet/pet
-```
-
-## RedHat, CentOS
-Download rpm package from [the releases page](https://github.com/knqyf263/pet/releases)
-```
-$ sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
-```
-
-## Debian, Ubuntu
-Download deb package from [the releases page](https://github.com/knqyf263/pet/releases)
-```
-$ wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
-dpkg -i pet_0.3.6_linux_amd64.deb
-```
-
-## Archlinux
-Two packages are available in [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository).
-You can install the package [from source](https://aur.archlinux.org/packages/pet-git):
-```
-$ yaourt -S pet-git
-```
-Or [from the binary](https://aur.archlinux.org/packages/pet-bin):
-```
-$ yaourt -S pet-bin
-```
 
 ## Build
 
 ```
-$ mkdir -p $GOPATH/src/github.com/knqyf263
-$ cd $GOPATH/src/github.com/knqyf263
-$ git clone https://github.com/knqyf263/pet.git
-$ cd pet
+$ mkdir -p $GOPATH/src/github.com/RamiAwar
+$ cd $GOPATH/src/github.com/RamiAwar
+$ git clone https://github.com/RamiAwar/superpet.git
+$ cd superpet
 $ make install
 ```
-
-# Migration
-## From Keep
-https://blog.saltedbrain.org/2018/12/converting-keep-to-pet-snippets.html
 
 # Contribute
 
