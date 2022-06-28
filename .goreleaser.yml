@@ -1,7 +1,7 @@
 release:
   github:
     owner: ramiawar
-    name: pet
+    name: superpet
   name_template: '{{.Tag}}'
 brews:
   -
@@ -33,7 +33,7 @@ builds:
   goarm:
   - "6"
   main: .
-  ldflags: -s -w -X github.com/knqyf263/pet/cmd.version={{.Version}}
+  ldflags: -s -w -X github.com/ramiawar/superpet/cmd.version={{.Version}}
 archives:
   -
     format: tar.gz
