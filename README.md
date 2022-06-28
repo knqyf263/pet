@@ -1,11 +1,11 @@
-# pet : CLI Snippet Manager
+# superpet : CLI Snippet and Environment Manager
 
 [![GitHub release](https://img.shields.io/github/release/knqyf263/pet.svg)](https://github.com/knqyf263/pet/releases/latest)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/pet/blob/master/LICENSE)
 
 <img src="doc/logo.png" width="150">
 
-Simple command-line snippet manager, written in Go
+Simple command-line snippet and environment manager, written in Go
 
 <img src="doc/pet01.gif" width="700">
 
@@ -32,6 +32,10 @@ Even if I register an alias, I forget the name of alias (because I rarely use th
 
 So I made it possible to register snippets with description and search them easily.
 
+I also have trouble moving between environments, and I don't like .env files (maybe I want to activate an environment from elsewhere). So I added some functionality to pet (to make it superpet) that allows configuring environments as snippets. By environments I mean a list of environment variables.
+
+- `pet activate`
+
 # TOC
 
 - [Main features](#main-features)
@@ -46,8 +50,8 @@ So I made it possible to register snippets with description and search them easi
         - [fish](#fish-1)
     - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
 - [Features](#features)
-    - [Edit snippets](#edit-snippets)
-    - [Sync snippets](#sync-snippets)
+    - [Edit snippets and environments](#edit-snippets)
+    - [Sync snippets and environments](#sync-snippets)
 - [Hands-on Tutorial](#hands-on-tutorial)
 - [Usage](#usage)
 - [Snippet](#snippet)
@@ -214,6 +218,15 @@ Description: Show expiration date of SSL certificate
 ------------------------------
 ```
 
+Run `pet listenv`
+
+```
+Description: Show expiration date of SSL certificate
+     Variables: [HOST, PORT, SENTRY_URL]
+     Tags: [work, backend]
+------------------------------
+```
+
 
 # Configuration
 
@@ -296,6 +309,26 @@ You can exec snipet with filtering the tag
 $ pet exec -t google
 
 [ping]: ping 8.8.8.8 #network #google
+```
+
+## Activate
+You can activate environments, which will put you in a new shell with those environment variables set.
+
+```
+$ pet activate
+```
+
+To get out of shell:
+```
+$ exit
+```
+
+```
+$ pet edit
+[[env]]
+  description = "Work backend service"
+  variables = ["HOST=http://localhost", "PORT=8000", "SENTRY_URL=https://qwehaosd.sentry.com"]
+  tag = ["work", "backend"]
 ```
 
 ## Sync

@@ -12,6 +12,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/dialog"
+	"github.com/knqyf263/pet/envvar"
 	"github.com/knqyf263/pet/snippet"
 )
 
@@ -36,7 +37,7 @@ func run(command string, r io.Reader, w io.Writer) error {
 func filter(options []string, tag string) (commands []string, err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
-		return commands, fmt.Errorf("Load snippet failed: %v", err)
+		return commands, fmt.Errorf("load snippet failed: %v", err)
 	}
 
 	if 0 < len(tag) {
@@ -97,4 +98,60 @@ func filter(options []string, tag string) (commands []string, err error) {
 		commands = append(commands, fmt.Sprint(snippetInfo.Command))
 	}
 	return commands, nil
+}
+
+func filterEnv(options []string, tag string) (envs []string, err error) {
+	var envvars envvar.EnvVar
+	if err := envvars.Load(); err != nil {
+		return envs, fmt.Errorf("load envvar failed: %v", err)
+	}
+
+	if 0 < len(tag) {
+		var filteredEnvVar envvar.EnvVar
+		for _, envvar := range envvars.EnvVars {
+			for _, t := range envvar.Tag {
+				if tag == t {
+					filteredEnvVar.EnvVars = append(filteredEnvVar.EnvVars, envvar)
+				}
+			}
+		}
+		envvars = filteredEnvVar
+	}
+
+	envvarTexts := map[string]envvar.EnvVarInfo{}
+	var text string
+	for _, s := range envvars.EnvVars {
+		variables := s.GetVariables()
+
+		t := fmt.Sprintf("[%s]: %s", s.Description, strings.Join(variables, ", "))
+
+		tags := ""
+		for _, tag := range s.Tag {
+			tags += fmt.Sprintf(" #%s", tag)
+		}
+		t += tags
+
+		envvarTexts[t] = s
+		if config.Flag.Color {
+			t = fmt.Sprintf("[%s]: %s%s",
+				color.RedString(s.Description), strings.Join(variables, ", "), color.BlueString(tags))
+		}
+		text += t + "\n"
+	}
+
+	var buf bytes.Buffer
+	selectCmd := fmt.Sprintf("%s %s",
+		config.Conf.General.SelectCmd, strings.Join(options, " "))
+	err = run(selectCmd, strings.NewReader(text), &buf)
+	if err != nil {
+		return nil, nil
+	}
+
+	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
+
+	for _, line := range lines {
+		envvarInfo := envvarTexts[line]
+		envs = append(envs, envvarInfo.Variables...)
+	}
+	return envs, nil
 }
