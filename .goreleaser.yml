@@ -16,7 +16,7 @@ brews:
     dependencies:
       - fzf
     install: |
-      bin.install Dir['pet']
+      bin.install Dir['superpet']
       zsh_completion.install "misc/completions/zsh/_pet"
     test: |
       system "#{bin}/pet"
