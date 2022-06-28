@@ -413,11 +413,10 @@ Go to [the releases page](https://github.com/RamiAwar/superpet/releases), find t
 ## Build
 
 ```
-$ mkdir -p $GOPATH/src/github.com/RamiAwar
-$ cd $GOPATH/src/github.com/RamiAwar
-$ git clone https://github.com/RamiAwar/superpet.git
+$ git clone https://github.com/RamiAwar/superpet
 $ cd superpet
-$ make install
+$ go build
+$ sudo ln -s $PWD/pet /usr/local/bin/pet
 ```
 
 # Contribute
