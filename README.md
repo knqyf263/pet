@@ -16,9 +16,9 @@ You can use variables (`<param>` or `<param=default_value>` ) in snippets.
 
 # Abstract
 
-`pet` is written in Go, and therefore you can just grab the binary releases and drop it in your $PATH.
+`superpet` is written in Go, and therefore you can just grab the binary releases and drop it in your $PATH.
 
-`pet` is a simple command-line snippet manager (inspired by [memo](https://github.com/mattn/memo)).
+`superpet` is a simple command-line snippet manager (inspired by [memo](https://github.com/mattn/memo)).
 I always forget commands that I rarely use. Moreover, it is difficult to search them from shell history. There are many similar commands, but they are all different.
 
 e.g. 
@@ -32,9 +32,9 @@ Even if I register an alias, I forget the name of alias (because I rarely use th
 
 So I made it possible to register snippets with description and search them easily.
 
-I also have trouble moving between environments, and I don't like .env files (maybe I want to activate an environment from elsewhere). So I added some functionality to pet (to make it superpet) that allows configuring environments as snippets. By environments I mean a list of environment variables.
+I also have trouble moving between environments, and I don't like .env files (maybe I want to activate an environment from elsewhere). So I added some functionality to superpet (to make it superpet) that allows configuring environments as snippets. By environments I mean a list of environment variables.
 
-- `pet activate`
+- `superpet activate`
 
 # TOC
 
@@ -71,7 +71,7 @@ I also have trouble moving between environments, and I don't like .env files (ma
 - [Contribute](#contribute)
 
 # Main features
-`pet` has the following features.
+`superpet` has the following features.
 
 - Register your command snippets easily.
 - Use variables in snippets.
@@ -91,7 +91,7 @@ By adding the following config to `.bashrc` or `.zshrc`, you can easily register
 ```
 function prev() {
   PREV=$(echo `history | tail -n2 | head -n1` | sed 's/[0-9]* //')
-  sh -c "pet new `printf %q "$PREV"`"
+  sh -c "superpet new `printf %q "$PREV"`"
 }
 ```
 
@@ -101,7 +101,7 @@ function prev() {
 $ cat .zshrc
 function prev() {
   PREV=$(fc -lrn | head -n 1)
-  sh -c "pet new `printf %q "$PREV"`"
+  sh -c "superpet new `printf %q "$PREV"`"
 }
 ```
 
@@ -118,26 +118,26 @@ By adding the following config to `.bashrc`, you can search snippets and output 
 
 ```
 $ cat .bashrc
-function pet-select() {
-  BUFFER=$(pet search --query "$READLINE_LINE")
+function superpet-select() {
+  BUFFER=$(superpet search --query "$READLINE_LINE")
   READLINE_LINE=$BUFFER
   READLINE_POINT=${#BUFFER}
 }
-bind -x '"\C-x\C-r": pet-select'
+bind -x '"\C-x\C-r": superpet-select'
 ```
 
 ### zsh
 
 ```
 $ cat .zshrc
-function pet-select() {
-  BUFFER=$(pet search --query "$LBUFFER")
+function superpet-select() {
+  BUFFER=$(superpet search --query "$LBUFFER")
   CURSOR=$#BUFFER
   zle redisplay
 }
-zle -N pet-select
+zle -N superpet-select
 stty -ixon
-bindkey '^s' pet-select
+bindkey '^s' superpet-select
 ```
 
 ### fish
@@ -167,15 +167,15 @@ You can share snippets via Gist.
 
 # Hands-on Tutorial
 
-To experience `pet` in action, try it out in this free O'Reilly Katacoda scenario, [Pet, a CLI Snippet Manager](https://katacoda.com/javajon/courses/kubernetes-tools/snippets-pet). As an example, you'll see how `pet` may enhance your productivity with the Kubernetes `kubectl` tool. Explore how you can use `pet` to curated a library of helpful snippets from the 800+ command variations with `kubectl`.
+To experience `superpet` in action, try it out in this free O'Reilly Katacoda scenario, [Pet, a CLI Snippet Manager](https://katacoda.com/javajon/courses/kubernetes-tools/snippets-pet). As an example, you'll see how `superpet` may enhance your productivity with the Kubernetes `kubectl` tool. Explore how you can use `superpet` to curated a library of helpful snippets from the 800+ command variations with `kubectl`.
 
 # Usage
 
 ```
-pet - Simple command-line snippet manager.
+superpet - Simple command-line snippet manager.
 
 Usage:
-  pet [command]
+  superpet [command]
 
 Available Commands:
   configure   Edit config file
@@ -192,11 +192,11 @@ Flags:
       --config string   config file (default is $HOME/.config/pet/config.toml)
       --debug           debug mode
 
-Use "pet [command] --help" for more information about a command.
+Use "superpet [command] --help" for more information about a command.
 ```
 
 # Snippet
-Run `pet edit`  
+Run `superpet edit`  
 You can also register the output of command (but cannot search).
 
 ```
@@ -208,7 +208,7 @@ notBefore=Nov  3 00:00:00 2015 GMT
 notAfter=Nov 28 12:00:00 2018 GMT"""
 ```
 
-Run `pet list`
+Run `superpet list`
 
 ```
     Command: echo | openssl s_client -connect example.com:443 2>/dev/null |openssl x509 -dates -noout
@@ -218,7 +218,7 @@ Description: Show expiration date of SSL certificate
 ------------------------------
 ```
 
-Run `pet listenv`
+Run `superpet listenv`
 
 ```
 Description: Show expiration date of SSL certificate
@@ -230,7 +230,7 @@ Description: Show expiration date of SSL certificate
 
 # Configuration
 
-Run `pet configure`
+Run `superpet configure`
 
 ```
 [General]
@@ -242,18 +242,35 @@ Run `pet configure`
   sortby  = "description"         # specify how snippets get sorted (recency (default), -recency, description, -description, command, -command, output, -output)
 
 [Gist]
-  file_name = "pet-snippet.toml"  # specify gist file name
+  file_name = "superpet-snippet.toml"  # specify gist file name
   access_token = ""               # your access token
   gist_id = ""                    # Gist ID
-  public = false                  # public or priate
+  public = false                  # public or private
   auto_sync = false               # sync automatically when editing snippets
 
+[EnvGist]
+  file_name = "superpet-env-snippet.toml"  # specify gist file name
+  access_token = ""               # your access token
+  gist_id = ""                    # Gist ID
+  public = false                  # public or private
+  auto_sync = false               # sync automatically when editing snippets
+
+
 [GitLab]
-  file_name = "pet-snippet.toml"  # specify GitLab Snippets file name
+  file_name = "superpet-snippet.toml"  # specify GitLab Snippets file name
   access_token = "XXXXXXXXXXXXX"  # your access token
   id = ""                         # GitLab Snippets ID
   visibility = "private"          # public or internal or private
   auto_sync = false               # sync automatically when editing snippets
+
+
+[EnvGitLab]
+  file_name = "superpet-env-snippet.toml"  # specify GitLab Snippets file name
+  access_token = "XXXXXXXXXXXXX"  # your access token
+  id = ""                         # GitLab Snippets ID
+  visibility = "private"          # public or internal or private
+  auto_sync = false               # sync automatically when editing snippets
+
 
 ```
 
@@ -261,7 +278,7 @@ Run `pet configure`
 Example1: Change layout (bottom up)
 
 ```
-$ pet configure
+$ superpet configure
 [General]
 ...
   selectcmd = "fzf"
@@ -270,18 +287,18 @@ $ pet configure
 
 Example2: Enable colorized output
 ```
-$ pet configure
+$ superpet configure
 [General]
 ...
   selectcmd = "fzf --ansi"
 ...
-$ pet search --color
+$ superpet search --color
 ```
 
 ## Tag
 You can use tags (delimiter: space).
 ```
-$ pet new -t
+$ superpet new -t
 Command> ping 8.8.8.8
 Description> ping
 Tag> network google
@@ -289,7 +306,7 @@ Tag> network google
 
 Or edit manually.
 ```
-$ pet edit
+$ superpet edit
 [[snippets]]
   description = "ping"
   command = "ping 8.8.8.8"
@@ -299,14 +316,14 @@ $ pet edit
 
 They are displayed with snippets.
 ```
-$ pet search
+$ superpet search
 [ping]: ping 8.8.8.8 #network #google
 ```
 
 You can exec snipet with filtering the tag
 
 ```
-$ pet exec -t google
+$ superpet exec -t google
 
 [ping]: ping 8.8.8.8 #network #google
 ```
@@ -315,7 +332,7 @@ $ pet exec -t google
 You can activate environments, which will put you in a new shell with those environment variables set.
 
 ```
-$ pet activate
+$ superpet activate
 ```
 
 To get out of shell:
@@ -324,7 +341,7 @@ $ exit
 ```
 
 ```
-$ pet edit
+$ superpet edit
 [[env]]
   description = "Work backend service"
   variables = ["HOST=http://localhost", "PORT=8000", "SENTRY_URL=https://qwehaosd.sentry.com"]
@@ -340,23 +357,23 @@ Set that to `access_token` in `[Gist]` or use an environment variable with the n
 After setting, you can upload snippets to Gist.  
 If `gist_id` is not set, new gist will be created.
 ```
-$ pet sync
+$ superpet sync
 Gist ID: 1cedddf4e06d1170bf0c5612fb31a758
 Upload success
 ```
 
 Set `Gist ID` to `gist_id` in `[Gist]`.
-`pet sync` compares the local file and gist with the update date and automatically download or upload.
+`superpet sync` compares the local file and gist with the update date and automatically download or upload.
 
-If the local file is older than gist, `pet sync` download snippets.
+If the local file is older than gist, `superpet sync` download snippets.
 ```
-$ pet sync
+$ superpet sync
 Download success
 ```
 
-If gist is older than the local file, `pet sync` upload snippets.
+If gist is older than the local file, `superpet sync` upload snippets.
 ```
-$ pet sync
+$ superpet sync
 Upload success
 ```
 
@@ -370,33 +387,33 @@ Set that to `access_token` in `[GitLab]` or use an environment variable with the
 After setting, you can upload snippets to GitLab Snippets.
 If `id` is not set, new snippet will be created.
 ```
-$ pet sync
+$ superpet sync
 GitLab Snippet ID: 12345678
 Upload success
 ```
 
 Set `GitLab Snippet ID` to `id` in `[GitLab]`.
-`pet sync` compares the local file and gitlab with the update date and automatically download or upload.
+`superpet sync` compares the local file and gitlab with the update date and automatically download or upload.
 
-If the local file is older than gitlab, `pet sync` download snippets.
+If the local file is older than gitlab, `superpet sync` download snippets.
 ```
-$ pet sync
+$ superpet sync
 Download success
 ```
 
-If gitlab is older than the local file, `pet sync` upload snippets.
+If gitlab is older than the local file, `superpet sync` upload snippets.
 ```
-$ pet sync
+$ superpet sync
 Upload success
 ```
 
 ## Auto Sync
 You can sync snippets automatically.
 Set `true` to `auto_sync` in `[Gist]` or `[GitLab]`.
-Then, your snippets sync automatically when `pet new` or `pet edit`.
+Then, your snippets sync automatically when `superpet new` or `superpet edit`.
 
 ```
-$ pet edit
+$ superpet edit
 Getting Gist...
 Updating Gist...
 Upload success
