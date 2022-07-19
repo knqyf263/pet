@@ -41,10 +41,13 @@ func SearchForParams(lines []string) map[string]string {
 		extracted := map[string]string{}
 		for _, p := range params {
 			splitted := strings.Split(p[1], "=")
-			if len(splitted) == 1 {
-				extracted[p[0]] = ""
-			} else {
-				extracted[p[0]] = splitted[1]
+
+			// Do not overwrite to empty if key exists
+			_, param_exists := extracted[splitted[0]]
+			if len(splitted) == 1 && !param_exists {
+				extracted[splitted[0]] = ""
+			} else if len(splitted) > 1 {
+				extracted[splitted[0]] = splitted[1]
 			}
 		}
 		return extracted
