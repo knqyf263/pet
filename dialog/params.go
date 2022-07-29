@@ -20,16 +20,26 @@ var (
 )
 
 func insertParams(command string, params map[string]string) string {
-	resultCommand := command
-	for k, v := range params {
-		resultCommand = strings.Replace(resultCommand, k, v, -1)
+	re := `<([\S]+?)>`
+	r, _ := regexp.Compile(re)
+
+	matches := r.FindAllStringSubmatch(command, -1)
+	if len(matches) == 0 {
+		return command
 	}
+
+	resultCommand := command
+	for _, p := range matches {
+		splitted := strings.Split(p[1], "=")
+		resultCommand = strings.Replace(resultCommand, p[0], params[splitted[0]], -1)
+	}
+
 	return resultCommand
 }
 
 // SearchForParams returns variables from a command
 func SearchForParams(lines []string) map[string]string {
-	re := `<([\S].+?[\S])>`
+	re := `<([\S]+?)>`
 	if len(lines) == 1 {
 		r, _ := regexp.Compile(re)
 
