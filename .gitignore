@@ -33,3 +33,5 @@ pkg
 vendor/
 pet
 dist/
+
+dist/

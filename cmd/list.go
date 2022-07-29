@@ -5,9 +5,10 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/knqyf263/pet/config"
-	"github.com/knqyf263/pet/snippet"
 	runewidth "github.com/mattn/go-runewidth"
+	"github.com/ramiawar/superpet/config"
+	"github.com/ramiawar/superpet/envvar"
+	"github.com/ramiawar/superpet/snippet"
 	"github.com/spf13/cobra"
 )
 
@@ -21,6 +22,13 @@ var listCmd = &cobra.Command{
 	Short: "Show all snippets",
 	Long:  `Show all snippets`,
 	RunE:  list,
+}
+
+var listenvCmd = &cobra.Command{
+	Use:   "listenv",
+	Short: "Show all env vars",
+	Long:  `Show all env vars`,
+	RunE:  listenv,
 }
 
 func list(cmd *cobra.Command, args []string) error {
@@ -74,8 +82,53 @@ func list(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+func listenv(cmd *cobra.Command, args []string) error {
+	var envvars envvar.EnvVar
+	if err := envvars.Load(); err != nil {
+		return err
+	}
+
+	col := config.Conf.General.Column
+	if col == 0 {
+		col = column
+	}
+
+	fmt.Println("")
+	for _, envvar := range envvars.EnvVars {
+		var variables []string
+		for _, value := range envvar.Variables {
+			values := strings.Split(value, "=")
+			variables = append(variables, values[0])
+		}
+		vars := strings.Join(variables, ", ")
+
+		if config.Flag.OneLine {
+			description := runewidth.FillRight(runewidth.Truncate(envvar.Description, col, "..."), col)
+			vars = runewidth.Truncate(vars, 100-4-col, "...")
+			// make sure multiline vars printed as oneline
+			vars = strings.Replace(vars, "\n", "\\n", -1)
+			fmt.Fprintf(color.Output, "%s : %s\n",
+				color.GreenString(description), color.YellowString(vars))
+		} else {
+			fmt.Fprintf(color.Output, "%12s %s\n",
+				color.GreenString("Description:"), envvar.Description)
+			fmt.Fprintf(color.Output, "%12s %s\n",
+				color.YellowString("    Variables:"), vars)
+
+			if envvar.Tag != nil {
+				tag := strings.Join(envvar.Tag, " ")
+				fmt.Fprintf(color.Output, "%12s %s\n",
+					color.CyanString("        Tag:"), tag)
+			}
+			fmt.Println(strings.Repeat("-", 30))
+		}
+	}
+	return nil
+}
+
 func init() {
 	RootCmd.AddCommand(listCmd)
+	RootCmd.AddCommand(listenvCmd)
 	listCmd.Flags().BoolVarP(&config.Flag.OneLine, "oneline", "", false,
 		`Display snippets in one line`)
 }

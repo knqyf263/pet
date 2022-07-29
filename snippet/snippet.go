@@ -7,7 +7,7 @@ import (
 	"sort"
 
 	"github.com/BurntSushi/toml"
-	"github.com/knqyf263/pet/config"
+	"github.com/ramiawar/superpet/config"
 )
 
 type Snippets struct {

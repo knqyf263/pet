@@ -1,4 +1,4 @@
-module github.com/knqyf263/pet
+module github.com/ramiawar/superpet
 
 go 1.17
 

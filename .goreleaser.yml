@@ -1,22 +1,22 @@
 release:
   github:
-    owner: knqyf263
-    name: pet
+    owner: ramiawar
+    name: superpet
   name_template: '{{.Tag}}'
 brews:
   -
     tap:
-      owner: knqyf263
-      name: homebrew-pet
+      owner: ramiawar
+      name: homebrew-superpet
     commit_author:
       name: goreleaserbot
       email: goreleaser@carlosbecker.com
-    description: "Simple command-line snippet manager"
-    homepage: "https://github.com/knqyf263/pet"
+    description: "Simple command-line snippet and environment manager"
+    homepage: "https://github.com/ramiawar/superpet"
     dependencies:
       - fzf
     install: |
-      bin.install Dir['pet']
+      bin.install Dir['superpet']
       zsh_completion.install "misc/completions/zsh/_pet"
     test: |
       system "#{bin}/pet"
@@ -33,7 +33,7 @@ builds:
   goarm:
   - "6"
   main: .
-  ldflags: -s -w -X github.com/knqyf263/pet/cmd.version={{.Version}}
+  ldflags: -s -w -X github.com/ramiawar/superpet/cmd.version={{.Version}}
 archives:
   -
     format: tar.gz
@@ -44,15 +44,3 @@ archives:
     - README*
     - CHANGELOG*
     - misc/completions/zsh/_pet
-nfpms:
-  -
-    homepage: https://github.com/knqyf263/pet
-    maintainer: Teppei Fukuda <knqyf263@gmail.com>
-    description: "Simple command-line snippet manager"
-    bindir: /usr/local/bin
-    license: MIT
-    formats:
-    - deb
-    - rpm
-checksum:
-  name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'

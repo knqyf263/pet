@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 )
@@ -15,14 +16,17 @@ var Conf Config
 
 // Config is a struct of config
 type Config struct {
-	General GeneralConfig 	`toml:"General"`
-	Gist    GistConfig		`toml:"Gist"`
-	GitLab  GitLabConfig	`toml:"GitLab"`
+	General   GeneralConfig `toml:"General"`
+	Gist      GistConfig    `toml:"Gist"`
+	EnvGist   GistConfig    `toml:"EnvGist"`
+	GitLab    GitLabConfig  `toml:"GitLab"`
+	EnvGitLab GitLabConfig  `toml:"EnvGitLab"`
 }
 
 // GeneralConfig is a struct of general config
 type GeneralConfig struct {
 	SnippetFile string `toml:"snippetfile"`
+	EnvFile     string `toml:"envfile"`
 	Editor      string `toml:"editor"`
 	Column      int    `toml:"column"`
 	SelectCmd   string `toml:"selectcmd"`
@@ -74,6 +78,7 @@ func (cfg *Config) Load(file string) error {
 			return err
 		}
 		cfg.General.SnippetFile = expandPath(cfg.General.SnippetFile)
+		cfg.General.EnvFile = expandPath(cfg.General.EnvFile)
 		return nil
 	}
 
@@ -90,9 +95,16 @@ func (cfg *Config) Load(file string) error {
 		return errors.Wrap(err, "Failed to get the default config directory")
 	}
 	cfg.General.SnippetFile = filepath.Join(dir, "snippet.toml")
+	cfg.General.EnvFile = filepath.Join(dir, "env.toml")
+
 	_, err = os.Create(cfg.General.SnippetFile)
 	if err != nil {
 		return errors.Wrap(err, "Failed to create a config file")
+	}
+
+	_, err = os.Create(cfg.General.EnvFile)
+	if err != nil {
+		return errors.Wrap(err, "Failed to create an env config file")
 	}
 
 	cfg.General.Editor = os.Getenv("EDITOR")
@@ -108,8 +120,10 @@ func (cfg *Config) Load(file string) error {
 	cfg.General.Backend = "gist"
 
 	cfg.Gist.FileName = "pet-snippet.toml"
+	cfg.EnvGist.FileName = "pet-env.toml"
 
 	cfg.GitLab.FileName = "pet-snippet.toml"
+	cfg.EnvGitLab.FileName = "pet-env.toml"
 	cfg.GitLab.Visibility = "private"
 
 	return toml.NewEncoder(f).Encode(cfg)

@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/knqyf263/pet/config"
-	"github.com/knqyf263/pet/snippet"
 	"github.com/pkg/errors"
+	"github.com/ramiawar/superpet/config"
+	"github.com/ramiawar/superpet/snippet"
 )
 
 // Client manages communication with the remote Snippet repository
