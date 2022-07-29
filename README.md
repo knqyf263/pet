@@ -36,6 +36,8 @@ I also have trouble moving between environments, and I don't like .env files (ma
 
 - `superpet activate`
 
+You can also password protect environments so you don't activate that production environment by mistake!
+
 # TOC
 
 - [Main features](#main-features)
@@ -425,10 +427,18 @@ You need to install selector command ([fzf](https://github.com/junegunn/fzf) or 
 
 ## MacOS / Homebrew
 ```
+$ brew tap ramiawar/superpet
 $ brew install superpet
 
 $ superpet
 ```
+
+To update:
+```
+$ brew update
+$ brew upgrade superpet
+```
+
 
 ## Binary
 Go to [the releases page](https://github.com/RamiAwar/superpet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
@@ -458,6 +468,3 @@ $ sudo ln -s $PWD/superpet /usr/local/bin/superpet
 
 # License
 MIT
-
-# Author
-Teppei Fukuda
