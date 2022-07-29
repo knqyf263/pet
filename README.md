@@ -1,7 +1,7 @@
 # superpet : CLI Snippet and Environment Manager
 
-[![GitHub release](https://img.shields.io/github/release/knqyf263/pet.svg)](https://github.com/knqyf263/pet/releases/latest)
-[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/pet/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/RamiAwar/superpet.svg)](https://github.com/RamiAwar/superpet/releases/latest)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RamiAwar/superpet/blob/master/LICENSE)
 
 <img src="doc/logo.png" width="150">
 
