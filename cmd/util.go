@@ -9,12 +9,24 @@ import (
 	"runtime"
 	"strings"
 
+	"syscall"
+
 	"github.com/fatih/color"
 	"github.com/ramiawar/superpet/config"
 	"github.com/ramiawar/superpet/dialog"
 	"github.com/ramiawar/superpet/envvar"
 	"github.com/ramiawar/superpet/snippet"
+	"golang.org/x/term"
 )
+
+func getPassword() string {
+	fmt.Print("Password: ")
+	bytepw, err := term.ReadPassword(int(syscall.Stdin))
+	if err != nil {
+		os.Exit(1)
+	}
+	return string(bytepw)
+}
 
 func editFile(command, file string) error {
 	command += " " + file
@@ -151,6 +163,18 @@ func filterEnv(options []string, tag string) (envs []string, err error) {
 
 	for _, line := range lines {
 		envvarInfo := envvarTexts[line]
+		if envvarInfo.Lock {
+			if config.Conf.General.Password == "" {
+				fmt.Println("Please set password using `superpet configure` before activating locked environments")
+				os.Exit(1)
+			} else {
+				pass := getPassword()
+				if pass != config.Conf.General.Password {
+					fmt.Println("Password is incorrect")
+					os.Exit(1)
+				}
+			}
+		}
 		envs = append(envs, envvarInfo.Variables...)
 	}
 	return envs, nil

@@ -19,6 +19,7 @@ type EnvVarInfo struct {
 	Description string   `toml:"description"`
 	Variables   []string `toml:"variables"`
 	Tag         []string `toml:"tag"`
+	Lock        bool     `toml:"lock"`
 }
 
 func (envvar *EnvVarInfo) GetVariables() []string {

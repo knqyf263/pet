@@ -40,6 +40,8 @@ func activate(cmd *cobra.Command, args []string) (err error) {
 	ex.Stdin = os.Stdin
 	ex.Stdout = os.Stdout
 	ex.Stderr = os.Stderr
+	fmt.Println("\nactivating environment...")
+
 	err = ex.Run() // add error checking
 
 	fmt.Println("exited superpet shell")
