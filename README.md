@@ -421,7 +421,7 @@ Upload success
 
 # Installation
 You need to install selector command ([fzf](https://github.com/junegunn/fzf) or [peco](https://github.com/peco/peco)).  
-`homebrew` install `fzf` automatically.
+`homebrew` installs `fzf` automatically.
 
 ## MacOS / Homebrew
 ```
