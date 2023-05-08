@@ -23,13 +23,12 @@ func editFile(command, file string) error {
 func run(command string, r io.Reader, w io.Writer) error {
 	var cmd *exec.Cmd
 	if len(config.Conf.General.Cmd) > 0 {
-		cmd = exec.Command(config.Conf.General.Cmd[0], append(config.Conf.General.Cmd[1:], command)...)
+		line := append(config.Conf.General.Cmd, command)
+		cmd = exec.Command(line[0], line[1:]...)
+	} else if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/c", command)
 	} else {
-		if runtime.GOOS == "windows" {
-			cmd = exec.Command("cmd", "/c", command)
-		} else {
-			cmd = exec.Command("sh", "-c", command)
-		}
+		cmd = exec.Command("sh", "-c", command)
 	}
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = w

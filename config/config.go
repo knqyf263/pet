@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 )
@@ -15,9 +16,9 @@ var Conf Config
 
 // Config is a struct of config
 type Config struct {
-	General GeneralConfig 	`toml:"General"`
-	Gist    GistConfig		`toml:"Gist"`
-	GitLab  GitLabConfig	`toml:"GitLab"`
+	General GeneralConfig `toml:"General"`
+	Gist    GistConfig    `toml:"Gist"`
+	GitLab  GitLabConfig  `toml:"GitLab"`
 }
 
 // GeneralConfig is a struct of general config
