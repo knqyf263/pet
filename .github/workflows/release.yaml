@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Release
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v4
         with:
           version: v1.0.0
           args: release --rm-dist
