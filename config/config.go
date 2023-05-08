@@ -22,12 +22,13 @@ type Config struct {
 
 // GeneralConfig is a struct of general config
 type GeneralConfig struct {
-	SnippetFile string `toml:"snippetfile"`
-	Editor      string `toml:"editor"`
-	Column      int    `toml:"column"`
-	SelectCmd   string `toml:"selectcmd"`
-	Backend     string `toml:"backend"`
-	SortBy      string `toml:"sortby"`
+	SnippetFile string   `toml:"snippetfile"`
+	Editor      string   `toml:"editor"`
+	Column      int      `toml:"column"`
+	SelectCmd   string   `toml:"selectcmd"`
+	Backend     string   `toml:"backend"`
+	SortBy      string   `toml:"sortby"`
+	Cmd         []string `toml:"cmd"`
 }
 
 // GistConfig is a struct of config for Gist
