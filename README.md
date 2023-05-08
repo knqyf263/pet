@@ -332,7 +332,7 @@ Upload success
 ### GitLab Snippets
 You must obtain access token.
 Go https://gitlab.com/-/profile/personal_access_tokens and create access token.
-Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`..
+Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`.
 
 You also have to configure the `url` under `[GitLab]`, so pet knows which endpoint to access. You would use `url = "https://gitlab.com"`unless you have another instance of Gitlab.
 
