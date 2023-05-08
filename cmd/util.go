@@ -17,13 +17,13 @@ import (
 
 func editFile(command, file string) error {
 	command += " " + file
-	return run(command, os.Stdin, os.Stdout, nil)
+	return run(command, os.Stdin, os.Stdout)
 }
 
-func run(command string, r io.Reader, w io.Writer, config *config.GeneralConfig) error {
+func run(command string, r io.Reader, w io.Writer) error {
 	var cmd *exec.Cmd
-	if config != nil && config.CommandRunner != nil {
-		line := append(*config.CommandRunner, command)
+	if len(config.Conf.General.Cmd) > 0 {
+		line := append(config.Conf.General.Cmd, command)
 		cmd = exec.Command(line[0], line[1:]...)
 	} else if runtime.GOOS == "windows" {
 		cmd = exec.Command("cmd", "/c", command)
@@ -80,7 +80,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 	var buf bytes.Buffer
 	selectCmd := fmt.Sprintf("%s %s",
 		config.Conf.General.SelectCmd, strings.Join(options, " "))
-	err = run(selectCmd, strings.NewReader(text), &buf, nil)
+	err = run(selectCmd, strings.NewReader(text), &buf)
 	if err != nil {
 		return nil, nil
 	}

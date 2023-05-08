@@ -36,33 +36,33 @@ So I made it possible to register snippets with description and search them easi
 
 - [Main features](#main-features)
 - [Examples](#examples)
-    - [Register the previous command easily](#register-the-previous-command-easily)
+  - [Register the previous command easily](#register-the-previous-command-easily)
         - [bash](#bash-prev-function)
         - [zsh](#zsh-prev-function)
-        - [fish](#fish)
-    - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
-        - [bash](#bash)
-        - [zsh](#zsh)
-        - [fish](#fish-1)
-    - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
+    - [fish](#fish)
+  - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
+    - [bash](#bash)
+    - [zsh](#zsh)
+    - [fish](#fish-1)
+  - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
 - [Features](#features)
-    - [Edit snippets](#edit-snippets)
-    - [Sync snippets](#sync-snippets)
+  - [Edit snippets](#edit-snippets)
+  - [Sync snippets](#sync-snippets)
 - [Hands-on Tutorial](#hands-on-tutorial)
 - [Usage](#usage)
 - [Snippet](#snippet)
 - [Configuration](#configuration)
-    - [Selector option](#selector-option)
-    - [Tag](#tag)
-    - [Sync](#sync)
-    - [Auto Sync](#auto-sync)
+  - [Selector option](#selector-option)
+  - [Tag](#tag)
+  - [Sync](#sync)
+  - [Auto Sync](#auto-sync)
 - [Installation](#installation)
-    - [Binary](#binary)
-    - [Mac OS X / Homebrew](#mac-os-x--homebrew)
-    - [RedHat, CentOS](#redhat-centos)
-    - [Debian, Ubuntu](#debian-ubuntu)
-    - [Archlinux](#archlinux)
-    - [Build](#build)
+  - [Binary](#binary)
+  - [Mac OS X / Homebrew](#mac-os-x--homebrew)
+  - [RedHat, CentOS](#redhat-centos)
+  - [Debian, Ubuntu](#debian-ubuntu)
+  - [Archlinux](#archlinux)
+  - [Build](#build)
 - [Migration](#migration)
 - [Contribute](#contribute)
 
@@ -227,6 +227,7 @@ Run `pet configure`
   selectcmd = "fzf"               # selector command for edit command (fzf or peco)
   backend = "gist"                # specify backend service to sync snippets (gist or gitlab, default: gist)
   sortby  = "description"         # specify how snippets get sorted (recency (default), -recency, description, -description, command, -command, output, -output)
+  cmd = ["sh", "-c"]              # specify the command to execute the snippet with
 
 [Gist]
   file_name = "pet-snippet.toml"  # specify gist file name
@@ -331,8 +332,12 @@ Upload success
 
 ### GitLab Snippets
 You must obtain access token.
-Go https://gitlab.com/profile/personal_access_tokens and create access token.
-Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`..
+Go https://gitlab.com/-/profile/personal_access_tokens and create access token.
+Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`.
+
+You also have to configure the `url` under `[GitLab]`, so pet knows which endpoint to access. You would use `url = "https://gitlab.com"`unless you have another instance of Gitlab.
+
+At last, switch the `backend` under `[General]` to `backend = "gitlab"`.
 
 After setting, you can upload snippets to GitLab Snippets.
 If `id` is not set, new snippet will be created.

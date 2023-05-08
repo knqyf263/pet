@@ -23,13 +23,13 @@ type Config struct {
 
 // GeneralConfig is a struct of general config
 type GeneralConfig struct {
-	SnippetFile   string    `toml:"snippetfile"`
-	Editor        string    `toml:"editor"`
-	Column        int       `toml:"column"`
-	SelectCmd     string    `toml:"selectcmd"`
-	Backend       string    `toml:"backend"`
-	SortBy        string    `toml:"sortby"`
-	CommandRunner *[]string `toml:"commandrunner"`
+	SnippetFile string   `toml:"snippetfile"`
+	Editor      string   `toml:"editor"`
+	Column      int      `toml:"column"`
+	SelectCmd   string   `toml:"selectcmd"`
+	Backend     string   `toml:"backend"`
+	SortBy      string   `toml:"sortby"`
+	Cmd         []string `toml:"cmd"`
 }
 
 // GistConfig is a struct of config for Gist
@@ -119,7 +119,9 @@ func (cfg *Config) Load(file string) error {
 
 // GetDefaultConfigDir returns the default config directory
 func GetDefaultConfigDir() (dir string, err error) {
-	if runtime.GOOS == "windows" {
+	if env, ok := os.LookupEnv("PET_CONFIG_DIR"); ok {
+		dir = env
+	} else if runtime.GOOS == "windows" {
 		dir = os.Getenv("APPDATA")
 		if dir == "" {
 			dir = filepath.Join(os.Getenv("USERPROFILE"), "Application Data", "pet")
