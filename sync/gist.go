@@ -62,7 +62,7 @@ func (g GistClient) GetSnippet() (*Snippet, error) {
 
 	gist, res, err := g.Client.Gists.Get(context.Background(), g.ID)
 	if err != nil {
-		if res.StatusCode == 404 {
+		if res != nil && res.StatusCode == 404 {
 			return nil, errors.Wrapf(err, "No gist ID (%s)", g.ID)
 		}
 		return nil, errors.Wrapf(err, "Failed to get gist")

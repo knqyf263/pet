@@ -15,11 +15,11 @@ jobs:
           sudo apt-get -y update
           sudo apt-get -y install rpm
       - name: Setup Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 0
       - name: Release
