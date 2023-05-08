@@ -117,7 +117,9 @@ func (cfg *Config) Load(file string) error {
 
 // GetDefaultConfigDir returns the default config directory
 func GetDefaultConfigDir() (dir string, err error) {
-	if runtime.GOOS == "windows" {
+	if env, ok := os.LookupEnv("PET_CONFIG_DIR"); ok {
+		dir = env
+	} else if runtime.GOOS == "windows" {
 		dir = os.Getenv("APPDATA")
 		if dir == "" {
 			dir = filepath.Join(os.Getenv("USERPROFILE"), "Application Data", "pet")
@@ -126,7 +128,7 @@ func GetDefaultConfigDir() (dir string, err error) {
 	} else {
 		dir = filepath.Join(os.Getenv("HOME"), ".config", "pet")
 	}
-	if err := os.MkdirAll(dir, 0700); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", fmt.Errorf("cannot create directory: %v", err)
 	}
 	return dir, nil
