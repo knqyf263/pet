@@ -29,7 +29,7 @@ func insertParams(command string, params map[string]string) string {
 
 // SearchForParams returns variables from a command
 func SearchForParams(lines []string) map[string]string {
-	re := `<([\S].+?[\S])>`
+	re := `<(\w+?(?:=.+?)?)>`
 	if len(lines) == 1 {
 		r, _ := regexp.Compile(re)
 
