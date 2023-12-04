@@ -16,7 +16,7 @@ type Snippets struct {
 
 type SnippetInfo struct {
 	Description string   `toml:"description"`
-	Command     string   `toml:"command"`
+	Commands    []string `toml:"commands"`
 	Tag         []string `toml:"tag"`
 	Output      string   `toml:"output"`
 }
