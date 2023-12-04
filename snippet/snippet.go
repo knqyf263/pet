@@ -90,7 +90,7 @@ type ByCommand []SnippetInfo
 
 func (a ByCommand) Len() int           { return len(a) }
 func (a ByCommand) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByCommand) Less(i, j int) bool { return a[i].Command > a[j].Command }
+func (a ByCommand) Less(i, j int) bool { return len(a[i].Commands) > len(a[j].Commands) }
 
 type ByDescription []SnippetInfo
 
