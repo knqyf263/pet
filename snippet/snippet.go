@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 
 	"github.com/BurntSushi/toml"
@@ -43,6 +44,46 @@ func (snippets *Snippets) Save() error {
 		return fmt.Errorf("Failed to save snippet file. err: %s", err)
 	}
 	return toml.NewEncoder(f).Encode(snippets)
+}
+
+// Merge combines two slices of snippets together. If there is a duplicate, their commands and tags are merged as a set.
+func (snippets *Snippets) Merge(moreSnippets *Snippets) *Snippets {
+	// key our snippets by desc
+	groups := map[string]SnippetInfo{}
+
+	// add first group to map
+	for _, snippet := range snippets.Snippets {
+		groups[snippet.Description] = snippet
+	}
+
+	// add second group to map, handling duplicates
+	for _, snippet := range moreSnippets.Snippets {
+		// handle duplicate
+		if existing, ok := groups[snippet.Description]; ok {
+			// merge commands
+			for _, command := range snippet.Commands {
+				if !slices.Contains(existing.Commands, command) {
+					existing.Commands = append(existing.Commands, command)
+				}
+			}
+			// merge tags
+			for _, tag := range snippet.Tag {
+				if !slices.Contains(existing.Tag, tag) {
+					existing.Tag = append(existing.Tag, tag)
+				}
+			}
+		} else {
+			// snippet is new, merge cleanly
+			groups[snippet.Description] = snippet
+		}
+	}
+
+	var result Snippets
+	for _, s := range groups {
+		result.Snippets = append(result.Snippets, s)
+	}
+
+	return &result
 }
 
 // ToString returns the contents of toml file.
