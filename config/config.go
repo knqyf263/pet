@@ -65,6 +65,7 @@ type FlagConfig struct {
 	OneLine   bool
 	Color     bool
 	Tag       bool
+	Output    bool
 }
 
 // Load loads a config toml
@@ -106,7 +107,7 @@ func (cfg *Config) Load(file string) error {
 		}
 	}
 	cfg.General.Column = 40
-	cfg.General.SelectCmd = "fzf"
+	cfg.General.SelectCmd = "fzf --reverse --ansi"
 	cfg.General.Backend = "gist"
 
 	cfg.Gist.FileName = "pet-snippet.toml"

@@ -28,28 +28,25 @@ func insertParams(command string, params map[string]string) string {
 }
 
 // SearchForParams returns variables from a command
-func SearchForParams(lines []string) map[string]string {
+func SearchForParams(line string) map[string]string {
 	re := `<([\S].+?[\S])>`
-	if len(lines) == 1 {
-		r, _ := regexp.Compile(re)
+	r, _ := regexp.Compile(re)
 
-		params := r.FindAllStringSubmatch(lines[0], -1)
-		if len(params) == 0 {
-			return nil
-		}
-
-		extracted := map[string]string{}
-		for _, p := range params {
-			splitted := strings.Split(p[1], "=")
-			if len(splitted) == 1 {
-				extracted[p[0]] = ""
-			} else {
-				extracted[p[0]] = splitted[1]
-			}
-		}
-		return extracted
+	params := r.FindAllStringSubmatch(line, -1)
+	if len(params) == 0 {
+		return nil
 	}
-	return nil
+
+	extracted := map[string]string{}
+	for _, p := range params {
+		splitted := strings.Split(p[1], "=")
+		if len(splitted) == 1 {
+			extracted[p[0]] = ""
+		} else {
+			extracted[p[0]] = splitted[1]
+		}
+	}
+	return extracted
 }
 
 func evaluateParams(g *gocui.Gui, _ *gocui.View) error {

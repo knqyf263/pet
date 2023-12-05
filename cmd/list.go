@@ -57,7 +57,7 @@ func list(cmd *cobra.Command, args []string) error {
 		//	}
 		//} else {
 		//}
-		fmt.Fprintf(color.Output, "%12s \n", color.YellowString("    Commands:"))
+		fmt.Fprintf(color.Output, "%12s \n", color.YellowString("Example Commands:"))
 		for _, command := range snippet.Commands {
 			//fmt.Fprintf(color.Output, "%12s %s\n", color.YellowString("    Commands:"), command)
 			fmt.Println("    ", command)
@@ -65,12 +65,12 @@ func list(cmd *cobra.Command, args []string) error {
 		if snippet.Tag != nil {
 			tag := strings.Join(snippet.Tag, " ")
 			fmt.Fprintf(color.Output, "%12s %s\n",
-				color.CyanString("        Tag:"), tag)
+				color.CyanString("Tag:"), tag)
 		}
 		if snippet.Output != "" {
 			output := strings.Replace(snippet.Output, "\n", "\n             ", -1)
 			fmt.Fprintf(color.Output, "%12s %s\n",
-				color.RedString("     Output:"), output)
+				color.RedString("Output:"), output)
 		}
 		fmt.Println(strings.Repeat("-", 30))
 	}

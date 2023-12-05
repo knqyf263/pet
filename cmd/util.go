@@ -54,32 +54,48 @@ func filter(options []string, tag string) (commands []string, err error) {
 		snippets = filteredSnippets
 	}
 
-	snippetTexts := map[string]snippet.SnippetInfo{}
+	// This is a map of section headings to snippet, so that if a heading is picked, we can use the first command as the default
+	snippetHeadings := map[string]snippet.SnippetInfo{}
+	// This is a map of formatted commands to original commands, so that we can format them however we want
+	commandTexts := map[string]string{}
 	var text string
 	for _, s := range snippets.Snippets {
-		commands := s.Commands
-		for _, command := range s.Commands {
+		var sectionHeader string
+		formattedCommands := make([]string, 0)
+		// format commands
+		for i, command := range s.Commands {
 			if strings.ContainsAny(command, "\n") {
 				command = strings.Replace(command, "\n", "\\n", -1)
 			}
+			command = fmt.Sprintf("$ %s", command)
+			formattedCommands = append(formattedCommands, command)
+			commandTexts[command] = s.Commands[i]
 		}
 
-		// Commands should be printed out on a new line
-		t := fmt.Sprintf("[%s]: %s", s.Description, strings.Join(commands, "\n"))
-
+		// format tags
 		tags := ""
 		for _, tag := range s.Tag {
 			tags += fmt.Sprintf(" #%s", tag)
 		}
-		t += tags
 
-		snippetTexts[t] = s
-		// TODO we probably need to fix how we list snippets that have multiple commands
+		// section heading
+		headerKey := fmt.Sprintf("[%s] %s", s.Description, tags)
 		if config.Flag.Color {
-			t = fmt.Sprintf("[%s]: %s%s",
-				color.RedString(s.Description), commands, color.BlueString(tags))
+			sectionHeader = fmt.Sprintf("[%s] %s", color.RedString(s.Description), color.BlueString(tags))
+		} else {
+			sectionHeader = headerKey
 		}
-		text += t + "\n"
+		// associate the top-level description with a snippet so we can default to the first option if picked
+		// clip in fzf always copies the plaintext version, so we need to store the non-color version as our key
+		// TODO see if we can make this more robust with other fuzzy searches
+		snippetHeadings[headerKey] = s
+		if len(text) > 0 {
+			text += "\n"
+		}
+		text += fmt.Sprintf("%s\n", sectionHeader)
+
+		// add the commands
+		text += strings.Join(formattedCommands, "\n")
 	}
 
 	var buf bytes.Buffer
@@ -92,17 +108,29 @@ func filter(options []string, tag string) (commands []string, err error) {
 
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
 
-	params := dialog.SearchForParams(lines)
-	if params != nil {
-		snippetInfo := snippetTexts[lines[0]]
-		dialog.CurrentCommand = snippetInfo.Commands[0] // TODO - does this need to be fixed?
-		dialog.GenerateParamsLayout(params, dialog.CurrentCommand)
-		res := []string{dialog.FinalCommand}
-		return res, nil
-	}
 	for _, line := range lines {
-		snippetInfo := snippetTexts[line]
-		commands = append(commands, fmt.Sprint(snippetInfo.Commands))
+		var command string
+		// first see if they selected a snippet heading
+		if snippetInfo, ok := snippetHeadings[line]; ok {
+			// default to first command
+			command = fmt.Sprint(snippetInfo.Commands[0])
+		} else if snippetText, ok := commandTexts[line]; ok {
+			command = fmt.Sprint(snippetText)
+		} else {
+			fmt.Fprintf(color.Output, "\n%s: %s\n", color.HiRedString("unable to select command: "), line)
+			continue
+		}
+
+		// extract params from the original command
+		params := dialog.SearchForParams(command)
+		if params != nil {
+			dialog.CurrentCommand = command
+			dialog.GenerateParamsLayout(params, dialog.CurrentCommand)
+			res := []string{dialog.FinalCommand}
+			return res, nil
+		}
+
+		commands = append(commands, command)
 	}
 	return commands, nil
 }
