@@ -47,4 +47,6 @@ func init() {
 		`Use delim as the command delimiter character`)
 	clipCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
 		`Filter tag`)
+	clipCmd.Flags().BoolVarP(&config.Flag.Color, "color", "", false,
+		`Enable colorized output (only fzf) (not working)`)
 }
