@@ -70,6 +70,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 	var command string
 	var description string
 	var tags []string
+	var output string
 
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
@@ -98,18 +99,26 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		tags = strings.Fields(t)
 	}
 
+	if config.Flag.Output {
+		var o string
+		if o, err = scan(color.RedString("Output> ")); err != nil {
+			return err
+		}
+		output = o
+	}
+
 	snippetExists := false
 	var newSnippets snippet.Snippets
 	for _, s := range snippets.Snippets {
 		// if the description matches an existing one, merge it into the existing one
 		if s.Description == description {
 			snippetExists = true
+			fmt.Fprintf(color.Output, "%s\"%s\"\n", color.HiGreenString("Merging with existing snippet: "), description)
 			// if the description and command already exist, then return an error
 			if slices.Contains(s.Commands, command) {
 				return fmt.Errorf("snippet already exists with that description and command")
 			}
 			s.Commands = append(s.Commands, command)
-			fmt.Printf("%+v\n", s.Commands)
 
 			// add any new tags to the set of tags
 			for _, tag := range tags {
@@ -117,20 +126,26 @@ func new(cmd *cobra.Command, args []string) (err error) {
 					s.Tag = append(s.Tag, tag)
 				}
 			}
+
+			// overwrite the output if there isn't one
+			if s.Output == "" {
+				s.Output = output
+			} else {
+				fmt.Fprintf(color.Output, "%s\n", color.HiRedString("'Output' is already set on the snippet, ignoring."))
+			}
 		}
 
 		newSnippets.Snippets = append(newSnippets.Snippets, s)
 	}
 
-	fmt.Printf("%+v\n", snippets)
-
 	// if we didnt match an existing snippet, then create a new one
 	if !snippetExists {
-		fmt.Println("creating new snippet")
+		fmt.Fprintf(color.Output, "%s\n", color.HiGreenString("Creating new snippet..."))
 		newSnippet := snippet.SnippetInfo{
 			Description: description,
 			Commands:    []string{command},
 			Tag:         tags,
+			Output:      output,
 		}
 		newSnippets.Snippets = append(newSnippets.Snippets, newSnippet)
 	}
@@ -138,6 +153,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 	if err = newSnippets.Save(); err != nil {
 		return err
 	}
+	fmt.Fprintf(color.Output, "%s\n", color.HiGreenString("Success!"))
 
 	snippetFile := config.Conf.General.SnippetFile
 	if config.Conf.Gist.AutoSync {
@@ -151,4 +167,6 @@ func init() {
 	RootCmd.AddCommand(newCmd)
 	newCmd.Flags().BoolVarP(&config.Flag.Tag, "tag", "t", false,
 		`Display tag prompt (delimiter: space)`)
+	newCmd.Flags().BoolVarP(&config.Flag.Output, "output", "o", false,
+		`Display output prompt`)
 }

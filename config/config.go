@@ -65,6 +65,7 @@ type FlagConfig struct {
 	OneLine   bool
 	Color     bool
 	Tag       bool
+	Output    bool
 }
 
 // Load loads a config toml
