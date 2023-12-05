@@ -67,7 +67,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 			if strings.ContainsAny(command, "\n") {
 				command = strings.Replace(command, "\n", "\\n", -1)
 			}
-			command = fmt.Sprintf(" $ %s", command)
+			command = fmt.Sprintf("$ %s", command)
 			formattedCommands = append(formattedCommands, command)
 			commandTexts[command] = s.Commands[i]
 		}
@@ -108,24 +108,29 @@ func filter(options []string, tag string) (commands []string, err error) {
 
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
 
-	params := dialog.SearchForParams(lines)
-	if params != nil {
-		snippetInfo := snippetHeadings[lines[0]]
-		dialog.CurrentCommand = snippetInfo.Commands[0] // TODO - does this need to be fixed?
-		dialog.GenerateParamsLayout(params, dialog.CurrentCommand)
-		res := []string{dialog.FinalCommand}
-		return res, nil
-	}
 	for _, line := range lines {
+		var command string
 		// first see if they selected a snippet heading
 		if snippetInfo, ok := snippetHeadings[line]; ok {
 			// default to first command
-			commands = append(commands, fmt.Sprint(snippetInfo.Commands[0]))
+			command = fmt.Sprint(snippetInfo.Commands[0])
 		} else if snippetText, ok := commandTexts[line]; ok {
-			commands = append(commands, fmt.Sprint(snippetText))
+			command = fmt.Sprint(snippetText)
 		} else {
 			fmt.Fprintf(color.Output, "\n%s: %s\n", color.HiRedString("unable to select command: "), line)
+			continue
 		}
+
+		// extract params from the original command
+		params := dialog.SearchForParams(command)
+		if params != nil {
+			dialog.CurrentCommand = command
+			dialog.GenerateParamsLayout(params, dialog.CurrentCommand)
+			res := []string{dialog.FinalCommand}
+			return res, nil
+		}
+
+		commands = append(commands, command)
 	}
 	return commands, nil
 }
