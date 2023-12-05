@@ -55,12 +55,12 @@ func filter(options []string, tag string) (commands []string, err error) {
 	}
 
 	// This is a map of section headings to snippet, so that if a heading is picked, we can use the first command as the default
-	snippetSections := map[string]snippet.SnippetInfo{}
+	snippetHeadings := map[string]snippet.SnippetInfo{}
 	// This is a map of formatted commands to original commands, so that we can format them however we want
 	commandTexts := map[string]string{}
 	var text string
 	for _, s := range snippets.Snippets {
-		sectionHeader := ""
+		var sectionHeader string
 		formattedCommands := make([]string, 0)
 		// format commands
 		for i, command := range s.Commands {
@@ -79,18 +79,20 @@ func filter(options []string, tag string) (commands []string, err error) {
 		}
 
 		// section heading
+		headerKey := fmt.Sprintf("[%s] %s", s.Description, tags)
 		if config.Flag.Color {
-			sectionHeader += fmt.Sprintf("[%s] %s\n", color.RedString(s.Description), color.BlueString(tags))
+			sectionHeader = fmt.Sprintf("[%s] %s", color.RedString(s.Description), color.BlueString(tags))
 		} else {
-			sectionHeader += fmt.Sprintf("[%s] %s\n", s.Description, tags)
+			sectionHeader = headerKey
 		}
-
 		// associate the top-level description with a snippet so we can default to the first option if picked
-		snippetSections[sectionHeader] = s
+		// clip in fzf always copies the plaintext version, so we need to store the non-color version as our key
+		// TODO see if we can make this more robust with other fuzzy searches
+		snippetHeadings[headerKey] = s
 		if len(text) > 0 {
 			text += "\n"
 		}
-		text += sectionHeader
+		text += fmt.Sprintf("%s\n", sectionHeader)
 
 		// add the commands
 		text += strings.Join(formattedCommands, "\n")
@@ -108,15 +110,22 @@ func filter(options []string, tag string) (commands []string, err error) {
 
 	params := dialog.SearchForParams(lines)
 	if params != nil {
-		snippetInfo := snippetSections[lines[0]]
+		snippetInfo := snippetHeadings[lines[0]]
 		dialog.CurrentCommand = snippetInfo.Commands[0] // TODO - does this need to be fixed?
 		dialog.GenerateParamsLayout(params, dialog.CurrentCommand)
 		res := []string{dialog.FinalCommand}
 		return res, nil
 	}
 	for _, line := range lines {
-		snippetInfo := snippetSections[line]
-		commands = append(commands, fmt.Sprint(snippetInfo.Commands))
+		// first see if they selected a snippet heading
+		if snippetInfo, ok := snippetHeadings[line]; ok {
+			// default to first command
+			commands = append(commands, fmt.Sprint(snippetInfo.Commands[0]))
+		} else if snippetText, ok := commandTexts[line]; ok {
+			commands = append(commands, fmt.Sprint(snippetText))
+		} else {
+			fmt.Fprintf(color.Output, "\n%s: %s\n", color.HiRedString("unable to select command: "), line)
+		}
 	}
 	return commands, nil
 }
