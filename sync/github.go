@@ -89,6 +89,7 @@ func (g GithubClient) UploadSnippet(content string) error {
 	return nil
 }
 
+/**
 func (g GithubClient) createGist(ctx context.Context, gist *github.Gist) (gistID *string, err error) {
 	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 	s.Start()
@@ -103,7 +104,6 @@ func (g GithubClient) createGist(ctx context.Context, gist *github.Gist) (gistID
 }
 
 func (g GithubClient) updateGist(ctx context.Context, gist *github.Gist) (err error) {
-	/**
 	s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 	s.Start()
 	s.Suffix = " Updating Gist..."
@@ -112,7 +112,6 @@ func (g GithubClient) updateGist(ctx context.Context, gist *github.Gist) (err er
 	if _, _, err = g.Client.Gists.Edit(ctx, g.ID, gist); err != nil {
 		return errors.Wrap(err, "Failed to edit gist")
 	}
-
-	*/
 	return nil
 }
+*/
