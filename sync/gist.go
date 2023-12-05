@@ -3,18 +3,12 @@ package sync
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/briandowns/spinner"
 	"github.com/google/go-github/github"
 	"github.com/knqyf263/pet/config"
 	"github.com/pkg/errors"
-	"golang.org/x/oauth2"
-)
-
-const (
-	githubTokenEnvVariable = "PET_GITHUB_ACCESS_TOKEN"
 )
 
 // GistClient manages communication with Gist
@@ -25,7 +19,7 @@ type GistClient struct {
 
 // NewGistClient returns GistClient
 func NewGistClient() (Client, error) {
-	accessToken, err := getGithubAccessToken()
+	accessToken, err := getGithubGistAccessToken()
 	if err != nil {
 		return nil, fmt.Errorf(`access_token is empty.
 Go https://github.com/settings/tokens/new and create access_token (only need "gist" scope).
@@ -38,15 +32,6 @@ Write access_token in config file (pet configure) or export $%v.
 		ID:     config.Conf.Gist.GistID,
 	}
 	return client, nil
-}
-
-func getGithubAccessToken() (string, error) {
-	if config.Conf.Gist.AccessToken != "" {
-		return config.Conf.Gist.AccessToken, nil
-	} else if os.Getenv(githubTokenEnvVariable) != "" {
-		return os.Getenv(githubTokenEnvVariable), nil
-	}
-	return "", errors.New("Github AccessToken not found in any source")
 }
 
 // GetSnippet returns the remote snippet
@@ -134,13 +119,4 @@ func (g GistClient) updateGist(ctx context.Context, gist *github.Gist) (err erro
 		return errors.Wrap(err, "Failed to edit gist")
 	}
 	return nil
-}
-
-func githubClient(accessToken string) *github.Client {
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: accessToken},
-	)
-	tc := oauth2.NewClient(oauth2.NoContext, ts)
-	client := github.NewClient(tc)
-	return client
 }
