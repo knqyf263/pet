@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -97,19 +98,44 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		tags = strings.Fields(t)
 	}
 
+	snippetExists := false
+	var newSnippets snippet.Snippets
 	for _, s := range snippets.Snippets {
+		// if the description matches an existing one, merge it into the existing one
 		if s.Description == description {
-			return fmt.Errorf("Snippet [%s] already exists", description)
+			snippetExists = true
+			// if the description and command already exist, then return an error
+			if slices.Contains(s.Commands, command) {
+				return fmt.Errorf("snippet already exists with that description and command")
+			}
+			s.Commands = append(s.Commands, command)
+			fmt.Printf("%+v\n", s.Commands)
+
+			// add any new tags to the set of tags
+			for _, tag := range tags {
+				if !slices.Contains(s.Tag, tag) {
+					s.Tag = append(s.Tag, tag)
+				}
+			}
 		}
+
+		newSnippets.Snippets = append(newSnippets.Snippets, s)
 	}
 
-	newSnippet := snippet.SnippetInfo{
-		Description: description,
-		Command:     command,
-		Tag:         tags,
+	fmt.Printf("%+v\n", snippets)
+
+	// if we didnt match an existing snippet, then create a new one
+	if !snippetExists {
+		fmt.Println("creating new snippet")
+		newSnippet := snippet.SnippetInfo{
+			Description: description,
+			Commands:    []string{command},
+			Tag:         tags,
+		}
+		newSnippets.Snippets = append(newSnippets.Snippets, newSnippet)
 	}
-	snippets.Snippets = append(snippets.Snippets, newSnippet)
-	if err = snippets.Save(); err != nil {
+
+	if err = newSnippets.Save(); err != nil {
 		return err
 	}
 

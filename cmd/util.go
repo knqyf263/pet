@@ -42,7 +42,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 		return commands, fmt.Errorf("Load snippet failed: %v", err)
 	}
 
-	if 0 < len(tag) {
+	if len(tag) > 0 {
 		var filteredSnippets snippet.Snippets
 		for _, snippet := range snippets.Snippets {
 			for _, t := range snippet.Tag {
@@ -57,11 +57,15 @@ func filter(options []string, tag string) (commands []string, err error) {
 	snippetTexts := map[string]snippet.SnippetInfo{}
 	var text string
 	for _, s := range snippets.Snippets {
-		command := s.Command
-		if strings.ContainsAny(command, "\n") {
-			command = strings.Replace(command, "\n", "\\n", -1)
+		commands := s.Commands
+		for _, command := range s.Commands {
+			if strings.ContainsAny(command, "\n") {
+				command = strings.Replace(command, "\n", "\\n", -1)
+			}
 		}
-		t := fmt.Sprintf("[%s]: %s", s.Description, command)
+
+		// Commands should be printed out on a new line
+		t := fmt.Sprintf("[%s]: %s", s.Description, strings.Join(commands, "\n"))
 
 		tags := ""
 		for _, tag := range s.Tag {
@@ -70,9 +74,10 @@ func filter(options []string, tag string) (commands []string, err error) {
 		t += tags
 
 		snippetTexts[t] = s
+		// TODO we probably need to fix how we list snippets that have multiple commands
 		if config.Flag.Color {
 			t = fmt.Sprintf("[%s]: %s%s",
-				color.RedString(s.Description), command, color.BlueString(tags))
+				color.RedString(s.Description), commands, color.BlueString(tags))
 		}
 		text += t + "\n"
 	}
@@ -90,14 +95,14 @@ func filter(options []string, tag string) (commands []string, err error) {
 	params := dialog.SearchForParams(lines)
 	if params != nil {
 		snippetInfo := snippetTexts[lines[0]]
-		dialog.CurrentCommand = snippetInfo.Command
+		dialog.CurrentCommand = snippetInfo.Commands[0] // TODO - does this need to be fixed?
 		dialog.GenerateParamsLayout(params, dialog.CurrentCommand)
 		res := []string{dialog.FinalCommand}
 		return res, nil
 	}
 	for _, line := range lines {
 		snippetInfo := snippetTexts[line]
-		commands = append(commands, fmt.Sprint(snippetInfo.Command))
+		commands = append(commands, fmt.Sprint(snippetInfo.Commands))
 	}
 	return commands, nil
 }
