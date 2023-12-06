@@ -348,8 +348,8 @@ After setting, you can upload snippets to your Github repository.
 **NOTE:** As of this moment, the snippet tool is not able to create the file in the repository, so it need to be created (empty) before the first sync. 
 
 Set `file_name`, `repo_owner`, `repo_name` in `[Giuthub]` configuration. The `file_name` can contain a folder if you need to.
-
-
+At last, switch the backend under [General] to backend = "github".
+The behaviour when using `pet sync` is the same as the other implementations.
 
 ### GitLab Snippets
 You must obtain access token.
