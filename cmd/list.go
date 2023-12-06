@@ -60,12 +60,16 @@ func list(cmd *cobra.Command, args []string) error {
 		fmt.Fprintf(color.Output, "%12s \n", color.YellowString("Example Commands:"))
 		for _, command := range snippet.Commands {
 			//fmt.Fprintf(color.Output, "%12s %s\n", color.YellowString("    Commands:"), command)
-			fmt.Println("    ", command)
+			fmt.Println("$", command)
 		}
-		if snippet.Tag != nil {
-			tag := strings.Join(snippet.Tag, " ")
+		if snippet.Tags != nil {
+			tags := ""
+			for _, tag := range snippet.Tags {
+				tags += fmt.Sprintf(" #%s", tag)
+			}
+			tags = strings.TrimSpace(tags)
 			fmt.Fprintf(color.Output, "%12s %s\n",
-				color.CyanString("Tag:"), tag)
+				color.CyanString("Tags:"), tags)
 		}
 		if snippet.Output != "" {
 			output := strings.Replace(snippet.Output, "\n", "\n             ", -1)

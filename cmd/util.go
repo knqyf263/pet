@@ -45,7 +45,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 	if len(tag) > 0 {
 		var filteredSnippets snippet.Snippets
 		for _, snippet := range snippets.Snippets {
-			for _, t := range snippet.Tag {
+			for _, t := range snippet.Tags {
 				if tag == t {
 					filteredSnippets.Snippets = append(filteredSnippets.Snippets, snippet)
 				}
@@ -74,9 +74,10 @@ func filter(options []string, tag string) (commands []string, err error) {
 
 		// format tags
 		tags := ""
-		for _, tag := range s.Tag {
+		for _, tag := range s.Tags {
 			tags += fmt.Sprintf(" #%s", tag)
 		}
+		tags = strings.TrimSpace(tags)
 
 		// section heading
 		headerKey := fmt.Sprintf("[%s] %s", s.Description, tags)
@@ -96,6 +97,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 
 		// add the commands
 		text += strings.Join(formattedCommands, "\n")
+		text += "\n"
 	}
 
 	var buf bytes.Buffer
@@ -109,6 +111,11 @@ func filter(options []string, tag string) (commands []string, err error) {
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
 
 	for _, line := range lines {
+		// discard empty lines
+		if len(strings.TrimSpace(line)) == 0 {
+			continue
+		}
+
 		var command string
 		// first see if they selected a snippet heading
 		if snippetInfo, ok := snippetHeadings[line]; ok {

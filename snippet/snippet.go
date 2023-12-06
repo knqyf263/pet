@@ -18,7 +18,7 @@ type Snippets struct {
 type SnippetInfo struct {
 	Description string   `toml:"description"`
 	Commands    []string `toml:"commands"`
-	Tag         []string `toml:"tag"`
+	Tags        []string `toml:"tag"`
 	Output      string   `toml:"output"`
 }
 
@@ -67,9 +67,9 @@ func (snippets *Snippets) Merge(moreSnippets *Snippets) *Snippets {
 				}
 			}
 			// merge tags
-			for _, tag := range snippet.Tag {
-				if !slices.Contains(existing.Tag, tag) {
-					existing.Tag = append(existing.Tag, tag)
+			for _, tag := range snippet.Tags {
+				if !slices.Contains(existing.Tags, tag) {
+					existing.Tags = append(existing.Tags, tag)
 				}
 			}
 		} else {
