@@ -93,7 +93,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 	if config.Flag.Tag {
 		var t string
-		if t, err = scan(color.CyanString("Tag> ")); err != nil {
+		if t, err = scan(color.CyanString("Tags (space-delimited)> ")); err != nil {
 			return err
 		}
 		tags = strings.Fields(t)
@@ -122,8 +122,8 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 			// add any new tags to the set of tags
 			for _, tag := range tags {
-				if !slices.Contains(s.Tag, tag) {
-					s.Tag = append(s.Tag, tag)
+				if !slices.Contains(s.Tags, tag) {
+					s.Tags = append(s.Tags, tag)
 				}
 			}
 
@@ -144,7 +144,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		newSnippet := snippet.SnippetInfo{
 			Description: description,
 			Commands:    []string{command},
-			Tag:         tags,
+			Tags:        tags,
 			Output:      output,
 		}
 		newSnippets.Snippets = append(newSnippets.Snippets, newSnippet)
