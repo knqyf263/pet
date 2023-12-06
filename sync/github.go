@@ -118,7 +118,7 @@ func getShaForFile(fileName string, owner string, repoName string, g GithubClien
 
 func getGithubAccessToken() (string, error) {
 	if config.Conf.GitHub.AccessToken != "" {
-		return config.Conf.Gist.AccessToken, nil
+		return config.Conf.GitHub.AccessToken, nil
 	} else if os.Getenv(githubTokenEnvVariable) != "" {
 		return os.Getenv(githubTokenEnvVariable), nil
 	}
