@@ -3,6 +3,7 @@ package sync
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -76,7 +77,7 @@ func (g GistClient) UploadSnippet(content string) error {
 		Description: github.String("description"),
 		Public:      github.Bool(config.Conf.Gist.Public),
 		Files: map[github.GistFilename]github.GistFile{
-			github.GistFilename(config.Conf.Gist.FileName): github.GistFile{
+			github.GistFilename(config.Conf.Gist.FileName): {
 				Content: github.String(content),
 			},
 		},
@@ -119,4 +120,13 @@ func (g GistClient) updateGist(ctx context.Context, gist *github.Gist) (err erro
 		return errors.Wrap(err, "Failed to edit gist")
 	}
 	return nil
+}
+
+func getGithubGistAccessToken() (string, error) {
+	if config.Conf.Gist.AccessToken != "" {
+		return config.Conf.Gist.AccessToken, nil
+	} else if os.Getenv(githubTokenEnvVariable) != "" {
+		return os.Getenv(githubTokenEnvVariable), nil
+	}
+	return "", errors.New("Github AccessToken not found in any source")
 }

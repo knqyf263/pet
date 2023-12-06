@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/knqyf263/pet/config"
+	"os"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -89,4 +90,13 @@ func getShaForFile(fileName string, owner string, repoName string, g GithubClien
 		}
 	}
 	return sha
+}
+
+func getGithubAccessToken() (string, error) {
+	if config.Conf.GitHub.AccessToken != "" {
+		return config.Conf.Gist.AccessToken, nil
+	} else if os.Getenv(githubTokenEnvVariable) != "" {
+		return os.Getenv(githubTokenEnvVariable), nil
+	}
+	return "", errors.New("Github AccessToken not found in any source")
 }
