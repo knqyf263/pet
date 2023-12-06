@@ -19,6 +19,7 @@ type Config struct {
 	General GeneralConfig `toml:"General"`
 	Gist    GistConfig    `toml:"Gist"`
 	GitLab  GitLabConfig  `toml:"GitLab"`
+	GitHub  GithubConfig  `toml:"Github"`
 }
 
 // GeneralConfig is a struct of general config
@@ -50,6 +51,14 @@ type GitLabConfig struct {
 	Visibility  string `toml:"visibility"`
 	AutoSync    bool   `toml:"auto_sync"`
 	Insecure    bool   `toml:"skip_ssl"`
+}
+
+type GithubConfig struct {
+	FileName    string `toml:"file_name"`
+	AccessToken string `toml:"access_token"`
+	RepoOwner   string `toml:"repo_owner"`
+	RepoName    string `toml:"repo_name"`
+	AutoSync    bool   `toml:"auto_sync"`
 }
 
 // Flag is global flag variable

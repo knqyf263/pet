@@ -243,6 +243,13 @@ Run `pet configure`
   visibility = "private"          # public or internal or private
   auto_sync = false               # sync automatically when editing snippets
 
+[Github]
+  file_name = "pet-snippet.toml"  # specify GitLab Snippets file name
+  repo_owner = ""                 # specify the owner of the repo
+  repo_name = ""                  # specify the repo name to store the configuration
+  access_token = "XXXXXXXXXXXXX"  # your access token
+  auto_sync = false               # sync automatically when editing snippets
+
 ```
 
 ## Selector option
@@ -329,6 +336,20 @@ Upload success
 ```
 
 *Note: `-u` option is deprecated*
+
+
+### Github repository
+You must obtain access token.
+Go https://github.com/settings/tokens/new and create access token (only need "repo" scope).
+Set that to `access_token` in `[Github]` or use an environment variable with the name `$PET_GITHUB_ACCESS_TOKEN`.
+
+After setting, you can upload snippets to your Github repository.
+
+**NOTE:** As of this moment, the snippet tool is not able to create the file in the repository, so it need to be created (empty) before the first sync. 
+
+Set `file_name`, `repo_owner`, `repo_name` in `[Giuthub]` configuration. The `file_name` can contain a folder if you need to.
+At last, switch the backend under [General] to backend = "github".
+The behaviour when using `pet sync` is the same as the other implementations.
 
 ### GitLab Snippets
 You must obtain access token.
