@@ -1,6 +1,7 @@
 package sync
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/knqyf263/pet/config"
@@ -41,14 +42,19 @@ func (g GithubClient) GetSnippet() (*Snippet, error) {
 	defer s.Stop()
 
 	ghConfig := config.Conf.GitHub
-	fileContent, _, resp, err := g.Client.Repositories.GetContents(context.Background(), ghConfig.RepoOwner, ghConfig.RepoName, ghConfig.FileName, nil)
+	content, err := g.Client.Repositories.DownloadContents(context.Background(), ghConfig.RepoOwner, ghConfig.RepoName, ghConfig.FileName, nil)
 	if err != nil {
-		fmt.Printf("Error from Github: %s", resp.Status)
 		return nil, errors.Wrapf(err, "Failed to get repo")
 	}
 
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(content)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed read github response")
+	}
+
 	return &Snippet{
-		Content: *(fileContent.Content),
+		Content: buf.String(),
 	}, nil
 }
 
