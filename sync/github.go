@@ -41,21 +41,39 @@ func (g GithubClient) GetSnippet() (*Snippet, error) {
 	s.Suffix = " Getting configuration from Github..."
 	defer s.Stop()
 
+	// get file content
 	ghConfig := config.Conf.GitHub
 	content, err := g.Client.Repositories.DownloadContents(context.Background(), ghConfig.RepoOwner, ghConfig.RepoName, ghConfig.FileName, nil)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get repo")
 	}
 
+	//
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(content)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed read github response")
 	}
 
+	//
+	updatedAt, err := getFileUpdatedAt(ghConfig, g)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Snippet{
-		Content: buf.String(),
+		Content:   buf.String(),
+		UpdatedAt: updatedAt,
 	}, nil
+}
+
+func getFileUpdatedAt(ghConfig config.GithubConfig, g GithubClient) (time.Time, error) {
+	opts := &github.CommitsListOptions{Path: ghConfig.FileName}
+	commits, _, err := g.Client.Repositories.ListCommits(context.Background(), ghConfig.RepoOwner, ghConfig.RepoName, opts)
+	if err != nil {
+		return time.Time{}, errors.Wrapf(err, "Failed to get file commits info")
+	}
+	return commits[0].Commit.Author.GetDate(), nil
 }
 
 // UploadSnippet uploads local snippets to Github
