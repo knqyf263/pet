@@ -68,12 +68,14 @@ func NewSyncClient() (Client, error) {
 			return nil, errors.Wrap(err, "Failed to initialize Github client")
 		}
 		return client, nil
+	} else if config.Conf.General.Backend == "github" {
+		client, err := NewGistClient()
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to initialize Gist client")
+		}
+		return client, nil
 	}
-	client, err := NewGistClient()
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to initialize Gist client")
-	}
-	return client, nil
+	return NewEmptyBackend(), nil
 }
 
 func upload(client Client) (err error) {
@@ -114,4 +116,21 @@ func download(content string) error {
 
 	fmt.Println("Download success")
 	return os.WriteFile(snippetFile, []byte(content), os.ModePerm)
+}
+
+// NewEmptyBackend returns a new instance of EmptyBackend
+func NewEmptyBackend() Client {
+	return EmptyBackend{}
+}
+
+// EmptyBackend Default backend when no other is configured. This will allow skipping the sync if no backend is configured.
+type EmptyBackend struct{}
+
+func (e EmptyBackend) GetSnippet() (*Snippet, error) {
+	fmt.Println("No backend is configured, skipping sync")
+	return &Snippet{}, nil
+}
+
+func (e EmptyBackend) UploadSnippet(_ string) error {
+	return nil
 }
