@@ -9,7 +9,9 @@ Simple command-line snippet manager, written in Go
 
 <img src="doc/pet01.gif" width="700">
 
-You can use variables (`<param>` or `<param=default_value>` ) in snippets.
+You can use variables (`<param>` or `<param=default_value>` or `<param=default_value|other_default_value>`) in snippets.
+ArrowDown/ArrowUp are used to switch through all default `params`.
+Ctrl-k will clear the `param` selection.
 
 <img src="doc/pet08.gif" width="700">
 
