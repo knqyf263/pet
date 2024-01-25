@@ -3,20 +3,57 @@ package dialog
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/jroimartin/gocui"
 )
 
-func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
+func generateView(g *gocui.Gui, desc string, defaultParams []string, coords []int, editable bool) error {
 	if StringInSlice(desc, views) {
 		return nil
 	}
+
+	currentOpt := 0
+	maxOpt := len(defaultParams)
+
 	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3]); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		fmt.Fprint(v, fill)
+		g.SetKeybinding(v.Name(), gocui.KeyArrowDown, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+			if maxOpt == 0 {
+				return nil
+			}
+			next := currentOpt + 1
+			if next >= maxOpt {
+				next = currentOpt
+			}
+			v.Clear()
+			fmt.Fprint(v, defaultParams[next])
+			currentOpt = next
+			return nil
+		})
+		g.SetKeybinding(v.Name(), gocui.KeyArrowUp, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+			if maxOpt == 0 {
+				return nil
+			}
+			prev := currentOpt - 1
+			if prev < 0 {
+				prev = currentOpt
+			}
+			v.Clear()
+			fmt.Fprint(v, defaultParams[prev])
+			currentOpt = prev
+			return nil
+		})
+		g.SetKeybinding(v.Name(), gocui.KeyCtrlK, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+			v.Clear()
+			return nil
+		})
+
+		fmt.Fprint(v, defaultParams[currentOpt])
 	}
+
 	view, _ := g.View(desc)
 	view.Title = desc
 	view.Wrap = false
@@ -45,10 +82,11 @@ func GenerateParamsLayout(params map[string]string, command string) {
 
 	maxX, maxY := g.Size()
 	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
-		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
+		[]string{command}, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
 	idx := 0
 	for k, v := range params {
-		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
+		defaultParams := strings.Split(v, "|")
+		generateView(g, k, defaultParams, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
 			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
 		idx++
 	}
