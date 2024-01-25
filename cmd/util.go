@@ -6,9 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
-	"syscall"
 
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
@@ -26,9 +24,6 @@ func run(command string, r io.Reader, w io.Writer) error {
 	if len(config.Conf.General.Cmd) > 0 {
 		line := append(config.Conf.General.Cmd, command)
 		cmd = exec.Command(line[0], line[1:]...)
-	} else if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd.exe")
-		cmd.SysProcAttr = &syscall.SysProcAttr{CmdLine: fmt.Sprintf("/c \"%s\"", command)}
 	} else {
 		cmd = exec.Command("sh", "-c", command)
 	}
