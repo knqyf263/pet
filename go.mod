@@ -27,6 +27,7 @@ require (
 
 require (
 	github.com/alessio/shellescape v1.4.1 // indirect
+	github.com/go-test/deep v1.1.0 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
