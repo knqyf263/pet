@@ -29,7 +29,7 @@ func insertParams(command string, params map[string]string) string {
 
 // SearchForParams returns variables from a command
 func SearchForParams(lines []string) map[string]string {
-	re := `<([\S].+?[\S])>`
+	re := `<([\S]+?)>`
 	if len(lines) == 1 {
 		r, _ := regexp.Compile(re)
 
@@ -41,10 +41,14 @@ func SearchForParams(lines []string) map[string]string {
 		extracted := map[string]string{}
 		for _, p := range params {
 			splitted := strings.Split(p[1], "=")
-			if len(splitted) == 1 {
-				extracted[p[0]] = ""
-			} else {
-				extracted[p[0]] = splitted[1]
+			key := splitted[0]
+			_, param_exists := extracted[key]
+
+			// Set to empty if no value is provided and param is not already set
+			if len(splitted) == 1 && !param_exists {
+				extracted[key] = ""
+			} else if len(splitted) > 1 {
+				extracted[key] = splitted[1]
 			}
 		}
 		return extracted
