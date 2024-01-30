@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/awesome-gocui/gocui"
+	"github.com/jroimartin/gocui"
 )
 
-func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
+func generateView(g *gocui.Gui, desc string, fill []string, coords []int, editable bool) error {
 	if StringInSlice(desc, views) {
 		return nil
 	}
-	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3], 0); err != nil {
+	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3]); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		fmt.Fprint(v, fill)
+		fmt.Fprint(v, fill[0])
 	}
 	view, _ := g.View(desc)
 	view.Title = desc
@@ -24,14 +24,17 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	view.Editable = editable
 
 	views = append(views, desc)
+
+	vOptions = append(vOptions, &viewOptions{desc, fill, 0})
+
 	idxView++
 
 	return nil
 }
 
 // GenerateParamsLayout generates CUI to receive params
-func GenerateParamsLayout(params map[string]string, command string) {
-	g, err := gocui.NewGui(gocui.OutputNormal, false)
+func GenerateParamsLayout(params map[string][]string, command string) {
+	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -45,11 +48,19 @@ func GenerateParamsLayout(params map[string]string, command string) {
 
 	maxX, maxY := g.Size()
 	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
-		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
+		[]string{command}, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
 	idx := 0
 	for k, v := range params {
-		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
-			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
+		if len(v) > 1 {
+			k = k + " (...)"
+		}
+
+		generateView(g, k, v,
+			[]int{maxX / 10,
+				(maxY / 4) + (idx+1)*layoutStep,
+				(maxX / 2) + (maxX / 3),
+				(maxY / 4) + 2 + (idx+1)*layoutStep},
+			true)
 		idx++
 	}
 
@@ -94,6 +105,52 @@ func initKeybindings(g *gocui.Gui) error {
 		}); err != nil {
 		return err
 	}
+
+	if err := g.SetKeybinding("", gocui.KeyArrowUp, gocui.ModNone, updateOptionInViewUp); err != nil {
+		return err
+	}
+
+	if err := g.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, updateOptionInViewDown); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func updateOptionInViewUp(g *gocui.Gui, _ *gocui.View) error {
+	// currentViewOption
+	cvo := vOptions[curView]
+	if len(cvo.options) < 2 {
+		return nil
+	}
+
+	cvo.current++
+	if cvo.current > len(cvo.options)-1 {
+		cvo.current = 0
+	}
+
+	view, _ := g.View(views[curView])
+	view.Clear()
+	view.Write([]byte(cvo.options[cvo.current]))
+	return nil
+}
+
+func updateOptionInViewDown(g *gocui.Gui, _ *gocui.View) error {
+	// currentViewOption
+	cvo := vOptions[curView]
+
+	if len(cvo.options) < 2 {
+		return nil
+	}
+
+	cvo.current--
+	if cvo.current < 0 {
+		cvo.current = len(cvo.options) - 1
+	}
+
+	view, _ := g.View(views[curView])
+	view.Clear()
+	view.Write([]byte(cvo.options[cvo.current]))
 	return nil
 }
 

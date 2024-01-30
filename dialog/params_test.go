@@ -7,11 +7,34 @@ import (
 )
 
 func TestSearchForParams(t *testing.T) {
-	command := "<a=1> <b> hello"
+	command := "<a=1> <b> hello <multi=aaa|bbb|ccc>"
 
-	params := map[string]string{
-		"a": "1",
-		"b": "",
+	params := map[string][]string{
+		"a":     []string{"1"},
+		"b":     []string{""},
+		"multi": []string{"aaa", "bbb", "ccc"},
+	}
+
+	got := SearchForParams([]string{command})
+
+	for key, value := range params {
+		if got[key] != value {
+			t.Fatalf("wanted param '%s' to equal '%s', got '%s'", key, value, got[key])
+		}
+	}
+
+	for key, value := range got {
+		if params[key] != value {
+			t.Fatalf("wanted param '%s' to equal '%s', got '%s'", key, value, got[key])
+		}
+	}
+}
+
+func TestSearchForParams_MultiOptions(t *testing.T) {
+	command := "<multi=aaa|bbb|ccc>"
+
+	params := map[string][]string{
+		"multi": []string{"aaa", "bbb", "ccc"},
 	}
 
 	got := SearchForParams([]string{command})
