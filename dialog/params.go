@@ -9,10 +9,8 @@ import (
 )
 
 var (
-	views = []string{}
-	// A list of original params before parsing. Will be useful to later when buiding the command
-	paramsList = []string{}
-	vOptions   = []*viewOptions{}
+	views      = []string{}
+	parameters = []*parameter{}
 	layoutStep = 3
 	curView    = -1
 	idxView    = 0
@@ -23,8 +21,9 @@ var (
 	FinalCommand string
 )
 
-type viewOptions struct {
-	viewName string
+type parameter struct {
+	original string
+	name     string
 	options  []string
 	current  int
 }
@@ -32,11 +31,8 @@ type viewOptions struct {
 func insertParams(command string, params map[string]string) string {
 	resultCommand := command
 	log.Println("in command ", command)
-	i := 0
-	for _, v := range params {
-		resultCommand = strings.Replace(resultCommand, paramsList[i], v, -1)
-		i++
-		// resultCommand = strings.Replace(resultCommand, "<"+k+">", v, -1)
+	for _, v := range parameters {
+		resultCommand = strings.Replace(resultCommand, v.original, params[v.name], -1)
 	}
 	log.Println("out command ", resultCommand)
 	return resultCommand
@@ -54,21 +50,33 @@ func SearchForParams(lines []string) map[string][]string {
 		}
 
 		extracted := map[string][]string{}
+
 		for _, p := range params {
 			splitted := strings.Split(p[1], "=")
 			key := splitted[0]
-			// Log the original parameter as we will need it when inserting paraemters
-			paramsList = append(paramsList, "<"+p[1]+">")
 
-			_, param_exists := extracted[key]
+			// _, param_exists := extracted[key]
 
 			// Set to empty if no value is provided and param is not already set
-			if len(splitted) == 1 && !param_exists {
-				extracted[key] = []string{""}
+			// if len(splitted) == 1 && !param_exists {
+			if len(splitted) == 1 {
+				p := &parameter{
+					original: "<" + p[1] + ">",
+					name:     key,
+					options:  []string{""},
+					current:  0,
+				}
+				parameters = append(parameters, p)
 			} else if len(splitted) > 1 {
 				// From a list of parameters (divided with "|", get all of them
 				pSplit := strings.Split(splitted[1], "|")
-				extracted[key] = append(extracted[key], pSplit...)
+				p := &parameter{
+					original: "<" + p[1] + ">",
+					name:     key,
+					options:  pSplit,
+					current:  0,
+				}
+				parameters = append(parameters, p)
 			}
 		}
 		return extracted
