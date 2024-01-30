@@ -229,8 +229,8 @@ If a command template has parameters surrounded by `<` and `>`, these parameters
 Each parameter can be defined with or without default value(s).
 
 Examples:
- * `<parameter>` - paramaeter without a default value
- * `<targetFolder=~/Downloads>` - paramaeter with a default value
+ * `<parameter>` - parameter without a default value
+ * `<targetFolder=~/Downloads>` - parameter with a default value
  * `<unit=bytes|kbytes|mbytes>` - list of default values. In the text field, change by pressing Up/Down keys.
 
 <img src="doc/pet09.gif" width="700">
