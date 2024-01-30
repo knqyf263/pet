@@ -12,8 +12,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/google/go-github v15.0.0+incompatible
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/jroimartin/gocui v0.4.0
-	github.com/mattn/go-runewidth v0.0.2
+	github.com/mattn/go-runewidth v0.0.10
 	github.com/pkg/errors v0.8.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.1 // indirect
@@ -27,16 +26,23 @@ require (
 
 require (
 	github.com/alessio/shellescape v1.4.1 // indirect
+	github.com/awesome-gocui/gocui v1.1.0 // indirect
+	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/gdamore/tcell/v2 v2.4.0 // indirect
 	github.com/go-test/deep v1.1.0 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.6.8 // indirect
+	github.com/lucasb-eyer/go-colorful v1.0.3 // indirect
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.3 // indirect
 	github.com/nsf/termbox-go v0.0.0-20180509163535-21a4d435a862 // indirect
+	github.com/rivo/uniseg v0.1.0 // indirect
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/sys v0.0.0-20211116061358-0a5406a5449c // indirect
+	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
+	golang.org/x/text v0.3.3 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	google.golang.org/appengine v1.3.0 // indirect
 )
