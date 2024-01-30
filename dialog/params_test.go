@@ -109,6 +109,17 @@ func TestSearchForParams_InvalidParamFormat(t *testing.T) {
 	}
 }
 
+func TestSearchForParams_ConfusingBrackets(t *testing.T) {
+	command := "cat <<EOF > <file=path/to/file>\nEOF"
+	want := map[string]string{
+		"file": "path/to/file",
+	}
+	got := SearchForParams([]string{command})
+	if diff := deep.Equal(want, got); diff != nil {
+		t.Fatal(diff)
+	}
+}
+
 func TestSearchForParams_MultipleParamsSameKey(t *testing.T) {
 	command := "<a=1> <a=2> <a=3>"
 	want := map[string]string{
