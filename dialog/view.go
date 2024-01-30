@@ -4,34 +4,44 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/awesome-gocui/gocui"
+	"github.com/jroimartin/gocui"
 )
 
-func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
+func generateView(g *gocui.Gui, p *parameter, coords []int, editable bool) error {
+	desc := p.name
+	fill := p.options[0]
+
 	if StringInSlice(desc, views) {
 		return nil
 	}
-	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3], 0); err != nil {
+
+	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3]); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 		fmt.Fprint(v, fill)
 	}
 	view, _ := g.View(desc)
-	view.Title = desc
+
+	if len(p.options) > 1 {
+		view.Title = desc + " (...)"
+	} else {
+		view.Title = desc
+	}
 	view.Wrap = false
 	view.Autoscroll = true
 	view.Editable = editable
 
 	views = append(views, desc)
+
 	idxView++
 
 	return nil
 }
 
 // GenerateParamsLayout generates CUI to receive params
-func GenerateParamsLayout(params map[string]string, command string) {
-	g, err := gocui.NewGui(gocui.OutputNormal, false)
+func GenerateParamsLayout(params map[string][]string, command string) {
+	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -44,12 +54,22 @@ func GenerateParamsLayout(params map[string]string, command string) {
 	g.SetManagerFunc(layout)
 
 	maxX, maxY := g.Size()
-	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
-		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
+	generateView(g,
+		&parameter{
+			name:    "Command(TAB => Select next, ENTER => Execute command, Cursor up/down => change optional parameter):",
+			options: []string{command},
+		},
+		[]int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5},
+		false)
+
 	idx := 0
-	for k, v := range params {
-		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
-			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
+	for _, p := range parameters {
+		generateView(g, p,
+			[]int{maxX / 10,
+				(maxY / 4) + (idx+1)*layoutStep,
+				(maxX / 2) + (maxX / 3),
+				(maxY / 4) + 2 + (idx+1)*layoutStep},
+			true)
 		idx++
 	}
 
@@ -94,7 +114,57 @@ func initKeybindings(g *gocui.Gui) error {
 		}); err != nil {
 		return err
 	}
+
+	if err := g.SetKeybinding("", gocui.KeyArrowUp, gocui.ModNone, updateOptionInViewUp); err != nil {
+		return err
+	}
+
+	if err := g.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, updateOptionInViewDown); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func updateOptionInView(g *gocui.Gui, ch int) error {
+	// Don't handle up/down key for Command view
+	if curView == 0 {
+		return nil
+	}
+
+	// Shitfting one view as Command view is not on the parameters list
+	p := parameters[curView-1]
+	if len(p.options) < 2 {
+		return nil
+	}
+
+	// If ch(ange) is -1 --> key down
+	//                +1 --> key up
+	if ch == -1 {
+		p.current--
+		if p.current < 0 {
+			p.current = len(p.options) - 1
+		}
+
+	} else if ch == 1 {
+		p.current++
+		if p.current > len(p.options)-1 {
+			p.current = 0
+		}
+	}
+
+	view, _ := g.View(views[curView])
+	view.Clear()
+	view.Write([]byte(p.options[p.current]))
+	return nil
+}
+
+func updateOptionInViewUp(g *gocui.Gui, _ *gocui.View) error {
+	return updateOptionInView(g, 1)
+}
+
+func updateOptionInViewDown(g *gocui.Gui, _ *gocui.View) error {
+	return updateOptionInView(g, -1)
 }
 
 func layout(g *gocui.Gui) error {
