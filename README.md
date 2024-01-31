@@ -140,6 +140,7 @@ function pet-select() {
   CURSOR=$#BUFFER
   zle redisplay
 }
+unset zle_bracketed_paste
 zle -N pet-select
 stty -ixon
 bindkey '^s' pet-select
