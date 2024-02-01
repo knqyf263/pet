@@ -3,10 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
-	"os/exec"
-	"runtime"
 	"strings"
 
 	"github.com/fatih/color"
@@ -18,22 +15,6 @@ import (
 func editFile(command, file string) error {
 	command += " " + file
 	return run(command, os.Stdin, os.Stdout)
-}
-
-func run(command string, r io.Reader, w io.Writer) error {
-	var cmd *exec.Cmd
-	if len(config.Conf.General.Cmd) > 0 {
-		line := append(config.Conf.General.Cmd, command)
-		cmd = exec.Command(line[0], line[1:]...)
-	} else if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/c", command)
-	} else {
-		cmd = exec.Command("sh", "-c", command)
-	}
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = w
-	cmd.Stdin = r
-	return cmd.Run()
 }
 
 func filter(options []string, tag string) (commands []string, err error) {
