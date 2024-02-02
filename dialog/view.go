@@ -7,6 +7,11 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
+var (
+	layoutStep = 3
+	curView    = -1
+)
+
 func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
 	if StringInSlice(desc, views) {
 		return nil
@@ -24,7 +29,6 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	view.Editable = editable
 
 	views = append(views, desc)
-	idxView++
 
 	return nil
 }
