@@ -9,7 +9,7 @@ import (
 
 var (
 	views      = []string{}
-	layoutStep = 3
+	layoutStep = 4
 	curView    = -1
 	idxView    = 0
 
