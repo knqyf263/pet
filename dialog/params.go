@@ -39,7 +39,7 @@ func insertParams(command string, params map[string]string) string {
 }
 
 // SearchForParams returns variables from a command
-func SearchForParams(lines []string) map[string]string {
+func SearchForParams(lines []string) [][2]string {
 	if len(lines) == 1 {
 		r, _ := regexp.Compile(patternRegex)
 
@@ -49,6 +49,7 @@ func SearchForParams(lines []string) map[string]string {
 		}
 
 		extracted := map[string]string{}
+		ordered_params := [][2]string{}
 		for _, p := range params {
 			splitted := strings.Split(p[1], "=")
 			key := splitted[0]
@@ -58,10 +59,22 @@ func SearchForParams(lines []string) map[string]string {
 			if len(splitted) == 1 && !param_exists {
 				extracted[key] = ""
 			} else if len(splitted) > 1 {
+				// Set the value instead if it is provided
 				extracted[key] = splitted[1]
 			}
+
+			// Fill in the keys only if seen for the first time to track order
+			if !param_exists {
+				ordered_params = append(ordered_params, [2]string{key, ""})
+			}
 		}
-		return extracted
+
+		// Fill in the values
+		for i, param := range ordered_params {
+			pair := [2]string{param[0], extracted[param[0]]}
+			ordered_params[i] = pair
+		}
+		return ordered_params
 	}
 	return nil
 }
