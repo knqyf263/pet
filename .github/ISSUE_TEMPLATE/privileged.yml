@@ -1,0 +1,25 @@
+name: Privileged
+description: You were directed from Github discussions to create an issue in Pet 👇
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in Pet! 🚀
+        If you are were not directed to create an issue here, please start the conversation in a [Question in GitHub Discussions](https://github.com/knqyf263/pet/discussions/categories/questions) instead!
+        
+        If you want to create a PR, share the idea first in Github discussions! 💬
+        This will give you ⚡️ quick feedback ⚡️ before you've spent time on it, instead of waiting for a much longer review process AFTER you've done the work.
+  - type: checkboxes
+    id: privileged
+    attributes:
+      label: Privileged issue
+      description: Confirm that you are allowed to create an issue here.
+      options:
+        - label: I've been directed through Discussions to create an issue here.
+          required: true
+  - type: textarea
+    id: content
+    attributes:
+      label: Issue Content
+      description: Add the content of the issue here.
+
