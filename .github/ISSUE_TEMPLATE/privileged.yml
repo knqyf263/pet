@@ -4,16 +4,18 @@ body:
   - type: markdown
     attributes:
       value: |
+        ## Thanks!
         Thanks for your interest in Pet! 🚀
         If you are were not directed to create an issue here, please start the conversation in a [Question in GitHub Discussions](https://github.com/knqyf263/pet/discussions/categories/questions) instead!
         
-        If you want to create a PR, share the idea first in Github discussions! 💬
+        ## Got a PR?
+        If you want to create a PR, share the idea first in [Github discussions](https://github.com/knqyf263/pet/discussions)! 💬
         This will give you ⚡️ quick feedback ⚡️ before you've spent time on it, instead of waiting for a much longer review process AFTER you've done the work.
   - type: checkboxes
     id: privileged
     attributes:
       label: Privileged issue
-      description: Confirm that you are allowed to create an issue here.
+      description: Confirm that you were directed to create an issue here.
       options:
         - label: I've been directed through Discussions to create an issue here.
           required: true
