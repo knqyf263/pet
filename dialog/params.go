@@ -4,34 +4,41 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
 )
 
 var (
-	views      = []string{}
-	layoutStep = 3
-	curView    = -1
-	idxView    = 0
+	views = []string{}
 
 	//CurrentCommand is the command before assigning to variables
 	CurrentCommand string
 	//FinalCommand is the command after assigning to variables
 	FinalCommand string
+
+	patternRegex = `<([\S]+?)>`
 )
 
 func insertParams(command string, params map[string]string) string {
-	resultCommand := command
-	for k, v := range params {
-		resultCommand = strings.Replace(resultCommand, k, v, -1)
+	r, _ := regexp.Compile(patternRegex)
+
+	matches := r.FindAllStringSubmatch(command, -1)
+	if len(matches) == 0 {
+		return command
 	}
+
+	resultCommand := command
+	for _, p := range matches {
+		splitted := strings.Split(p[1], "=")
+		resultCommand = strings.Replace(resultCommand, p[0], params[splitted[0]], -1)
+	}
+
 	return resultCommand
 }
 
 // SearchForParams returns variables from a command
-func SearchForParams(lines []string) map[string]string {
-	re := `<([\S].+?[\S])>`
+func SearchForParams(lines []string) [][2]string {
 	if len(lines) == 1 {
-		r, _ := regexp.Compile(re)
+		r, _ := regexp.Compile(patternRegex)
 
 		params := r.FindAllStringSubmatch(lines[0], -1)
 		if len(params) == 0 {
@@ -39,15 +46,32 @@ func SearchForParams(lines []string) map[string]string {
 		}
 
 		extracted := map[string]string{}
+		ordered_params := [][2]string{}
 		for _, p := range params {
 			splitted := strings.Split(p[1], "=")
-			if len(splitted) == 1 {
-				extracted[p[0]] = ""
-			} else {
-				extracted[p[0]] = splitted[1]
+			key := splitted[0]
+			_, param_exists := extracted[key]
+
+			// Set to empty if no value is provided and param is not already set
+			if len(splitted) == 1 && !param_exists {
+				extracted[key] = ""
+			} else if len(splitted) > 1 {
+				// Set the value instead if it is provided
+				extracted[key] = splitted[1]
+			}
+
+			// Fill in the keys only if seen for the first time to track order
+			if !param_exists {
+				ordered_params = append(ordered_params, [2]string{key, ""})
 			}
 		}
-		return extracted
+
+		// Fill in the values
+		for i, param := range ordered_params {
+			pair := [2]string{param[0], extracted[param[0]]}
+			ordered_params[i] = pair
+		}
+		return ordered_params
 	}
 	return nil
 }

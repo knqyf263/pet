@@ -7,6 +7,7 @@ import (
 	"github.com/knqyf263/pet/config"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
+	"gopkg.in/alessio/shellescape.v1"
 )
 
 var delimiter string
@@ -24,9 +25,9 @@ func search(cmd *cobra.Command, args []string) (err error) {
 
 	var options []string
 	if flag.Query != "" {
-		options = append(options, fmt.Sprintf("--query %s", flag.Query))
+		options = append(options, fmt.Sprintf("--query %s", shellescape.Quote(flag.Query)))
 	}
-	commands, err := filter(options)
+	commands, err := filter(options, flag.FilterTag)
 	if err != nil {
 		return err
 	}
@@ -44,6 +45,8 @@ func init() {
 		`Enable colorized output (only fzf)`)
 	searchCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
 		`Initial value for query`)
+	searchCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
+		`Filter tag`)
 	searchCmd.Flags().StringVarP(&config.Flag.Delimiter, "delimiter", "d", "; ",
 		`Use delim as the command delimiter character`)
 }

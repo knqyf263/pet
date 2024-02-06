@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/knqyf263/pet/config"
 	petSync "github.com/knqyf263/pet/sync"
@@ -44,7 +44,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 }
 
 func fileContent(fname string) string {
-	data, _ := ioutil.ReadFile(fname)
+	data, _ := os.ReadFile(fname)
 	return string(data)
 }
 

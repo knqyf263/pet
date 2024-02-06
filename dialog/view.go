@@ -4,14 +4,19 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
+)
+
+var (
+	layoutStep = 3
+	curView    = -1
 )
 
 func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
 	if StringInSlice(desc, views) {
 		return nil
 	}
-	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3]); err != nil {
+	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3], 0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -24,14 +29,13 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	view.Editable = editable
 
 	views = append(views, desc)
-	idxView++
 
 	return nil
 }
 
 // GenerateParamsLayout generates CUI to receive params
-func GenerateParamsLayout(params map[string]string, command string) {
-	g, err := gocui.NewGui(gocui.OutputNormal)
+func GenerateParamsLayout(params [][2]string, command string) {
+	g, err := gocui.NewGui(gocui.OutputNormal, false)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -47,7 +51,11 @@ func GenerateParamsLayout(params map[string]string, command string) {
 	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
 		command, []int{maxX / 10, maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
 	idx := 0
-	for k, v := range params {
+
+	// Create a view for each param
+	for _, pair := range params {
+		// Unpack parameter key and value
+		k, v := pair[0], pair[1]
 		generateView(g, k, v, []int{maxX / 10, (maxY / 4) + (idx+1)*layoutStep,
 			maxX/10 + 20, (maxY / 4) + 2 + (idx+1)*layoutStep}, true)
 		idx++
