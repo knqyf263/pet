@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -25,15 +23,21 @@ var newCmd = &cobra.Command{
 	RunE:  new,
 }
 
-func scan(message string) (string, error) {
+func CanceledError() error {
+	return errors.New("canceled")
+}
+
+func scan(message string, out io.Writer, in io.ReadCloser, allowEmpty bool) (string, error) {
 	f, err := os.CreateTemp("", "pet-")
-	tempFile := f.Name()
-	defer os.Remove(f.Name()) // clean up
-	if runtime.GOOS == "windows" {
-		tempDir := os.Getenv("TEMP")
-		tempFile = filepath.Join(tempDir, "pet.tmp")
+	if err != nil {
+		return "", err
 	}
+	defer os.Remove(f.Name()) // clean up temp file
+	tempFile := f.Name()
+
 	l, err := readline.NewEx(&readline.Config{
+		Stdout:          out,
+		Stdin:           in,
 		Prompt:          message,
 		HistoryFile:     tempFile,
 		InterruptPrompt: "^C",
@@ -41,6 +45,7 @@ func scan(message string) (string, error) {
 
 		HistorySearchFold: true,
 	})
+
 	if err != nil {
 		return "", err
 	}
@@ -58,13 +63,16 @@ func scan(message string) (string, error) {
 			break
 		}
 
+		// If empty string, just ignore tags
 		line = strings.TrimSpace(line)
-		if line == "" {
+		if line == "" && !allowEmpty {
 			continue
+		} else if line == "" {
+			return "", nil
 		}
 		return line, nil
 	}
-	return "", errors.New("canceled")
+	return "", CanceledError()
 }
 
 func new(cmd *cobra.Command, args []string) (err error) {
@@ -81,27 +89,30 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		command = strings.Join(args, " ")
 		fmt.Fprintf(color.Output, "%s %s\n", color.YellowString("Command>"), command)
 	} else {
-		command, err = scan(color.YellowString("Command> "))
+		command, err = scan(color.YellowString("Command> "), os.Stdout, os.Stdin, false)
 		if err != nil {
 			return err
 		}
 	}
-	description, err = scan(color.GreenString("Description> "))
+	description, err = scan(color.GreenString("Description> "), os.Stdout, os.Stdin, false)
 	if err != nil {
 		return err
 	}
 
 	if config.Flag.Tag {
 		var t string
-		if t, err = scan(color.CyanString("Tag> ")); err != nil {
+		if t, err = scan(color.CyanString("Tag> "), os.Stdout, os.Stdin, true); err != nil {
 			return err
 		}
-		tags = strings.Fields(t)
+
+		if t != "" {
+			tags = strings.Fields(t)
+		}
 	}
 
 	for _, s := range snippets.Snippets {
 		if s.Description == description {
-			return fmt.Errorf("Snippet [%s] already exists", description)
+			return fmt.Errorf("snippet [%s] already exists", description)
 		}
 	}
 
