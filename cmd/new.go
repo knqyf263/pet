@@ -26,7 +26,9 @@ var newCmd = &cobra.Command{
 }
 
 func scan(message string) (string, error) {
-	tempFile := "/tmp/pet.tmp"
+	f, err := os.CreateTemp("", "pet-")
+	tempFile := f.Name()
+	defer os.Remove(f.Name()) // clean up
 	if runtime.GOOS == "windows" {
 		tempDir := os.Getenv("TEMP")
 		tempFile = filepath.Join(tempDir, "pet.tmp")
