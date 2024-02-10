@@ -40,7 +40,7 @@ So I made it possible to register snippets with description and search them easi
     - [bash](#bash-prev-function)
     - [zsh](#zsh-prev-function)
     - [fish](#fish)
-  - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
+  - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r-recommended)
     - [bash](#bash)
     - [zsh](#zsh)
     - [fish](#fish-1)
