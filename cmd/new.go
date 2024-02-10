@@ -87,21 +87,21 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 	if len(args) > 0 {
 		command = strings.Join(args, " ")
-		fmt.Fprintf(color.Output, "%s %s\n", color.YellowString("Command>"), command)
+		fmt.Fprintf(color.Output, "%s %s\n", color.HiYellowString("Command>"), command)
 	} else {
-		command, err = scan(color.YellowString("Command> "), os.Stdout, os.Stdin, false)
+		command, err = scan(color.HiYellowString("Command> "), os.Stdout, os.Stdin, false)
 		if err != nil {
 			return err
 		}
 	}
-	description, err = scan(color.GreenString("Description> "), os.Stdout, os.Stdin, false)
+	description, err = scan(color.HiGreenString("Description> "), os.Stdout, os.Stdin, false)
 	if err != nil {
 		return err
 	}
 
 	if config.Flag.Tag {
 		var t string
-		if t, err = scan(color.CyanString("Tag> "), os.Stdout, os.Stdin, true); err != nil {
+		if t, err = scan(color.HiCyanString("Tag> "), os.Stdout, os.Stdin, true); err != nil {
 			return err
 		}
 
