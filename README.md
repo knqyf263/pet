@@ -107,10 +107,12 @@ https://github.com/otms61/fish-pet
 
 <img src="doc/pet02.gif" width="700">
 
-## Select snippets at the current line (like C-r)
+## Select snippets at the current line (like C-r) (RECOMMENDED)
 
 ### bash
 By adding the following config to `.bashrc`, you can search snippets and output on the shell.
+This will also allow you to execute the commands yourself, which will add them to your shell history! This is basically the only way we can manipulate shell history.
+This also allows you to *chain* commands! [Example here](https://github.com/knqyf263/pet/discussions/266)
 
 ```
 $ cat .bashrc
