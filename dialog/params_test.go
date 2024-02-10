@@ -73,8 +73,34 @@ func TestSearchForParams_WithNewline(t *testing.T) {
 	}
 }
 
+func TestSearchForParams_ValueWithSpaces(t *testing.T) {
+	command := "example_function --flag=<param=Lots of Bananas>"
+
+	want := [][2]string{
+		{"param", "Lots of Bananas"},
+	}
+
+	got := SearchForParams([]string{command})
+
+	if diff := deep.Equal(want, got); diff != nil {
+		t.Fatal(diff)
+	}
+}
+
 func TestSearchForParams_InvalidParamFormat(t *testing.T) {
 	command := "<a=1 <b> hello"
+	want := [][2]string{
+		{"b", ""},
+	}
+	got := SearchForParams([]string{command})
+
+	if diff := deep.Equal(want, got); diff != nil {
+		t.Fatal(diff)
+	}
+}
+
+func TestSearchForParams_InvalidParamFormatWithoutSpaces(t *testing.T) {
+	command := "<a=1<b>hello"
 	want := [][2]string{
 		{"b", ""},
 	}

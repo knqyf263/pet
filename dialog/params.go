@@ -15,11 +15,14 @@ var (
 	//FinalCommand is the command after assigning to variables
 	FinalCommand string
 
-	patternRegex = `<([\S]+?)>`
+	// This matches most encountered patterns
+	// Skips match if there is a whitespace at the end ex. <param='my >
+	// Ignores <, > characters since they're used to match the pattern
+	patternRegex = `<([^<>]*[^\s])>`
 )
 
 func insertParams(command string, params map[string]string) string {
-	r, _ := regexp.Compile(patternRegex)
+	r := regexp.MustCompile(patternRegex)
 
 	matches := r.FindAllStringSubmatch(command, -1)
 	if len(matches) == 0 {
@@ -38,7 +41,7 @@ func insertParams(command string, params map[string]string) string {
 // SearchForParams returns variables from a command
 func SearchForParams(lines []string) [][2]string {
 	if len(lines) == 1 {
-		r, _ := regexp.Compile(patternRegex)
+		r := regexp.MustCompile(patternRegex)
 
 		params := r.FindAllStringSubmatch(lines[0], -1)
 		if len(params) == 0 {
