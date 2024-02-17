@@ -24,7 +24,7 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	}
 	view, _ := g.View(desc)
 	view.Title = desc
-	view.Wrap = false
+	view.Wrap = true
 	view.Autoscroll = true
 	view.Editable = editable
 
