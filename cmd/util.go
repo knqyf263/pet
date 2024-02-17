@@ -67,8 +67,16 @@ func filter(options []string, tag string) (commands []string, err error) {
 	}
 
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
+	var params [][2]string
 
-	params := dialog.SearchForParams(lines)
+	// If only one line is selected, search for params in the command
+	if len(lines) == 1 {
+		snippetInfo := snippetTexts[lines[0]]
+		params = dialog.SearchForParams(snippetInfo.Command)
+	} else {
+		params = nil
+	}
+
 	if params != nil {
 		snippetInfo := snippetTexts[lines[0]]
 		dialog.CurrentCommand = snippetInfo.Command

@@ -14,7 +14,7 @@ func TestSearchForParams(t *testing.T) {
 		{"b", ""},
 	}
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -24,7 +24,7 @@ func TestSearchForParams(t *testing.T) {
 func TestSearchForParams_WithNoParams(t *testing.T) {
 	command := "no params"
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if got != nil {
 		t.Fatalf("wanted nil, got '%v'", got)
@@ -40,7 +40,7 @@ func TestSearchForParams_WithMultipleParams(t *testing.T) {
 		{"c", "3"},
 	}
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -50,7 +50,7 @@ func TestSearchForParams_WithMultipleParams(t *testing.T) {
 func TestSearchForParams_WithEmptyCommand(t *testing.T) {
 	command := ""
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if got != nil {
 		t.Fatalf("wanted nil, got '%v'", got)
@@ -66,7 +66,7 @@ func TestSearchForParams_WithNewline(t *testing.T) {
 		{"c", "3"},
 	}
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -80,7 +80,7 @@ func TestSearchForParams_ValueWithSpaces(t *testing.T) {
 		{"param", "Lots of Bananas"},
 	}
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -92,7 +92,7 @@ func TestSearchForParams_InvalidParamFormat(t *testing.T) {
 	want := [][2]string{
 		{"b", ""},
 	}
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -104,7 +104,7 @@ func TestSearchForParams_InvalidParamFormatWithoutSpaces(t *testing.T) {
 	want := [][2]string{
 		{"b", ""},
 	}
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -116,7 +116,7 @@ func TestSearchForParams_ConfusingBrackets(t *testing.T) {
 	want := [][2]string{
 		{"file", "path/to/file"},
 	}
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
 	}
@@ -127,7 +127,7 @@ func TestSearchForParams_MultipleParamsSameKey(t *testing.T) {
 	want := [][2]string{
 		{"a", "3"},
 	}
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -139,7 +139,7 @@ func TestSearchForParams_MultipleParamsSameKeyDifferentValues(t *testing.T) {
 	want := [][2]string{
 		{"a", "3"},
 	}
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -152,7 +152,7 @@ func TestSearchForParams_MultipleParamsSameKeyDifferentValues_MultipleLines(t *t
 		{"a", "3"},
 		{"b", "4"},
 	}
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -164,7 +164,7 @@ func TestSearchForParams_MultipleParamsSameKeyDifferentValues_InvalidFormat(t *t
 	want := [][2]string{
 		{"a", "3"},
 	}
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -178,7 +178,7 @@ func TestSearchForParams_MultipleParamsSameKeyDifferentValues_InvalidFormat_Mult
 		{"b", "4"},
 	}
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
@@ -191,7 +191,7 @@ func TestSearchForParams_MultipleParamsSameKeyDifferentValues_InvalidFormat_Mult
 		{"a", "3"},
 	}
 
-	got := SearchForParams([]string{command})
+	got := SearchForParams(command)
 
 	if diff := deep.Equal(want, got); diff != nil {
 		t.Fatal(diff)
