@@ -21,7 +21,7 @@ var (
 	patternRegex = `<([^<>]*[^\s])>`
 )
 
-func insertParams(command string, params map[string]string) string {
+func insertParams(command string, filledInParams map[string]string) string {
 	r := regexp.MustCompile(patternRegex)
 
 	matches := r.FindAllStringSubmatch(command, -1)
@@ -30,9 +30,17 @@ func insertParams(command string, params map[string]string) string {
 	}
 
 	resultCommand := command
+
+	// First match is the whole match (with brackets), second is the first group
+	// Ex. echo <param='my param'>
+	// -> matches[0][0]: <param='my param'>
+	// -> matches[0][1]: param='my param'
 	for _, p := range matches {
-		splitted := strings.Split(p[1], "=")
-		resultCommand = strings.Replace(resultCommand, p[0], params[splitted[0]], -1)
+		whole, matchedGroup := p[0], p[1]
+		param, _, _ := strings.Cut(matchedGroup, "=")
+
+		// Replace the whole match with the filled-in value of the param
+		resultCommand = strings.Replace(resultCommand, whole, filledInParams[param], -1)
 	}
 
 	return resultCommand
@@ -50,21 +58,21 @@ func SearchForParams(command string) [][2]string {
 	extracted := map[string]string{}
 	ordered_params := [][2]string{}
 	for _, p := range params {
-		splitted := strings.Split(p[1], "=")
-		key := splitted[0]
-		_, param_exists := extracted[key]
+		_, matchedGroup := p[0], p[1]
+		paramKey, defaultValue, separatorFound := strings.Cut(matchedGroup, "=")
+		_, param_exists := extracted[paramKey]
 
 		// Set to empty if no value is provided and param is not already set
-		if len(splitted) == 1 && !param_exists {
-			extracted[key] = ""
-		} else if len(splitted) > 1 {
-			// Set the value instead if it is provided
-			extracted[key] = splitted[1]
+		if !separatorFound && !param_exists {
+			extracted[paramKey] = ""
+		} else if separatorFound {
+			// Set to default value instead if it is provided
+			extracted[paramKey] = defaultValue
 		}
 
 		// Fill in the keys only if seen for the first time to track order
 		if !param_exists {
-			ordered_params = append(ordered_params, [2]string{key, ""})
+			ordered_params = append(ordered_params, [2]string{paramKey, ""})
 		}
 	}
 

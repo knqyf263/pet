@@ -198,6 +198,19 @@ func TestSearchForParams_MultipleParamsSameKeyDifferentValues_InvalidFormat_Mult
 	}
 }
 
+func TestSearchForParams_EqualsInDefaultValueIgnored(t *testing.T) {
+	command := "echo \"<param=Hello == World!===>\""
+	want := [][2]string{
+		{"param", "Hello == World!==="},
+	}
+
+	got := SearchForParams(command)
+
+	if diff := deep.Equal(want, got); diff != nil {
+		t.Fatal(diff)
+	}
+}
+
 func TestInsertParams(t *testing.T) {
 	command := "<a=1> <a> <b> hello"
 
@@ -238,6 +251,20 @@ func TestInsertParams_complex(t *testing.T) {
 
 	got := insertParams(command, params)
 	want := "something localhost:9200/case/_delete_by_query/localhost:9200"
+	if got != want {
+		t.Fatalf("got %s, want %s", got, want)
+	}
+}
+
+func TestInsertParams_EqualsInDefaultValueIgnored(t *testing.T) {
+	command := "echo \"<param=Hello == World!===>\""
+
+	params := map[string]string{
+		"param": "something == something",
+	}
+
+	got := insertParams(command, params)
+	want := "echo \"something == something\""
 	if got != want {
 		t.Fatalf("got %s, want %s", got, want)
 	}
