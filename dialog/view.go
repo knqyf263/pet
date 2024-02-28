@@ -7,6 +7,11 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
+var (
+	layoutStep = 3
+	curView    = -1
+)
+
 func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
 	if StringInSlice(desc, views) {
 		return nil
@@ -19,18 +24,17 @@ func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable
 	}
 	view, _ := g.View(desc)
 	view.Title = desc
-	view.Wrap = false
+	view.Wrap = true
 	view.Autoscroll = true
 	view.Editable = editable
 
 	views = append(views, desc)
-	idxView++
 
 	return nil
 }
 
 // GenerateParamsLayout generates CUI to receive params
-func GenerateParamsLayout(params map[string]string, command string) {
+func GenerateParamsLayout(params [][2]string, command string) {
 	g, err := gocui.NewGui(gocui.OutputNormal, false)
 	if err != nil {
 		log.Panicln(err)
@@ -50,7 +54,11 @@ func GenerateParamsLayout(params map[string]string, command string) {
 	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
 		command, []int{leftX, maxY / 10, rightX, maxY/10 + 5}, false)
 	idx := 0
-	for k, v := range params {
+
+	// Create a view for each param
+	for _, pair := range params {
+		// Unpack parameter key and value
+		k, v := pair[0], pair[1]
 		generateView(g, k, v,
 			[]int{leftX,
 				(maxY / 4) + (idx+1)*layoutStep,

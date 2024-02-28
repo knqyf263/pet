@@ -18,11 +18,14 @@ var (
 	//FinalCommand is the command after assigning to variables
 	FinalCommand string
 
-	patternRegex = `<([\S]+?)>`
+	// This matches most encountered patterns
+	// Skips match if there is a whitespace at the end ex. <param='my >
+	// Ignores <, > characters since they're used to match the pattern
+	patternRegex = `<([^<>]*[^\s])>`
 )
 
-func insertParams(command string, params map[string]string) string {
-	r, _ := regexp.Compile(patternRegex)
+func insertParams(command string, filledInParams map[string]string) string {
+	r := regexp.MustCompile(patternRegex)
 
 	matches := r.FindAllStringSubmatch(command, -1)
 	if len(matches) == 0 {
@@ -30,40 +33,58 @@ func insertParams(command string, params map[string]string) string {
 	}
 
 	resultCommand := command
+
+	// First match is the whole match (with brackets), second is the first group
+	// Ex. echo <param='my param'>
+	// -> matches[0][0]: <param='my param'>
+	// -> matches[0][1]: param='my param'
 	for _, p := range matches {
-		splitted := strings.Split(p[1], "=")
-		resultCommand = strings.Replace(resultCommand, p[0], params[splitted[0]], -1)
+		whole, matchedGroup := p[0], p[1]
+		param, _, _ := strings.Cut(matchedGroup, "=")
+
+		// Replace the whole match with the filled-in value of the param
+		resultCommand = strings.Replace(resultCommand, whole, filledInParams[param], -1)
 	}
 
 	return resultCommand
 }
 
 // SearchForParams returns variables from a command
-func SearchForParams(lines []string) map[string]string {
-	if len(lines) == 1 {
-		r, _ := regexp.Compile(patternRegex)
+func SearchForParams(command string) [][2]string {
+	r := regexp.MustCompile(patternRegex)
 
-		params := r.FindAllStringSubmatch(lines[0], -1)
-		if len(params) == 0 {
-			return nil
-		}
-
-		extracted := map[string]string{}
-		for _, p := range params {
-			splitted := strings.Split(p[1], "=")
-			key := splitted[0]
-			_, param_exists := extracted[key]
-
-			// Set to empty if no value is provided and param is not already set
-			if len(splitted) == 1 && !param_exists {
-				extracted[key] = ""
-			} else if len(splitted) > 1 {
-				extracted[key] = splitted[1]
-			}
-		}
-		return extracted
+	params := r.FindAllStringSubmatch(command, -1)
+	if len(params) == 0 {
+		return nil
 	}
-	return nil
+
+	extracted := map[string]string{}
+	ordered_params := [][2]string{}
+	for _, p := range params {
+		_, matchedGroup := p[0], p[1]
+		paramKey, defaultValue, separatorFound := strings.Cut(matchedGroup, "=")
+		_, param_exists := extracted[paramKey]
+
+		// Set to empty if no value is provided and param is not already set
+		if !separatorFound && !param_exists {
+			extracted[paramKey] = ""
+		} else if separatorFound {
+			// Set to default value instead if it is provided
+			extracted[paramKey] = defaultValue
+		}
+
+		// Fill in the keys only if seen for the first time to track order
+		if !param_exists {
+			ordered_params = append(ordered_params, [2]string{paramKey, ""})
+		}
+	}
+
+	// Fill in the values
+	for i, param := range ordered_params {
+		pair := [2]string{param[0], extracted[param[0]]}
+		ordered_params[i] = pair
+	}
+	return ordered_params
 }
 
 func evaluateParams(g *gocui.Gui, _ *gocui.View) error {
