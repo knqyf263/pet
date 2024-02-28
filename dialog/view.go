@@ -44,14 +44,17 @@ func GenerateParamsLayout(params map[string]string, command string) {
 	g.SetManagerFunc(layout)
 
 	maxX, maxY := g.Size()
+	leftX := (maxX / 2) - (maxX / 3)
+	rightX := (maxX / 2) + (maxX / 3)
+
 	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
-		command, []int{(maxX / 2) - (maxX / 3), maxY / 10, (maxX / 2) + (maxX / 3), maxY/10 + 5}, false)
+		command, []int{leftX, maxY / 10, rightX, maxY/10 + 5}, false)
 	idx := 0
 	for k, v := range params {
 		generateView(g, k, v,
-			[]int{(maxX / 2) - (maxX / 4),
+			[]int{leftX,
 				(maxY / 4) + (idx+1)*layoutStep,
-				(maxX / 2) + (maxX / 4),
+				rightX,
 				(maxY / 4) + 2 + (idx+1)*layoutStep},
 			true)
 		idx++
