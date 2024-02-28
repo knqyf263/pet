@@ -8,10 +8,7 @@ import (
 )
 
 var (
-	views      = []string{}
-	layoutStep = 4
-	curView    = -1
-	idxView    = 0
+	views = []string{}
 
 	//CurrentCommand is the command before assigning to variables
 	CurrentCommand string
