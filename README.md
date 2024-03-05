@@ -35,6 +35,7 @@ So I made it possible to register snippets with description and search them easi
 # TOC
 
 - [Main features](#main-features)
+- [Parameters] (#parameters)
 - [Examples](#examples)
   - [Register the previous command easily](#register-the-previous-command-easily)
     - [bash](#bash-prev-function)
