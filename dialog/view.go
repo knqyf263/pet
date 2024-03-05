@@ -3,6 +3,7 @@ package dialog
 import (
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/awesome-gocui/gocui"
 )
@@ -10,25 +11,94 @@ import (
 var (
 	layoutStep = 3
 	curView    = -1
+
+	// This is for matching multiple default values in parameters
+	parameterMultipleValueRegex = `(\|_.*?_\|)`
 )
 
-func generateView(g *gocui.Gui, desc string, fill string, coords []int, editable bool) error {
-	if StringInSlice(desc, views) {
-		return nil
-	}
-	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3], 0); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		fmt.Fprint(v, fill)
-	}
-	view, _ := g.View(desc)
-	view.Title = desc
-	view.Wrap = true
-	view.Autoscroll = true
-	view.Editable = editable
+// createView sets up a new view with the given parameters.
+func createView(g *gocui.Gui, name string, coords []int, editable bool) (*gocui.View, error) {
+    if StringInSlice(name, views) {
+        return nil, nil
+    }
 
-	views = append(views, desc)
+    v, err := g.SetView(name, coords[0], coords[1], coords[2], coords[3], 0)
+    if err != nil && err != gocui.ErrUnknownView {
+        return nil, err
+    }
+
+    v.Title = name
+    v.Wrap = true
+    v.Autoscroll = true
+    v.Editable = editable
+
+    views = append(views, name)
+
+    return v, nil
+}
+
+func generateSingleParameterView(g *gocui.Gui, name string, defaultParam string, coords []int, editable bool) error {
+	view, err := createView(g, name, coords, editable)
+    if err != nil {
+        return err
+    }
+
+	g.SetKeybinding(view.Name(), gocui.KeyCtrlK, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		v.Clear()
+		return nil
+	})
+
+    fmt.Fprint(view, defaultParam)
+	return nil
+}
+
+func generateMultipleParameterView(g *gocui.Gui, name string, defaultParams []string, coords []int, editable bool) error {
+	view, err := createView(g, name, coords, editable)
+    if err != nil {
+        return err
+    }
+
+	currentOpt := 0
+	maxOpt := len(defaultParams)
+
+	fmt.Fprint(view, defaultParams[currentOpt])
+	
+	viewTitle := name
+	// Adjust view title to hint the user about the available 
+	// options if there are more than one
+	if maxOpt > 1 {
+		viewTitle = name + " (UP/DOWN => Select default value)"
+	}
+	
+	view.Title = viewTitle
+
+	g.SetKeybinding(view.Name(), gocui.KeyArrowDown, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		if maxOpt == 0 {
+			return nil
+		}
+		next := currentOpt + 1
+		if next >= maxOpt {
+			next = 0
+		}
+		v.Clear()
+		fmt.Fprint(v, defaultParams[next])
+		currentOpt = next
+		return nil
+	})
+
+	g.SetKeybinding(view.Name(), gocui.KeyArrowUp, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		if maxOpt == 0 {
+			return nil
+		}
+		prev := currentOpt - 1
+		if prev < 0 {
+			prev = maxOpt - 1
+		}
+		v.Clear()
+		fmt.Fprint(v, defaultParams[prev])
+		currentOpt = prev
+		return nil
+	})
 
 	return nil
 }
@@ -51,20 +121,45 @@ func GenerateParamsLayout(params [][2]string, command string) {
 	leftX := (maxX / 2) - (maxX / 3)
 	rightX := (maxX / 2) + (maxX / 3)
 
-	generateView(g, "Command(TAB => Select next, ENTER => Execute command):",
+	generateSingleParameterView(g, "Command(TAB => Select next, ENTER => Execute command):",
 		command, []int{leftX, maxY / 10, rightX, maxY/10 + 5}, false)
 	idx := 0
 
 	// Create a view for each param
 	for _, pair := range params {
 		// Unpack parameter key and value
-		k, v := pair[0], pair[1]
-		generateView(g, k, v,
-			[]int{leftX,
-				(maxY / 4) + (idx+1)*layoutStep,
-				rightX,
-				(maxY / 4) + 2 + (idx+1)*layoutStep},
-			true)
+		parameterKey, parameterValue := pair[0], pair[1]
+
+		// Check value for multiple defaults
+		r := regexp.MustCompile(parameterMultipleValueRegex)
+		matches := r.FindAllStringSubmatch(parameterValue, -1)
+
+		if len(matches) > 0 {
+			// Extract the default values and generate multiple params view
+			parameters := []string{}
+			for _, p := range matches {
+				_, matchedGroup := p[0], p[1]
+				// Remove the separators
+				matchedGroup = matchedGroup[2 : len(matchedGroup)-2]
+				parameters = append(parameters, matchedGroup)
+			}
+			generateMultipleParameterView(
+				g, parameterKey, parameters, []int{
+					leftX,
+					(maxY / 4) + (idx+1)*layoutStep,
+					rightX,
+					(maxY / 4) + 2 + (idx+1)*layoutStep},
+				true)
+		} else {
+			// Generate single param view using the single value
+			generateSingleParameterView(g, parameterKey, parameterValue,
+				[]int{
+					leftX,
+					(maxY / 4) + (idx+1)*layoutStep,
+					rightX,
+					(maxY / 4) + 2 + (idx+1)*layoutStep},
+				true)
+		}
 		idx++
 	}
 

@@ -35,6 +35,7 @@ So I made it possible to register snippets with description and search them easi
 # TOC
 
 - [Main features](#main-features)
+- [Parameters] (#parameters)
 - [Examples](#examples)
   - [Register the previous command easily](#register-the-previous-command-easily)
     - [bash](#bash-prev-function)
@@ -70,11 +71,26 @@ So I made it possible to register snippets with description and search them easi
 `pet` has the following features.
 
 - Register your command snippets easily.
-- Use variables in snippets.
+- Use variables (with one or several default values) in snippets.
 - Search snippets interactively.
 - Run snippets directly.
 - Edit snippets easily (config is just a TOML file).
 - Sync snippets via Gist or GitLab Snippets automatically.
+
+# Parameters
+There are `<n_ways>` ways of entering parameters.
+
+They can contain default values: Hello `<subject=world>`
+defined by the equal sign. 
+
+They can even contain `<content=spaces & = signs>` where the default value would be \<content=<mark>spaces & = signs</mark>\>.
+
+Default values just can't \<end with spaces \>.
+
+They can also contain multiple default values:
+Hello `<subject=|_John_||_Sam_||_Jane Doe = special #chars_|>`
+
+The values in this case would be :Hello \<subject=\|\_<mark>John</mark>\_\|\|\_<mark>Sam</mark>\_\|\|\_<mark>Jane Doe = special #chars</mark>\_\|\>
 
 # Examples
 Some examples are shown below.

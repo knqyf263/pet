@@ -211,6 +211,21 @@ func TestSearchForParams_EqualsInDefaultValueIgnored(t *testing.T) {
 	}
 }
 
+func TestSearchForParams_MultipleDefaultValuesDoNotBreakFunction(t *testing.T) {
+	command := "echo \"<param=|_Hello_||_Hello world_||_How are you?_|> <second=Hello>, <third>\""
+	want := [][2]string{
+		{"param", "|_Hello_||_Hello world_||_How are you?_|"},
+		{"second", "Hello"},
+		{"third", ""},
+	}
+
+	got := SearchForParams(command)
+
+	if diff := deep.Equal(want, got); diff != nil {
+		t.Fatal(diff)
+	}
+}
+
 func TestInsertParams(t *testing.T) {
 	command := "<a=1> <a> <b> hello"
 
