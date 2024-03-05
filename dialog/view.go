@@ -16,86 +16,90 @@ var (
 	parameterMultipleValueRegex = `(\|_.*?_\|)`
 )
 
-func generateSingleParameterView(g *gocui.Gui, desc string, defaultParam string, coords []int, editable bool) error {
-	if StringInSlice(desc, views) {
+// createView sets up a new view with the given parameters.
+func createView(g *gocui.Gui, name string, coords []int, editable bool) (*gocui.View, error) {
+    if StringInSlice(name, views) {
+        return nil, nil
+    }
+
+    v, err := g.SetView(name, coords[0], coords[1], coords[2], coords[3], 0)
+    if err != nil && err != gocui.ErrUnknownView {
+        return nil, err
+    }
+
+    v.Title = name
+    v.Wrap = true
+    v.Autoscroll = true
+    v.Editable = editable
+
+    views = append(views, name)
+
+    return v, nil
+}
+
+func generateSingleParameterView(g *gocui.Gui, name string, defaultParam string, coords []int, editable bool) error {
+	view, err := createView(g, name, coords, editable)
+    if err != nil {
+        return err
+    }
+
+	g.SetKeybinding(view.Name(), gocui.KeyCtrlK, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		v.Clear()
 		return nil
-	}
-	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3], 0); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		fmt.Fprint(v, defaultParam)
-	}
-	view, _ := g.View(desc)
-	view.Title = desc
-	view.Wrap = true
-	view.Autoscroll = true
-	view.Editable = editable
+	})
 
-	views = append(views, desc)
-
+    fmt.Fprint(view, defaultParam)
 	return nil
 }
 
-func generateMultipleParameterView(g *gocui.Gui, desc string, defaultParams []string, coords []int, editable bool) error {
-	if StringInSlice(desc, views) {
-		return nil
-	}
+func generateMultipleParameterView(g *gocui.Gui, name string, defaultParams []string, coords []int, editable bool) error {
+	view, err := createView(g, name, coords, editable)
+    if err != nil {
+        return err
+    }
 
 	currentOpt := 0
 	maxOpt := len(defaultParams)
 
-	if v, err := g.SetView(desc, coords[0], coords[1], coords[2], coords[3], 0); err != nil {
-		if err != gocui.ErrUnknownView {
-			return err
-		}
-		g.SetKeybinding(v.Name(), gocui.KeyArrowDown, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
-			if maxOpt == 0 {
-				return nil
-			}
-			next := currentOpt + 1
-			if next >= maxOpt {
-				next = currentOpt
-			}
-			v.Clear()
-			fmt.Fprint(v, defaultParams[next])
-			currentOpt = next
-			return nil
-		})
-		g.SetKeybinding(v.Name(), gocui.KeyArrowUp, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
-			if maxOpt == 0 {
-				return nil
-			}
-			prev := currentOpt - 1
-			if prev < 0 {
-				prev = currentOpt
-			}
-			v.Clear()
-			fmt.Fprint(v, defaultParams[prev])
-			currentOpt = prev
-			return nil
-		})
-		g.SetKeybinding(v.Name(), gocui.KeyCtrlK, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
-			v.Clear()
-			return nil
-		})
-
-		fmt.Fprint(v, defaultParams[currentOpt])
-	}
+	fmt.Fprint(view, defaultParams[currentOpt])
 	
-	view, _ := g.View(desc)
-	viewTitle := desc
+	viewTitle := name
 	// Adjust view title to hint the user about the available 
 	// options if there are more than one
 	if maxOpt > 1 {
-		viewTitle = desc + " (UP/DOWN => Select default value)"
+		viewTitle = name + " (UP/DOWN => Select default value)"
 	}
 	
 	view.Title = viewTitle
-	view.Wrap = false
-	view.Autoscroll = true
-	view.Editable = editable
-	views = append(views, desc)
+
+	g.SetKeybinding(view.Name(), gocui.KeyArrowDown, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		if maxOpt == 0 {
+			return nil
+		}
+		next := currentOpt + 1
+		if next >= maxOpt {
+			next = 0
+		}
+		v.Clear()
+		fmt.Fprint(v, defaultParams[next])
+		currentOpt = next
+		return nil
+	})
+
+	g.SetKeybinding(view.Name(), gocui.KeyArrowUp, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		if maxOpt == 0 {
+			return nil
+		}
+		prev := currentOpt - 1
+		if prev < 0 {
+			prev = maxOpt - 1
+		}
+		v.Clear()
+		fmt.Fprint(v, defaultParams[prev])
+		currentOpt = prev
+		return nil
+	})
+
 	return nil
 }
 
