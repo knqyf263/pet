@@ -3,22 +3,23 @@ release:
     owner: knqyf263
     name: pet
   name_template: '{{.Tag}}'
-brew:
-  github:
-    owner: knqyf263
-    name: homebrew-pet
-  commit_author:
-    name: goreleaserbot
-    email: goreleaser@carlosbecker.com
-  description: "Simple command-line snippet manager"
-  homepage: "https://github.com/knqyf263/pet"
-  dependencies:
-    - fzf
-  install: |
-    bin.install Dir['pet']
-    zsh_completion.install "misc/completions/zsh/_pet"
-  test: |
-    system "#{bin}/pet"
+brews:
+  -
+    tap:
+      owner: knqyf263
+      name: homebrew-pet
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    description: "Simple command-line snippet manager"
+    homepage: "https://github.com/knqyf263/pet"
+    dependencies:
+      - fzf
+    install: |
+      bin.install Dir['pet']
+      zsh_completion.install "misc/completions/zsh/_pet"
+    test: |
+      system "#{bin}/pet"
 builds:
 - goos:
   - linux
@@ -26,28 +27,32 @@ builds:
   - windows
   goarch:
   - amd64
+  - arm
+  - arm64
   - "386"
   goarm:
   - "6"
   main: .
   ldflags: -s -w -X github.com/knqyf263/pet/cmd.version={{.Version}}
-archive:
-  format: tar.gz
-  name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
-    .Arm }}{{ end }}'
-  files:
-  - LICENSE*
-  - README*
-  - CHANGELOG*
-  - misc/completions/zsh/_pet
-nfpm:   
-  homepage: https://github.com/knqyf263/pet 
-  maintainer: Teppei Fukuda <knqyf263@gmail.com>
-  description: "Simple command-line snippet manager"
-  bindir: /usr/local/bin     
-  license: MIT
-  formats:   
-  - deb      
-  - rpm
+archives:
+  -
+    format: tar.gz
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
+      .Arm }}{{ end }}'
+    files:
+    - LICENSE*
+    - README*
+    - CHANGELOG*
+    - misc/completions/zsh/_pet
+nfpms:
+  -
+    homepage: https://github.com/knqyf263/pet
+    maintainer: Teppei Fukuda <knqyf263@gmail.com>
+    description: "Simple command-line snippet manager"
+    bindir: /usr/local/bin
+    license: MIT
+    formats:
+    - deb
+    - rpm
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'

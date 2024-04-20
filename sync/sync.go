@@ -2,7 +2,6 @@ package sync
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -108,5 +107,5 @@ func download(content string) error {
 	}
 
 	fmt.Println("Download success")
-	return ioutil.WriteFile(snippetFile, []byte(content), os.ModePerm)
+	return os.WriteFile(snippetFile, []byte(content), os.ModePerm)
 }

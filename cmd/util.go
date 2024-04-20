@@ -3,10 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
-	"os/exec"
-	"runtime"
 	"strings"
 
 	"github.com/fatih/color"
@@ -20,23 +17,22 @@ func editFile(command, file string) error {
 	return run(command, os.Stdin, os.Stdout)
 }
 
-func run(command string, r io.Reader, w io.Writer) error {
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/c", command)
-	} else {
-		cmd = exec.Command("sh", "-c", command)
-	}
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = w
-	cmd.Stdin = r
-	return cmd.Run()
-}
-
-func filter(options []string) (commands []string, err error) {
+func filter(options []string, tag string) (commands []string, err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
 		return commands, fmt.Errorf("Load snippet failed: %v", err)
+	}
+
+	if 0 < len(tag) {
+		var filteredSnippets snippet.Snippets
+		for _, snippet := range snippets.Snippets {
+			for _, t := range snippet.Tag {
+				if tag == t {
+					filteredSnippets.Snippets = append(filteredSnippets.Snippets, snippet)
+				}
+			}
+		}
+		snippets = filteredSnippets
 	}
 
 	snippetTexts := map[string]snippet.SnippetInfo{}
@@ -57,7 +53,7 @@ func filter(options []string) (commands []string, err error) {
 		snippetTexts[t] = s
 		if config.Flag.Color {
 			t = fmt.Sprintf("[%s]: %s%s",
-				color.RedString(s.Description), command, color.BlueString(tags))
+				color.HiRedString(s.Description), command, color.HiCyanString(tags))
 		}
 		text += t + "\n"
 	}
@@ -71,8 +67,16 @@ func filter(options []string) (commands []string, err error) {
 	}
 
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
+	var params [][2]string
 
-	params := dialog.SearchForParams(lines)
+	// If only one line is selected, search for params in the command
+	if len(lines) == 1 {
+		snippetInfo := snippetTexts[lines[0]]
+		params = dialog.SearchForParams(snippetInfo.Command)
+	} else {
+		params = nil
+	}
+
 	if params != nil {
 		snippetInfo := snippetTexts[lines[0]]
 		dialog.CurrentCommand = snippetInfo.Command

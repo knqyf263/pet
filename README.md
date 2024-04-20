@@ -35,34 +35,35 @@ So I made it possible to register snippets with description and search them easi
 # TOC
 
 - [Main features](#main-features)
+- [Parameters] (#parameters)
 - [Examples](#examples)
-    - [Register the previous command easily](#register-the-previous-command-easily)
-        - [bash](#bash-prev-function)
-        - [zsh](#zsh-prev-function)
-        - [fish](#fish)
-    - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
-        - [bash](#bash)
-        - [zsh](#zsh)
-        - [fish](#fish-1)
-    - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
+  - [Register the previous command easily](#register-the-previous-command-easily)
+    - [bash](#bash-prev-function)
+    - [zsh](#zsh-prev-function)
+    - [fish](#fish)
+  - [Select snippets at the current line (like C-r) (RECOMMENDED)](#select-snippets-at-the-current-line-like-c-r-recommended)
+    - [bash](#bash)
+    - [zsh](#zsh)
+    - [fish](#fish-1)
+  - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
 - [Features](#features)
-    - [Edit snippets](#edit-snippets)
-    - [Sync snippets](#sync-snippets)
+  - [Edit snippets](#edit-snippets)
+  - [Sync snippets](#sync-snippets)
 - [Hands-on Tutorial](#hands-on-tutorial)
 - [Usage](#usage)
 - [Snippet](#snippet)
 - [Configuration](#configuration)
-    - [Selector option](#selector-option)
-    - [Tag](#tag)
-    - [Sync](#sync)
-    - [Auto Sync](#auto-sync)
+  - [Selector option](#selector-option)
+  - [Tag](#tag)
+  - [Sync](#sync)
+  - [Auto Sync](#auto-sync)
 - [Installation](#installation)
-    - [Binary](#binary)
-    - [Mac OS X / Homebrew](#mac-os-x--homebrew)
-    - [RedHat, CentOS](#redhat-centos)
-    - [Debian, Ubuntu](#debian-ubuntu)
-    - [Archlinux](#archlinux)
-    - [Build](#build)
+  - [Binary](#binary)
+  - [Mac OS X / Homebrew](#mac-os-x--homebrew)
+  - [RedHat, CentOS](#redhat-centos)
+  - [Debian, Ubuntu](#debian-ubuntu)
+  - [Archlinux](#archlinux)
+  - [Build](#build)
 - [Migration](#migration)
 - [Contribute](#contribute)
 
@@ -70,11 +71,26 @@ So I made it possible to register snippets with description and search them easi
 `pet` has the following features.
 
 - Register your command snippets easily.
-- Use variables in snippets.
+- Use variables (with one or several default values) in snippets.
 - Search snippets interactively.
 - Run snippets directly.
 - Edit snippets easily (config is just a TOML file).
 - Sync snippets via Gist or GitLab Snippets automatically.
+
+# Parameters
+There are `<n_ways>` ways of entering parameters.
+
+They can contain default values: Hello `<subject=world>`
+defined by the equal sign. 
+
+They can even contain `<content=spaces & = signs>` where the default value would be \<content=<mark>spaces & = signs</mark>\>.
+
+Default values just can't \<end with spaces \>.
+
+They can also contain multiple default values:
+Hello `<subject=|_John_||_Sam_||_Jane Doe = special #chars_|>`
+
+The values in this case would be :Hello \<subject=\|\_<mark>John</mark>\_\|\|\_<mark>Sam</mark>\_\|\|\_<mark>Jane Doe = special #chars</mark>\_\|\>
 
 # Examples
 Some examples are shown below.
@@ -107,10 +123,12 @@ https://github.com/otms61/fish-pet
 
 <img src="doc/pet02.gif" width="700">
 
-## Select snippets at the current line (like C-r)
+## Select snippets at the current line (like C-r) (RECOMMENDED)
 
 ### bash
 By adding the following config to `.bashrc`, you can search snippets and output on the shell.
+This will also allow you to execute the commands yourself, which will add them to your shell history! This is basically the only way we can manipulate shell history.
+This also allows you to *chain* commands! [Example here](https://github.com/knqyf263/pet/discussions/266)
 
 ```
 $ cat .bashrc
@@ -227,6 +245,7 @@ Run `pet configure`
   selectcmd = "fzf"               # selector command for edit command (fzf or peco)
   backend = "gist"                # specify backend service to sync snippets (gist or gitlab, default: gist)
   sortby  = "description"         # specify how snippets get sorted (recency (default), -recency, description, -description, command, -command, output, -output)
+  cmd = ["sh", "-c"]              # specify the command to execute the snippet with
 
 [Gist]
   file_name = "pet-snippet.toml"  # specify gist file name
@@ -290,6 +309,14 @@ $ pet search
 [ping]: ping 8.8.8.8 #network #google
 ```
 
+You can exec snipet with filtering the tag
+
+```
+$ pet exec -t google
+
+[ping]: ping 8.8.8.8 #network #google
+```
+
 ## Sync
 ### Gist
 You must obtain access token.
@@ -323,8 +350,12 @@ Upload success
 
 ### GitLab Snippets
 You must obtain access token.
-Go https://gitlab.com/profile/personal_access_tokens and create access token.
-Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`..
+Go https://gitlab.com/-/profile/personal_access_tokens and create access token.
+Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`.
+
+You also have to configure the `url` under `[GitLab]`, so pet knows which endpoint to access. You would use `url = "https://gitlab.com"`unless you have another instance of Gitlab.
+
+At last, switch the `backend` under `[General]` to `backend = "gitlab"`.
 
 After setting, you can upload snippets to GitLab Snippets.
 If `id` is not set, new snippet will be created.
@@ -391,8 +422,8 @@ $ sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3
 ## Debian, Ubuntu
 Download deb package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-$ wget https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.deb
-dpkg -i pet_0.3.0_linux_amd64.deb
+$ wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
+dpkg -i pet_0.3.6_linux_amd64.deb
 ```
 
 ## Archlinux

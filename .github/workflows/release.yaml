@@ -1,0 +1,29 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install rpm
+      - name: Checkout code
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Release
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: v1.18.2
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.PET_PAT }}

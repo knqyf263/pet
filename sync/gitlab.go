@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"net/http"
+	"crypto/tls"
 	"strconv"
 	"time"
 
@@ -33,24 +35,47 @@ Write access_token in config file (pet configure) or export $%v.
 		`, gitlabTokenEnvVariable)
 	}
 
-	client := GitLabClient{
-		Client: gitlab.NewClient(nil, accessToken),
-		ID:     0,
-	}
+	u := "https://git.mydomain.com/api/v4"
+	id := 0
+
+    h := &http.Client{}
 
 	if config.Conf.GitLab.Url != "" {
-		client.Client.SetBaseURL(config.Conf.GitLab.Url)
+		fmt.Println(config.Conf.GitLab.Url)
+		u = config.Conf.GitLab.Url
+	}
+
+	if config.Conf.GitLab.Insecure == true {
+		tr := &http.Transport{
+	        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	    }
+	    h = &http.Client{Transport: tr}
+	}
+
+	c, err := gitlab.NewClient(accessToken, gitlab.WithBaseURL(u), gitlab.WithHTTPClient(h))
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to create GitLab client: %d", id)
 	}
 
 	if config.Conf.GitLab.ID == "" {
+		client := GitLabClient{
+			Client: c,
+			ID:     id,
+		}
+
 		return client, nil
 	}
 
-	id, err := strconv.Atoi(config.Conf.GitLab.ID)
+	id, err = strconv.Atoi(config.Conf.GitLab.ID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Invalid GitLab Snippet ID: %d", id)
 	}
-	client.ID = id
+
+	client := GitLabClient{
+		Client: c,
+		ID:     id,
+	}
+
 	return client, nil
 }
 
