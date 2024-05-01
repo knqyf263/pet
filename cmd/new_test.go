@@ -88,7 +88,6 @@ func TestScan_EmptyStringWithoutAllowEmpty(t *testing.T) {
 
 	// Check if the input was printed
 	got := result
-
 	// Check if the result matches the expected result
 	if want != got {
 		t.Errorf("Expected result %q, but got %q", want, got)
@@ -96,6 +95,35 @@ func TestScan_EmptyStringWithoutAllowEmpty(t *testing.T) {
 
 	// Check if the error matches the expected error
 	if err.Error() != expectedError.Error() {
+		t.Errorf("Expected error %v, but got %v", expectedError, err)
+	}
+}
+
+func TestScanMultiLine_ExitsOnTwoEmptyLines(t *testing.T) {
+	prompt := "Enter something: "
+	secondPrompt := "whatever"
+
+	input := "test\nnewline here\nand another;\n\n\n" // Simulated user input
+	want := "test\nnewline here\nand another;"        // Expected output
+	expectedError := error(nil)
+
+	// Create a buffer for output
+	var outputBuffer bytes.Buffer
+	// Create a mock ReadCloser for input
+	inputReader := &MockReadCloser{strings.NewReader(input)}
+
+	result, err := scanMultiLine(prompt, secondPrompt, &outputBuffer, inputReader)
+
+	// Check if the input was printed
+	got := result
+
+	// Check if the result matches the expected result
+	if want != got {
+		t.Errorf("Expected result %q, but got %q", want, got)
+	}
+
+	// Check if the error matches the expected error
+	if err != expectedError {
 		t.Errorf("Expected error %v, but got %v", expectedError, err)
 	}
 }
