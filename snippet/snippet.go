@@ -6,8 +6,8 @@ import (
 	"os"
 	"sort"
 
-	"github.com/pelletier/go-toml"
 	"github.com/knqyf263/pet/config"
+	"github.com/pelletier/go-toml"
 )
 
 type Snippets struct {
@@ -29,7 +29,7 @@ func (snippets *Snippets) Load() error {
 	}
 	f, err := os.ReadFile(snippetFile)
 	if err != nil {
-		return fmt.Errorf("Failed to load snippet file. %v", err)
+		return fmt.Errorf("failed to load snippet file. %v", err)
 	}
 	toml.Unmarshal(f, snippets)
 	snippets.Order()
@@ -40,10 +40,10 @@ func (snippets *Snippets) Load() error {
 func (snippets *Snippets) Save() error {
 	snippetFile := config.Conf.General.SnippetFile
 	f, err := os.Create(snippetFile)
-	defer f.Close()
 	if err != nil {
-		return fmt.Errorf("Failed to save snippet file. err: %s", err)
+		return fmt.Errorf("failed to save snippet file. err: %s", err)
 	}
+	defer f.Close()
 	return toml.NewEncoder(f).Encode(snippets)
 }
 
@@ -52,7 +52,7 @@ func (snippets *Snippets) ToString() (string, error) {
 	var buffer bytes.Buffer
 	err := toml.NewEncoder(&buffer).Encode(snippets)
 	if err != nil {
-		return "", fmt.Errorf("Failed to convert struct to TOML string: %v", err)
+		return "", fmt.Errorf("failed to convert struct to TOML string: %v", err)
 	}
 	return buffer.String(), nil
 }
