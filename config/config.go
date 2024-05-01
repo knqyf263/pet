@@ -19,6 +19,7 @@ type Config struct {
 	General GeneralConfig `toml:"General"`
 	Gist    GistConfig    `toml:"Gist"`
 	GitLab  GitLabConfig  `toml:"GitLab"`
+	GHEGist GHEGistConfig `toml:"GHEGist"`
 }
 
 // GeneralConfig is a struct of general config
@@ -50,6 +51,17 @@ type GitLabConfig struct {
 	Visibility  string `toml:"visibility"`
 	AutoSync    bool   `toml:"auto_sync"`
 	Insecure    bool   `toml:"skip_ssl"`
+}
+
+// GHEGistConfig is a struct of config for Gist of Github Enterprise
+type GHEGistConfig struct {
+	BaseUrl		string `toml:"base_url"`
+	UploadUrl 	string `toml:"upload_url"`
+	FileName    string `toml:"file_name"`
+	AccessToken string `toml:"access_token"`
+	GistID      string `toml:"gist_id"`
+	Public      bool   `toml:"public"`
+	AutoSync    bool   `toml:"auto_sync"`
 }
 
 // Flag is global flag variable
