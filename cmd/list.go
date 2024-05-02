@@ -37,7 +37,7 @@ func list(cmd *cobra.Command, args []string) error {
 	for _, snippet := range snippets.Snippets {
 		if config.Flag.OneLine {
 			description := runewidth.FillRight(runewidth.Truncate(snippet.Description, col, "..."), col)
-			command := runewidth.Truncate(snippet.Command, 100-4-col, "...")
+			command := snippet.Command
 			// make sure multiline command printed as oneline
 			command = strings.Replace(command, "\n", "\\n", -1)
 			fmt.Fprintf(color.Output, "%s : %s\n",

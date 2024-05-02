@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/BurntSushi/toml"
+	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
 )
 
@@ -69,21 +69,24 @@ var Flag FlagConfig
 
 // FlagConfig is a struct of flag
 type FlagConfig struct {
-	Debug     bool
-	Query     string
-	FilterTag string
-	Command   bool
-	Delimiter string
-	OneLine   bool
-	Color     bool
-	Tag       bool
+	Debug        bool
+	Query        string
+	FilterTag    string
+	Command      bool
+	Delimiter    string
+	OneLine      bool
+	Color        bool
+	Tag          bool
+	UseMultiLine bool
+	UseEditor    bool
 }
 
 // Load loads a config toml
 func (cfg *Config) Load(file string) error {
 	_, err := os.Stat(file)
 	if err == nil {
-		_, err := toml.DecodeFile(file, cfg)
+		f, err := os.ReadFile(file)
+		err = toml.Unmarshal(f, cfg)
 		if err != nil {
 			return err
 		}
