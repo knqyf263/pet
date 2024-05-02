@@ -259,7 +259,7 @@ Run `pet configure`
 
 [GHEGist]
   base_url = ""                   # GHE base URL
-  upload_url = ""                 # GHE upload (often the same as the base URL)
+  upload_url = ""                 # GHE upload URL (often the same as the base URL)
   file_name = "pet-snippet.toml"  # specify gist file name
   access_token = ""               # your access token
   gist_id = ""                    # Gist ID
