@@ -239,7 +239,7 @@ Run `pet configure`
   editor = "vim"                  # your favorite text editor
   column = 40                     # column size for list command
   selectcmd = "fzf"               # selector command for edit command (fzf or peco)
-  backend = "gist"                # specify backend service to sync snippets (gist or gitlab, default: gist)
+  backend = "gist"                # specify backend service to sync snippets (gist, ghe or gitlab, default: gist)
   sortby  = "description"         # specify how snippets get sorted (recency (default), -recency, description, -description, command, -command, output, -output)
   cmd = ["sh", "-c"]              # specify the command to execute the snippet with
 
@@ -255,6 +255,15 @@ Run `pet configure`
   access_token = "XXXXXXXXXXXXX"  # your access token
   id = ""                         # GitLab Snippets ID
   visibility = "private"          # public or internal or private
+  auto_sync = false               # sync automatically when editing snippets
+
+[GHEGist]
+  base_url = ""                   # GHE base URL
+  upload_url = ""                 # GHE upload URL (often the same as the base URL)
+  file_name = "pet-snippet.toml"  # specify gist file name
+  access_token = ""               # your access token
+  gist_id = ""                    # Gist ID
+  public = false                  # public or priate
   auto_sync = false               # sync automatically when editing snippets
 
 ```
@@ -344,6 +353,25 @@ Upload success
 
 *Note: `-u` option is deprecated*
 
+### GHE Gist
+
+To use Gist with GitHub Enterprise, you need to follow these steps:
+
+1. Obtain an Access Token: Visit your GitHub Enterprise settings page to create a new access token with just the "gist" scope. This is necessary to authenticate and interact with the Gist API on GitHub Enterprise.
+2. Set the Access Token: Assign the newly created access token to `access_token` in the `[GHEGist]` section of your configuration. Alternatively, you can use an environment variable named `$PET_GITHUB_ENTERPRISE_ACCESS_TOKEN` to manage your token securely.
+3. Configure API Endpoints: Unlike the regular Gist config, you need to set `base_url` and `upload_url` to point to your GitHub Enterprise API endpoints. For example:
+
+```toml
+
+[GHEGist]
+base_url = "https://github-enterprise.example.com/api/v3/gists"
+upload_url = "https://github-enterprise.example.com/api/v3/gists"  # Often the same as the base URL
+```
+
+By setting these parameters, your tool will be configured to interact with GitHub Enterprise Gist, enabling you to sync and manage your snippets just as you would with the standard GitHub Gist service.
+
+Remember to replace `https://github-enterprise.example.com` with the actual URL of your GitHub Enterprise instance. This customization allows your tool to correctly connect to and use the Gist service in a GitHub Enterprise environment.
+
 ### GitLab Snippets
 You must obtain access token.
 Go https://gitlab.com/-/profile/personal_access_tokens and create access token.
@@ -378,7 +406,7 @@ Upload success
 
 ## Auto Sync
 You can sync snippets automatically.
-Set `true` to `auto_sync` in `[Gist]` or `[GitLab]`.
+Set `true` to `auto_sync` in `[Gist]`, `[GHEGist]` or `[GitLab]`.
 Then, your snippets sync automatically when `pet new` or `pet edit`.
 
 ```
