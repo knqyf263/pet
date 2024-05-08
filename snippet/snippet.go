@@ -31,7 +31,12 @@ func (snippets *Snippets) Load() error {
 	if err != nil {
 		return fmt.Errorf("failed to load snippet file. %v", err)
 	}
-	toml.Unmarshal(f, snippets)
+
+	err = toml.Unmarshal(f, snippets)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal snippet file. %v", err)
+	}
+
 	snippets.Order()
 	return nil
 }
