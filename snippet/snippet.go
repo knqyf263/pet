@@ -11,14 +11,14 @@ import (
 )
 
 type Snippets struct {
-	Snippets []SnippetInfo `toml:"snippets"`
+	Snippets []SnippetInfo
 }
 
 type SnippetInfo struct {
-	Description string   `toml:"description"`
-	Command     string   `toml:"command" multiline:"true"`
-	Tag         []string `toml:"tag"`
-	Output      string   `toml:"output"`
+	Description string
+	Command     string `toml:"multiline"`
+	Tag         []string
+	Output      string
 }
 
 // Load reads toml file.

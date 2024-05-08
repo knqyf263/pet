@@ -44,7 +44,6 @@ func scan(prompt string, out io.Writer, in io.ReadCloser, allowEmpty bool) (stri
 		HistoryFile:       tempFile,
 		InterruptPrompt:   "^C",
 		EOFPrompt:         "exit",
-		VimMode:           false,
 		HistorySearchFold: true,
 	})
 

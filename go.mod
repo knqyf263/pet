@@ -14,7 +14,6 @@ require (
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.3 // indirect
 	github.com/mattn/go-runewidth v0.0.10
-	github.com/pelletier/go-toml v1.8.1
 	github.com/pkg/errors v0.8.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.1 // indirect
@@ -29,6 +28,7 @@ require (
 require (
 	github.com/awesome-gocui/gocui v1.1.0
 	github.com/go-test/deep v1.1.0
+	github.com/pelletier/go-toml v1.9.5
 )
 
 require (

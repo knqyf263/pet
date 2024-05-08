@@ -16,21 +16,21 @@ var Conf Config
 
 // Config is a struct of config
 type Config struct {
-	General GeneralConfig `toml:"General"`
-	Gist    GistConfig    `toml:"Gist"`
-	GitLab  GitLabConfig  `toml:"GitLab"`
-	GHEGist GHEGistConfig `toml:"GHEGist"`
+	General GeneralConfig
+	Gist    GistConfig
+	GitLab  GitLabConfig
+	GHEGist GHEGistConfig
 }
 
 // GeneralConfig is a struct of general config
 type GeneralConfig struct {
-	SnippetFile string   `toml:"snippetfile"`
-	Editor      string   `toml:"editor"`
-	Column      int      `toml:"column"`
-	SelectCmd   string   `toml:"selectcmd"`
-	Backend     string   `toml:"backend"`
-	SortBy      string   `toml:"sortby"`
-	Cmd         []string `toml:"cmd"`
+	SnippetFile string
+	Editor      string
+	Column      int
+	SelectCmd   string
+	Backend     string
+	SortBy      string
+	Cmd         []string
 }
 
 // GistConfig is a struct of config for Gist
@@ -38,30 +38,30 @@ type GistConfig struct {
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
 	GistID      string `toml:"gist_id"`
-	Public      bool   `toml:"public"`
-	AutoSync    bool   `toml:"auto_sync"`
+	Public      bool
+	AutoSync    bool `toml:"auto_sync"`
 }
 
 // GitLabConfig is a struct of config for GitLabSnippet
 type GitLabConfig struct {
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
-	Url         string `toml:"url"`
-	ID          string `toml:"id"`
-	Visibility  string `toml:"visibility"`
-	AutoSync    bool   `toml:"auto_sync"`
-	Insecure    bool   `toml:"skip_ssl"`
+	Url         string
+	ID          string
+	Visibility  string
+	AutoSync    bool `toml:"auto_sync"`
+	SkipSsl     bool `toml:"skip_ssl"`
 }
 
 // GHEGistConfig is a struct of config for Gist of Github Enterprise
 type GHEGistConfig struct {
-	BaseUrl		string `toml:"base_url"`
-	UploadUrl 	string `toml:"upload_url"`
+	BaseUrl     string `toml:"base_url"`
+	UploadUrl   string `toml:"upload_url"`
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
 	GistID      string `toml:"gist_id"`
-	Public      bool   `toml:"public"`
-	AutoSync    bool   `toml:"auto_sync"`
+	Public      bool
+	AutoSync    bool `toml:"auto_sync"`
 }
 
 // Flag is global flag variable
