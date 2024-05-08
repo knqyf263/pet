@@ -16,7 +16,7 @@ type Snippets struct {
 
 type SnippetInfo struct {
 	Description string
-	Command     string `toml:"multiline"`
+	Command     string `toml:"command,multiline"`
 	Tag         []string
 	Output      string
 }
