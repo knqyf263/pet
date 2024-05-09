@@ -22,9 +22,9 @@ You can use variables (`<param>` or `<param=default_value>` ) in snippets.
 I always forget commands that I rarely use. Moreover, it is difficult to search them from shell history. There are many similar commands, but they are all different.
 
 e.g. 
-- `$ awk -F, 'NR <=2 {print $0}; NR >= 5 && NR <= 10 {print $0}' company.csv` (What I am looking for)
-- `$ awk -F, '$0 !~ "DNS|Protocol" {print $0}' packet.csv`
-- `$ awk -F, '{print $0} {if((NR-1) % 5 == 0) {print "----------"}}' test.csv`
+- `awk -F, 'NR <=2 {print $0}; NR >= 5 && NR <= 10 {print $0}' company.csv` (What I am looking for)
+- `awk -F, '$0 !~ "DNS|Protocol" {print $0}' packet.csv`
+- `awk -F, '{print $0} {if((NR-1) % 5 == 0) {print "----------"}}' test.csv`
 
 In the above case, I search by `awk` from shell history, but many commands hit.
 
@@ -110,7 +110,7 @@ function prev() {
 ### zsh prev function
 
 ```
-$ cat .zshrc
+cat .zshrc
 function prev() {
   PREV=$(fc -lrn | head -n 1)
   sh -c "pet new `printf %q "$PREV"`"
@@ -131,7 +131,7 @@ This will also allow you to execute the commands yourself, which will add them t
 This also allows you to *chain* commands! [Example here](https://github.com/knqyf263/pet/discussions/266)
 
 ```
-$ cat .bashrc
+cat .bashrc
 function pet-select() {
   BUFFER=$(pet search --query "$READLINE_LINE")
   READLINE_LINE=$BUFFER
@@ -143,7 +143,7 @@ bind -x '"\C-x\C-r": pet-select'
 ### zsh
 
 ```
-$ cat .zshrc
+cat .zshrc
 function pet-select() {
   BUFFER=$(pet search --query "$LBUFFER")
   CURSOR=$#BUFFER
@@ -272,7 +272,7 @@ Run `pet configure`
 Example1: Change layout (bottom up)
 
 ```
-$ pet configure
+pet configure
 [General]
 ...
   selectcmd = "fzf"
@@ -281,18 +281,18 @@ $ pet configure
 
 Example2: Enable colorized output
 ```
-$ pet configure
+pet configure
 [General]
 ...
   selectcmd = "fzf --ansi"
 ...
-$ pet search --color
+pet search --color
 ```
 
 ## Tag
 You can use tags (delimiter: space).
 ```
-$ pet new -t
+pet new -t
 Command> ping 8.8.8.8
 Description> ping
 Tag> network google
@@ -300,7 +300,7 @@ Tag> network google
 
 Or edit manually.
 ```
-$ pet edit
+pet edit
 [[snippets]]
   description = "ping"
   command = "ping 8.8.8.8"
@@ -310,14 +310,14 @@ $ pet edit
 
 They are displayed with snippets.
 ```
-$ pet search
+pet search
 [ping]: ping 8.8.8.8 #network #google
 ```
 
 You can exec snipet with filtering the tag
 
 ```
-$ pet exec -t google
+pet exec -t google
 
 [ping]: ping 8.8.8.8 #network #google
 ```
@@ -331,7 +331,7 @@ Set that to `access_token` in `[Gist]` or use an environment variable with the n
 After setting, you can upload snippets to Gist.  
 If `gist_id` is not set, new gist will be created.
 ```
-$ pet sync
+pet sync
 Gist ID: 1cedddf4e06d1170bf0c5612fb31a758
 Upload success
 ```
@@ -341,13 +341,13 @@ Set `Gist ID` to `gist_id` in `[Gist]`.
 
 If the local file is older than gist, `pet sync` download snippets.
 ```
-$ pet sync
+pet sync
 Download success
 ```
 
 If gist is older than the local file, `pet sync` upload snippets.
 ```
-$ pet sync
+pet sync
 Upload success
 ```
 
@@ -384,7 +384,7 @@ At last, switch the `backend` under `[General]` to `backend = "gitlab"`.
 After setting, you can upload snippets to GitLab Snippets.
 If `id` is not set, new snippet will be created.
 ```
-$ pet sync
+pet sync
 GitLab Snippet ID: 12345678
 Upload success
 ```
@@ -394,13 +394,13 @@ Set `GitLab Snippet ID` to `id` in `[GitLab]`.
 
 If the local file is older than gitlab, `pet sync` download snippets.
 ```
-$ pet sync
+pet sync
 Download success
 ```
 
 If gitlab is older than the local file, `pet sync` upload snippets.
 ```
-$ pet sync
+pet sync
 Upload success
 ```
 
@@ -410,7 +410,7 @@ Set `true` to `auto_sync` in `[Gist]`, `[GHEGist]` or `[GitLab]`.
 Then, your snippets sync automatically when `pet new` or `pet edit`.
 
 ```
-$ pet edit
+pet edit
 Getting Gist...
 Updating Gist...
 Upload success
@@ -426,27 +426,27 @@ Go to [the releases page](https://github.com/knqyf263/pet/releases), find the ve
 ## Mac OS X / Homebrew
 You can use homebrew on OS X.
 ```
-$ brew install knqyf263/pet/pet
+brew install knqyf263/pet/pet
 ```
 
 If you receive an error (`Error: knqyf263/pet/pet 64 already installed`) during `brew upgrade`, try the following command
 
 ```
-$ brew unlink pet && brew uninstall pet
-($ rm -rf /usr/local/Cellar/pet/64)
-$ brew install knqyf263/pet/pet
+brew unlink pet && brew uninstall pet
+(rm -rf /usr/local/Cellar/pet/64)
+brew install knqyf263/pet/pet
 ```
 
 ## RedHat, CentOS
 Download rpm package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-$ sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
+sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
 ```
 
 ## Debian, Ubuntu
 Download deb package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-$ wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
+wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
 dpkg -i pet_0.3.6_linux_amd64.deb
 ```
 
@@ -454,21 +454,21 @@ dpkg -i pet_0.3.6_linux_amd64.deb
 Two packages are available in [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository).
 You can install the package [from source](https://aur.archlinux.org/packages/pet-git):
 ```
-$ yaourt -S pet-git
+yaourt -S pet-git
 ```
 Or [from the binary](https://aur.archlinux.org/packages/pet-bin):
 ```
-$ yaourt -S pet-bin
+yaourt -S pet-bin
 ```
 
 ## Build
 
 ```
-$ mkdir -p $GOPATH/src/github.com/knqyf263
-$ cd $GOPATH/src/github.com/knqyf263
-$ git clone https://github.com/knqyf263/pet.git
-$ cd pet
-$ make install
+mkdir -p $GOPATH/src/github.com/knqyf263
+cd $GOPATH/src/github.com/knqyf263
+git clone https://github.com/knqyf263/pet.git
+cd pet
+make install
 ```
 
 # Migration
