@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/knqyf263/pet/config"
 	"github.com/spf13/cobra"
@@ -34,6 +36,7 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 
 	// Show final command before executing it
 	fmt.Printf("> %s\n", command)
+	signal.Ignore(syscall.SIGINT)
 
 	return run(command, os.Stdin, os.Stdout)
 }
