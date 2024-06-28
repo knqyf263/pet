@@ -20,6 +20,13 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	editor := config.Conf.General.Editor
 	snippetFile := config.Conf.General.SnippetFile
 
+	// Sync snippets beforehand to get the latest version if the remote is newer
+	if config.Conf.Gist.AutoSync {
+		if err := petSync.AutoSync(snippetFile); err != nil {
+			return err
+		}
+	}
+
 	// file content before editing
 	before := fileContent(snippetFile)
 

@@ -191,6 +191,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 
 	lineCount := countSnippetLines()
 
+	// Get the command from the user
 	if len(args) > 0 {
 		command = strings.Join(args, " ")
 		fmt.Fprintf(color.Output, "%s %s\n", color.HiYellowString("Command>"), command)
@@ -218,11 +219,12 @@ func new(cmd *cobra.Command, args []string) (err error) {
 			return err
 		}
 	}
+	// Get the description from the user
 	description, err = scan(color.HiGreenString("Description> "), os.Stdout, os.Stdin, false)
 	if err != nil {
 		return err
 	}
-
+	// Get the tags from the user
 	if config.Flag.Tag {
 		var t string
 		if t, err = scan(color.HiCyanString("Tag> "), os.Stdout, os.Stdin, true); err != nil {
@@ -234,12 +236,21 @@ func new(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
+	snippetFile := config.Conf.General.SnippetFile
+
+	// Sync snippets beforehand to get the latest version if the remote is newer
+	if config.Conf.Gist.AutoSync {
+		if err := petSync.AutoSync(snippetFile); err != nil {
+			return err
+		}
+	}
+
 	for _, s := range snippets.Snippets {
 		if s.Description == description {
 			return fmt.Errorf("snippet [%s] already exists", description)
 		}
 	}
-
+	// Save the command, description, and tags as a new snippet
 	newSnippet := snippet.SnippetInfo{
 		Description: description,
 		Command:     command,
@@ -249,8 +260,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 	if err = snippets.Save(); err != nil {
 		return err
 	}
-
-	snippetFile := config.Conf.General.SnippetFile
+	// Sync snippets after update to keep the remote up to date
 	if config.Conf.Gist.AutoSync {
 		return petSync.AutoSync(snippetFile)
 	}
