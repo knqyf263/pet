@@ -30,6 +30,7 @@ type GeneralConfig struct {
 	SelectCmd   string
 	Backend     string
 	SortBy      string
+	Color       bool
 	Cmd         []string
 }
 
@@ -123,6 +124,7 @@ func (cfg *Config) Load(file string) error {
 	cfg.General.Column = 40
 	cfg.General.SelectCmd = "fzf --ansi --layout=reverse --border --height=90% --pointer=* --cycle --prompt=Snippets:"
 	cfg.General.Backend = "gist"
+	cfg.General.Color = false
 
 	cfg.Gist.FileName = "pet-snippet.toml"
 

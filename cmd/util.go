@@ -55,7 +55,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 		t += tags
 
 		snippetTexts[t] = s
-		if config.Flag.Color {
+		if config.Flag.Color || config.Conf.General.Color {
 			t = fmt.Sprintf("[%s]: %s%s",
 				color.HiRedString(s.Description), command, color.HiCyanString(tags))
 		}
