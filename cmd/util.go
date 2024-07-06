@@ -46,18 +46,27 @@ func filter(options []string, tag string) (commands []string, err error) {
 		if strings.ContainsAny(command, "\n") {
 			command = strings.Replace(command, "\n", "\\n", -1)
 		}
-		t := fmt.Sprintf("[%s]: %s", s.Description, command)
 
 		tags := ""
 		for _, tag := range s.Tag {
-			tags += fmt.Sprintf(" #%s", tag)
+			tags += fmt.Sprintf("#%s ", tag)
 		}
-		t += tags
+
+		format := "[$description]: $command $tags"
+		if config.Conf.General.Format != "" {
+			format = config.Conf.General.Format
+		}
+
+		t := strings.Replace(format, "$command", command, 1)
+		t = strings.Replace(t, "$description", s.Description, 1)
+		t = strings.Replace(t, "$tags", tags, 1)
 
 		snippetTexts[t] = s
 		if config.Flag.Color || config.Conf.General.Color {
-			t = fmt.Sprintf("[%s]: %s%s",
-				color.HiRedString(s.Description), command, color.HiCyanString(tags))
+			t = config.Conf.General.Format
+			t = strings.Replace(format, "$command", command, 1)
+			t = strings.Replace(t, "$description", color.HiRedString(s.Description), 1)
+			t = strings.Replace(t, "$tags", color.HiCyanString(tags), 1)
 		}
 		text += t + "\n"
 	}

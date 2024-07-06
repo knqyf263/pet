@@ -33,3 +33,9 @@ pkg
 vendor/
 pet
 dist/
+
+# Tools and nix
+flake.nix
+flake.lock
+.direnv
+.envrc

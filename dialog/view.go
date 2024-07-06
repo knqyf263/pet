@@ -18,58 +18,58 @@ var (
 
 // createView sets up a new view with the given parameters.
 func createView(g *gocui.Gui, name string, coords []int, editable bool) (*gocui.View, error) {
-    if StringInSlice(name, views) {
-        return nil, nil
-    }
+	if StringInSlice(name, views) {
+		return nil, nil
+	}
 
-    v, err := g.SetView(name, coords[0], coords[1], coords[2], coords[3], 0)
-    if err != nil && err != gocui.ErrUnknownView {
-        return nil, err
-    }
+	v, err := g.SetView(name, coords[0], coords[1], coords[2], coords[3], 0)
+	if err != nil && err != gocui.ErrUnknownView {
+		return nil, err
+	}
 
-    v.Title = name
-    v.Wrap = true
-    v.Autoscroll = true
-    v.Editable = editable
+	v.Title = name
+	v.Wrap = true
+	v.Autoscroll = true
+	v.Editable = editable
 
-    views = append(views, name)
+	views = append(views, name)
 
-    return v, nil
+	return v, nil
 }
 
 func generateSingleParameterView(g *gocui.Gui, name string, defaultParam string, coords []int, editable bool) error {
 	view, err := createView(g, name, coords, editable)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	g.SetKeybinding(view.Name(), gocui.KeyCtrlK, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 		v.Clear()
 		return nil
 	})
 
-    fmt.Fprint(view, defaultParam)
+	fmt.Fprint(view, defaultParam)
 	return nil
 }
 
 func generateMultipleParameterView(g *gocui.Gui, name string, defaultParams []string, coords []int, editable bool) error {
 	view, err := createView(g, name, coords, editable)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	currentOpt := 0
 	maxOpt := len(defaultParams)
 
 	fmt.Fprint(view, defaultParams[currentOpt])
-	
+
 	viewTitle := name
-	// Adjust view title to hint the user about the available 
+	// Adjust view title to hint the user about the available
 	// options if there are more than one
 	if maxOpt > 1 {
 		viewTitle = name + " (UP/DOWN => Select default value)"
 	}
-	
+
 	view.Title = viewTitle
 
 	g.SetKeybinding(view.Name(), gocui.KeyArrowDown, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
