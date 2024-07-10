@@ -243,7 +243,7 @@ Run `pet configure`
   sortby  = "description"         # specify how snippets get sorted (recency (default), -recency, description, -description, command, -command, output, -output)
   cmd = ["sh", "-c"]              # specify the command to execute the snippet with
   color = false                   # enables output coloring with fzf, same as '--color' flag
-  format = "[$descripion]: $command $tags" controls the format of the output when searching
+  format = "[$description]: $command $tags" controls the format of the output when searching
 
 [Gist]
   file_name = "pet-snippet.toml"  # specify gist file name
@@ -316,7 +316,7 @@ pet search
 [ping]: ping 8.8.8.8 #network #google
 ```
 
-You can exec snipet with filtering the tag
+You can exec snippet with filtering the tag
 
 ```
 pet exec -t google
