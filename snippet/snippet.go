@@ -34,6 +34,13 @@ func (snippets *Snippets) Load() error {
 			snippetFiles = append(snippetFiles, snippetFile)
 		} else if !os.IsNotExist(err) {
 			return fmt.Errorf("failed to load snippet file. %v", err)
+		} else {
+			return fmt.Errorf(
+				`snippet file not found. %s
+Please run 'pet configure' and provide a correct file path, or remove this
+if you only want to provide snippetdirs instead`,
+				snippetFile,
+			)
 		}
 	}
 
