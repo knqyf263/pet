@@ -156,6 +156,7 @@ func selectFile(options []string, tag string) (snippetFile string, err error) {
 		snippetFile = fmt.Sprint(snippetInfo.Filename)
 	}
 	return snippetFile, nil
+}
 
 // CountLines returns the number of lines in a certain buffer
 func CountLines(r io.Reader) (int, error) {

@@ -1,6 +1,8 @@
 package cmd
 
-import "os"
+import (
+	"fmt"
+	"os"
 
 	"github.com/knqyf263/pet/config"
 	petSync "github.com/knqyf263/pet/sync"
