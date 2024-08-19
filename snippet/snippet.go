@@ -6,22 +6,21 @@ import (
 	"os"
 	"sort"
 	"strings"
-
-	"github.com/BurntSushi/toml"
 	"github.com/kennygrant/sanitize"
 	"github.com/knqyf263/pet/config"
+	"github.com/pelletier/go-toml"
 )
 
 type Snippets struct {
-	Snippets []SnippetInfo `toml:"snippets"`
+	Snippets []SnippetInfo
 }
 
 type SnippetInfo struct {
-	Filename    string   `toml:"-"`
-	Description string   `toml:"description"`
-	Command     string   `toml:"command"`
-	Tag         []string `toml:"tag"`
-	Output      string   `toml:"output,omitempty"`
+	Filename    string
+	Description string
+	Command     string `toml:"command,multiline"`
+	Tag         []string
+	Output      string
 }
 
 // Load reads toml file.
@@ -30,15 +29,23 @@ func (snippets *Snippets) Load() error {
 	if config.Conf.General.SnippetFile != "" {
 		files = append(files, config.Conf.General.SnippetFile)
 	}
-	for _, dir := range config.Conf.General.SnippetDirs {
+
+  for _, dir := range config.Conf.General.SnippetDirs {
 		files = append(files, getFiles(dir)...)
 	}
 
 	for _, file := range files {
 		tmp := Snippets{}
-		if _, err := toml.DecodeFile(file, &tmp); err != nil {
-			return fmt.Errorf("Failed to load snippet file. %v", err)
-		}
+		f, err := os.ReadFile(file)
+    if err != nil {
+      return fmt.Errorf("failed to load snippet file. %v", err)
+    }
+    
+    err = toml.Unmarshal(f, tmp)
+    if err != nil {
+      return fmt.Errorf("failed to parse snippet file. %v", err)
+    }
+    
 		for _, snippet := range tmp.Snippets {
 			snippet.Filename = file
 			snippets.Snippets = append(snippets.Snippets, snippet)
@@ -63,11 +70,12 @@ func (snippets *Snippets) Save() error {
 		}
 	}
 	f, err := os.Create(snippetFile)
-	defer f.Close()
 	if err != nil {
-		return fmt.Errorf("Failed to save snippet file. err: %s", err)
+		return fmt.Errorf("failed to save snippet file. err: %s", err)
 	}
-	return toml.NewEncoder(f).Encode(newSnippets)
+
+	defer f.Close()
+	return toml.NewEncoder(f).Encode(snippets)
 }
 
 // ToString returns the contents of toml file.
@@ -75,7 +83,7 @@ func (snippets *Snippets) ToString() (string, error) {
 	var buffer bytes.Buffer
 	err := toml.NewEncoder(&buffer).Encode(snippets)
 	if err != nil {
-		return "", fmt.Errorf("Failed to convert struct to TOML string: %v", err)
+		return "", fmt.Errorf("failed to convert struct to TOML string: %v", err)
 	}
 	return buffer.String(), nil
 }

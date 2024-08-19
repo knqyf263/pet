@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
-	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/fatih/color"
@@ -15,28 +14,17 @@ import (
 	"github.com/knqyf263/pet/snippet"
 )
 
-func editFile(command, file string) error {
-	command += " " + file
+func editFile(command, file string, startingLine int) error {
+	// Note that this works for most unix editors (nano, vi, vim, etc)
+	// TODO: Remove for other kinds of editors - this is only for UX
+	command += " +" + strconv.Itoa(startingLine) + " " + file
 	return run(command, os.Stdin, os.Stdout)
-}
-
-func run(command string, r io.Reader, w io.Writer) error {
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/c", command)
-	} else {
-		cmd = exec.Command("sh", "-c", command)
-	}
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = w
-	cmd.Stdin = r
-	return cmd.Run()
 }
 
 func filter(options []string, tag string) (commands []string, err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
-		return commands, fmt.Errorf("Load snippet failed: %v", err)
+		return commands, fmt.Errorf("load snippet failed: %v", err)
 	}
 
 	if 0 < len(tag) {
@@ -58,18 +46,27 @@ func filter(options []string, tag string) (commands []string, err error) {
 		if strings.ContainsAny(command, "\n") {
 			command = strings.Replace(command, "\n", "\\n", -1)
 		}
-		t := fmt.Sprintf("[%s]: %s", s.Description, command)
 
 		tags := ""
 		for _, tag := range s.Tag {
-			tags += fmt.Sprintf(" #%s", tag)
+			tags += fmt.Sprintf("#%s ", tag)
 		}
-		t += tags
+
+		format := "[$description]: $command $tags"
+		if config.Conf.General.Format != "" {
+			format = config.Conf.General.Format
+		}
+
+		t := strings.Replace(format, "$command", command, 1)
+		t = strings.Replace(t, "$description", s.Description, 1)
+		t = strings.Replace(t, "$tags", tags, 1)
 
 		snippetTexts[t] = s
-		if config.Flag.Color {
-			t = fmt.Sprintf("[%s]: %s%s",
-				color.RedString(s.Description), command, color.BlueString(tags))
+		if config.Flag.Color || config.Conf.General.Color {
+			t = config.Conf.General.Format
+			t = strings.Replace(format, "$command", command, 1)
+			t = strings.Replace(t, "$description", color.HiRedString(s.Description), 1)
+			t = strings.Replace(t, "$tags", color.HiCyanString(tags), 1)
 		}
 		text += t + "\n"
 	}
@@ -83,8 +80,16 @@ func filter(options []string, tag string) (commands []string, err error) {
 	}
 
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
+	var params [][2]string
 
-	params := dialog.SearchForParams(lines)
+	// If only one line is selected, search for params in the command
+	if len(lines) == 1 {
+		snippetInfo := snippetTexts[lines[0]]
+		params = dialog.SearchForParams(snippetInfo.Command)
+	} else {
+		params = nil
+	}
+
 	if params != nil {
 		snippetInfo := snippetTexts[lines[0]]
 		dialog.CurrentCommand = snippetInfo.Command
@@ -151,4 +156,23 @@ func selectFile(options []string, tag string) (snippetFile string, err error) {
 		snippetFile = fmt.Sprint(snippetInfo.Filename)
 	}
 	return snippetFile, nil
+
+// CountLines returns the number of lines in a certain buffer
+func CountLines(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }

@@ -22,9 +22,9 @@ You can use variables (`<param>` or `<param=default_value>` ) in snippets.
 I always forget commands that I rarely use. Moreover, it is difficult to search them from shell history. There are many similar commands, but they are all different.
 
 e.g. 
-- `$ awk -F, 'NR <=2 {print $0}; NR >= 5 && NR <= 10 {print $0}' company.csv` (What I am looking for)
-- `$ awk -F, '$0 !~ "DNS|Protocol" {print $0}' packet.csv`
-- `$ awk -F, '{print $0} {if((NR-1) % 5 == 0) {print "----------"}}' test.csv`
+- `awk -F, 'NR <=2 {print $0}; NR >= 5 && NR <= 10 {print $0}' company.csv` (What I am looking for)
+- `awk -F, '$0 !~ "DNS|Protocol" {print $0}' packet.csv`
+- `awk -F, '{print $0} {if((NR-1) % 5 == 0) {print "----------"}}' test.csv`
 
 In the above case, I search by `awk` from shell history, but many commands hit.
 
@@ -35,34 +35,35 @@ So I made it possible to register snippets with description and search them easi
 # TOC
 
 - [Main features](#main-features)
+- [Parameters](#parameters)
 - [Examples](#examples)
-    - [Register the previous command easily](#register-the-previous-command-easily)
-        - [bash](#bash-prev-function)
-        - [zsh](#zsh-prev-function)
-        - [fish](#fish)
-    - [Select snippets at the current line (like C-r)](#select-snippets-at-the-current-line-like-c-r)
-        - [bash](#bash)
-        - [zsh](#zsh)
-        - [fish](#fish-1)
-    - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
+  - [Register the previous command easily](#register-the-previous-command-easily)
+    - [bash](#bash-prev-function)
+    - [zsh](#zsh-prev-function)
+    - [fish](#fish)
+  - [Select snippets at the current line (like C-r) (RECOMMENDED)](#select-snippets-at-the-current-line-like-c-r-recommended)
+    - [bash](#bash)
+    - [zsh](#zsh)
+    - [fish](#fish-1)
+  - [Copy snippets to clipboard](#copy-snippets-to-clipboard)
 - [Features](#features)
-    - [Edit snippets](#edit-snippets)
-    - [Sync snippets](#sync-snippets)
+  - [Edit snippets](#edit-snippets)
+  - [Sync snippets](#sync-snippets)
 - [Hands-on Tutorial](#hands-on-tutorial)
 - [Usage](#usage)
 - [Snippet](#snippet)
 - [Configuration](#configuration)
-    - [Selector option](#selector-option)
-    - [Tag](#tag)
-    - [Sync](#sync)
-    - [Auto Sync](#auto-sync)
+  - [Selector option](#selector-option)
+  - [Tag](#tag)
+  - [Sync](#sync)
+  - [Auto Sync](#auto-sync)
 - [Installation](#installation)
-    - [Binary](#binary)
-    - [Mac OS X / Homebrew](#mac-os-x--homebrew)
-    - [RedHat, CentOS](#redhat-centos)
-    - [Debian, Ubuntu](#debian-ubuntu)
-    - [Archlinux](#archlinux)
-    - [Build](#build)
+  - [Binary](#binary)
+  - [Mac OS X / Homebrew](#mac-os-x--homebrew)
+  - [RedHat, CentOS](#redhat-centos)
+  - [Debian, Ubuntu](#debian-ubuntu)
+  - [Archlinux](#archlinux)
+  - [Build](#build)
 - [Migration](#migration)
 - [Contribute](#contribute)
 
@@ -70,11 +71,26 @@ So I made it possible to register snippets with description and search them easi
 `pet` has the following features.
 
 - Register your command snippets easily.
-- Use variables in snippets.
+- Use variables (with one or several default values) in snippets.
 - Search snippets interactively.
 - Run snippets directly.
 - Edit snippets easily (config is just a TOML file).
 - Sync snippets via Gist or GitLab Snippets automatically.
+
+# Parameters
+There are `<n_ways>` ways of entering parameters.
+
+They can contain default values: Hello `<subject=world>`
+defined by the equal sign. 
+
+They can even contain `<content=spaces & = signs>` where the default value would be \<content=<mark>spaces & = signs</mark>\>.
+
+Default values just can't \<end with spaces \>.
+
+They can also contain multiple default values:
+Hello `<subject=|_John_||_Sam_||_Jane Doe = special #chars_|>`
+
+The values in this case would be :Hello \<subject=\|\_<mark>John</mark>\_\|\|\_<mark>Sam</mark>\_\|\|\_<mark>Jane Doe = special #chars</mark>\_\|\>
 
 # Examples
 Some examples are shown below.
@@ -94,7 +110,7 @@ function prev() {
 ### zsh prev function
 
 ```
-$ cat .zshrc
+cat .zshrc
 function prev() {
   PREV=$(fc -lrn | head -n 1)
   sh -c "pet new `printf %q "$PREV"`"
@@ -107,13 +123,15 @@ https://github.com/otms61/fish-pet
 
 <img src="doc/pet02.gif" width="700">
 
-## Select snippets at the current line (like C-r)
+## Select snippets at the current line (like C-r) (RECOMMENDED)
 
 ### bash
 By adding the following config to `.bashrc`, you can search snippets and output on the shell.
+This will also allow you to execute the commands yourself, which will add them to your shell history! This is basically the only way we can manipulate shell history.
+This also allows you to *chain* commands! [Example here](https://github.com/knqyf263/pet/discussions/266)
 
 ```
-$ cat .bashrc
+cat .bashrc
 function pet-select() {
   BUFFER=$(pet search --query "$READLINE_LINE")
   READLINE_LINE=$BUFFER
@@ -125,7 +143,7 @@ bind -x '"\C-x\C-r": pet-select'
 ### zsh
 
 ```
-$ cat .zshrc
+cat .zshrc
 function pet-select() {
   BUFFER=$(pet search --query "$LBUFFER")
   CURSOR=$#BUFFER
@@ -160,10 +178,6 @@ The snippets are managed in the TOML file, so it's easy to edit.
 You can share snippets via Gist.
 
 <img src="doc/pet05.gif" width="700">
-
-# Hands-on Tutorial
-
-To experience `pet` in action, try it out in this free O'Reilly Katacoda scenario, [Pet, a CLI Snippet Manager](https://katacoda.com/javajon/courses/kubernetes-tools/snippets-pet). As an example, you'll see how `pet` may enhance your productivity with the Kubernetes `kubectl` tool. Explore how you can use `pet` to curated a library of helpful snippets from the 800+ command variations with `kubectl`.
 
 # Usage
 
@@ -225,8 +239,11 @@ Run `pet configure`
   editor = "vim"                  # your favorite text editor
   column = 40                     # column size for list command
   selectcmd = "fzf"               # selector command for edit command (fzf or peco)
-  backend = "gist"                # specify backend service to sync snippets (gist or gitlab, default: gist)
+  backend = "gist"                # specify backend service to sync snippets (gist, ghe or gitlab, default: gist)
   sortby  = "description"         # specify how snippets get sorted (recency (default), -recency, description, -description, command, -command, output, -output)
+  cmd = ["sh", "-c"]              # specify the command to execute the snippet with
+  color = false                   # enables output coloring with fzf, same as '--color' flag
+  format = "[$description]: $command $tags" controls the format of the output when searching
 
 [Gist]
   file_name = "pet-snippet.toml"  # specify gist file name
@@ -249,6 +266,15 @@ Directories musst be specified as an array.
 All `toml` files will be scraped and found snippets will be added.
 
 Example1: single directory
+
+[GHEGist]
+  base_url = ""                   # GHE base URL
+  upload_url = ""                 # GHE upload URL (often the same as the base URL)
+  file_name = "pet-snippet.toml"  # specify gist file name
+  access_token = ""               # your access token
+  gist_id = ""                    # Gist ID
+  public = false                  # public or priate
+  auto_sync = false               # sync automatically when editing snippets
 
 ```
 $ pet configure
@@ -276,7 +302,7 @@ Snippet files in `snippetdirs` will not be added to Gist or GitLab. You've to do
 Example1: Change layout (bottom up)
 
 ```
-$ pet configure
+pet configure
 [General]
 ...
   selectcmd = "fzf"
@@ -285,18 +311,18 @@ $ pet configure
 
 Example2: Enable colorized output
 ```
-$ pet configure
+pet configure
 [General]
 ...
   selectcmd = "fzf --ansi"
 ...
-$ pet search --color
+pet search --color
 ```
 
 ## Tag
 You can use tags (delimiter: space).
 ```
-$ pet new -t
+pet new -t
 Command> ping 8.8.8.8
 Description> ping
 Tag> network google
@@ -304,7 +330,7 @@ Tag> network google
 
 Or edit manually.
 ```
-$ pet edit
+pet edit
 [[snippets]]
   description = "ping"
   command = "ping 8.8.8.8"
@@ -314,14 +340,14 @@ $ pet edit
 
 They are displayed with snippets.
 ```
-$ pet search
+pet search
 [ping]: ping 8.8.8.8 #network #google
 ```
 
-You can exec snipet with filtering the tag
+You can exec snippet with filtering the tag
 
 ```
-$ pet exec -t google
+pet exec -t google
 
 [ping]: ping 8.8.8.8 #network #google
 ```
@@ -335,7 +361,7 @@ Set that to `access_token` in `[Gist]` or use an environment variable with the n
 After setting, you can upload snippets to Gist.  
 If `gist_id` is not set, new gist will be created.
 ```
-$ pet sync
+pet sync
 Gist ID: 1cedddf4e06d1170bf0c5612fb31a758
 Upload success
 ```
@@ -345,27 +371,50 @@ Set `Gist ID` to `gist_id` in `[Gist]`.
 
 If the local file is older than gist, `pet sync` download snippets.
 ```
-$ pet sync
+pet sync
 Download success
 ```
 
 If gist is older than the local file, `pet sync` upload snippets.
 ```
-$ pet sync
+pet sync
 Upload success
 ```
 
 *Note: `-u` option is deprecated*
 
+### GHE Gist
+
+To use Gist with GitHub Enterprise, you need to follow these steps:
+
+1. Obtain an Access Token: Visit your GitHub Enterprise settings page to create a new access token with just the "gist" scope. This is necessary to authenticate and interact with the Gist API on GitHub Enterprise.
+2. Set the Access Token: Assign the newly created access token to `access_token` in the `[GHEGist]` section of your configuration. Alternatively, you can use an environment variable named `$PET_GITHUB_ENTERPRISE_ACCESS_TOKEN` to manage your token securely.
+3. Configure API Endpoints: Unlike the regular Gist config, you need to set `base_url` and `upload_url` to point to your GitHub Enterprise API endpoints. For example:
+
+```toml
+
+[GHEGist]
+base_url = "https://github-enterprise.example.com/api/v3/gists"
+upload_url = "https://github-enterprise.example.com/api/v3/gists"  # Often the same as the base URL
+```
+
+By setting these parameters, your tool will be configured to interact with GitHub Enterprise Gist, enabling you to sync and manage your snippets just as you would with the standard GitHub Gist service.
+
+Remember to replace `https://github-enterprise.example.com` with the actual URL of your GitHub Enterprise instance. This customization allows your tool to correctly connect to and use the Gist service in a GitHub Enterprise environment.
+
 ### GitLab Snippets
 You must obtain access token.
-Go https://gitlab.com/profile/personal_access_tokens and create access token.
-Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`..
+Go https://gitlab.com/-/profile/personal_access_tokens and create access token.
+Set that to `access_token` in `[GitLab]` or use an environment variable with the name `$PET_GITLAB_ACCESS_TOKEN`.
+
+You also have to configure the `url` under `[GitLab]`, so pet knows which endpoint to access. You would use `url = "https://gitlab.com"`unless you have another instance of Gitlab.
+
+At last, switch the `backend` under `[General]` to `backend = "gitlab"`.
 
 After setting, you can upload snippets to GitLab Snippets.
 If `id` is not set, new snippet will be created.
 ```
-$ pet sync
+pet sync
 GitLab Snippet ID: 12345678
 Upload success
 ```
@@ -375,23 +424,23 @@ Set `GitLab Snippet ID` to `id` in `[GitLab]`.
 
 If the local file is older than gitlab, `pet sync` download snippets.
 ```
-$ pet sync
+pet sync
 Download success
 ```
 
 If gitlab is older than the local file, `pet sync` upload snippets.
 ```
-$ pet sync
+pet sync
 Upload success
 ```
 
 ## Auto Sync
 You can sync snippets automatically.
-Set `true` to `auto_sync` in `[Gist]` or `[GitLab]`.
+Set `true` to `auto_sync` in `[Gist]`, `[GHEGist]` or `[GitLab]`.
 Then, your snippets sync automatically when `pet new` or `pet edit`.
 
 ```
-$ pet edit
+pet edit
 Getting Gist...
 Updating Gist...
 Upload success
@@ -407,27 +456,27 @@ Go to [the releases page](https://github.com/knqyf263/pet/releases), find the ve
 ## Mac OS X / Homebrew
 You can use homebrew on OS X.
 ```
-$ brew install knqyf263/pet/pet
+brew install knqyf263/pet/pet
 ```
 
 If you receive an error (`Error: knqyf263/pet/pet 64 already installed`) during `brew upgrade`, try the following command
 
 ```
-$ brew unlink pet && brew uninstall pet
-($ rm -rf /usr/local/Cellar/pet/64)
-$ brew install knqyf263/pet/pet
+brew unlink pet && brew uninstall pet
+(rm -rf /usr/local/Cellar/pet/64)
+brew install knqyf263/pet/pet
 ```
 
 ## RedHat, CentOS
 Download rpm package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-$ sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
+sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
 ```
 
 ## Debian, Ubuntu
 Download deb package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-$ wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
+wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
 dpkg -i pet_0.3.6_linux_amd64.deb
 ```
 
@@ -435,21 +484,21 @@ dpkg -i pet_0.3.6_linux_amd64.deb
 Two packages are available in [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository).
 You can install the package [from source](https://aur.archlinux.org/packages/pet-git):
 ```
-$ yaourt -S pet-git
+yaourt -S pet-git
 ```
 Or [from the binary](https://aur.archlinux.org/packages/pet-bin):
 ```
-$ yaourt -S pet-bin
+yaourt -S pet-bin
 ```
 
 ## Build
 
 ```
-$ mkdir -p $GOPATH/src/github.com/knqyf263
-$ cd $GOPATH/src/github.com/knqyf263
-$ git clone https://github.com/knqyf263/pet.git
-$ cd pet
-$ make install
+mkdir -p $GOPATH/src/github.com/knqyf263
+cd $GOPATH/src/github.com/knqyf263
+git clone https://github.com/knqyf263/pet.git
+cd pet
+make install
 ```
 
 # Migration

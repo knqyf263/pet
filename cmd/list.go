@@ -37,40 +37,40 @@ func list(cmd *cobra.Command, args []string) error {
 	for _, snippet := range snippets.Snippets {
 		if config.Flag.OneLine {
 			description := runewidth.FillRight(runewidth.Truncate(snippet.Description, col, "..."), col)
-			command := runewidth.Truncate(snippet.Command, 100-4-col, "...")
+			command := snippet.Command
 			// make sure multiline command printed as oneline
 			command = strings.Replace(command, "\n", "\\n", -1)
 			fmt.Fprintf(color.Output, "%s : %s\n",
-				color.GreenString(description), color.YellowString(command))
+				color.HiGreenString(description), color.HiYellowString(command))
 		} else {
 			if config.Flag.Debug {
 				fmt.Fprintf(color.Output, "%12s %s\n",
 					color.RedString("   Filename:"), snippet.Filename)
 			}
 			fmt.Fprintf(color.Output, "%12s %s\n",
-				color.GreenString("Description:"), snippet.Description)
+				color.HiGreenString("Description:"), snippet.Description)
 			if strings.Contains(snippet.Command, "\n") {
 				lines := strings.Split(snippet.Command, "\n")
 				firstLine, restLines := lines[0], lines[1:]
 				fmt.Fprintf(color.Output, "%12s %s\n",
-					color.YellowString("    Command:"), firstLine)
+					color.HiYellowString("    Command:"), firstLine)
 				for _, line := range restLines {
 					fmt.Fprintf(color.Output, "%12s %s\n",
 						" ", line)
 				}
 			} else {
 				fmt.Fprintf(color.Output, "%12s %s\n",
-					color.YellowString("    Command:"), snippet.Command)
+					color.HiYellowString("    Command:"), snippet.Command)
 			}
 			if snippet.Tag != nil {
 				tag := strings.Join(snippet.Tag, " ")
 				fmt.Fprintf(color.Output, "%12s %s\n",
-					color.CyanString("        Tag:"), tag)
+					color.HiCyanString("        Tag:"), tag)
 			}
 			if snippet.Output != "" {
 				output := strings.Replace(snippet.Output, "\n", "\n             ", -1)
 				fmt.Fprintf(color.Output, "%12s %s\n",
-					color.RedString("     Output:"), output)
+					color.HiRedString("     Output:"), output)
 			}
 			fmt.Println(strings.Repeat("-", 30))
 		}

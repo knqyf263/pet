@@ -2,7 +2,6 @@ package sync
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -63,6 +62,12 @@ func NewSyncClient() (Client, error) {
 			return nil, errors.Wrap(err, "Failed to initialize GitLab client")
 		}
 		return client, nil
+	} else if config.Conf.General.Backend == "ghe" {
+		client, err := NewGHEGistClient()
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to initialize GHE client")
+		}
+		return client, nil
 	}
 	client, err := NewGistClient()
 	if err != nil {
@@ -108,5 +113,5 @@ func download(content string) error {
 	}
 
 	fmt.Println("Download success")
-	return ioutil.WriteFile(snippetFile, []byte(content), os.ModePerm)
+	return os.WriteFile(snippetFile, []byte(content), os.ModePerm)
 }

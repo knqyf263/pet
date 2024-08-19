@@ -6,8 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-
-	"github.com/BurntSushi/toml"
+	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
 )
 
@@ -16,20 +15,24 @@ var Conf Config
 
 // Config is a struct of config
 type Config struct {
-	General GeneralConfig `toml:"General"`
-	Gist    GistConfig    `toml:"Gist"`
-	GitLab  GitLabConfig  `toml:"GitLab"`
+	General GeneralConfig
+	Gist    GistConfig
+	GitLab  GitLabConfig
+	GHEGist GHEGistConfig
 }
 
 // GeneralConfig is a struct of general config
 type GeneralConfig struct {
-	SnippetFile string   `toml:"snippetfile"`
-	SnippetDirs []string `toml:"snippetdirs"`
-	Editor      string   `toml:"editor"`
-	Column      int      `toml:"column"`
-	SelectCmd   string   `toml:"selectcmd"`
-	Backend     string   `toml:"backend"`
-	SortBy      string   `toml:"sortby"`
+	SnippetFile string
+  SnippetDirs []string
+	Editor      string
+	Column      int
+	SelectCmd   string
+	Backend     string
+	SortBy      string
+	Color       bool
+	Format      string
+	Cmd         []string
 }
 
 // GistConfig is a struct of config for Gist
@@ -37,19 +40,30 @@ type GistConfig struct {
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
 	GistID      string `toml:"gist_id"`
-	Public      bool   `toml:"public"`
-	AutoSync    bool   `toml:"auto_sync"`
+	Public      bool
+	AutoSync    bool `toml:"auto_sync"`
 }
 
 // GitLabConfig is a struct of config for GitLabSnippet
 type GitLabConfig struct {
 	FileName    string `toml:"file_name"`
 	AccessToken string `toml:"access_token"`
-	Url         string `toml:"url"`
-	ID          string `toml:"id"`
-	Visibility  string `toml:"visibility"`
-	AutoSync    bool   `toml:"auto_sync"`
-	Insecure    bool   `toml:"skip_ssl"`
+	Url         string
+	ID          string
+	Visibility  string
+	AutoSync    bool `toml:"auto_sync"`
+	SkipSsl     bool `toml:"skip_ssl"`
+}
+
+// GHEGistConfig is a struct of config for Gist of Github Enterprise
+type GHEGistConfig struct {
+	BaseUrl     string `toml:"base_url"`
+	UploadUrl   string `toml:"upload_url"`
+	FileName    string `toml:"file_name"`
+	AccessToken string `toml:"access_token"`
+	GistID      string `toml:"gist_id"`
+	Public      bool
+	AutoSync    bool `toml:"auto_sync"`
 }
 
 // Flag is global flag variable
@@ -57,21 +71,24 @@ var Flag FlagConfig
 
 // FlagConfig is a struct of flag
 type FlagConfig struct {
-	Debug     bool
-	Query     string
-	FilterTag string
-	Command   bool
-	Delimiter string
-	OneLine   bool
-	Color     bool
-	Tag       bool
+	Debug        bool
+	Query        string
+	FilterTag    string
+	Command      bool
+	Delimiter    string
+	OneLine      bool
+	Color        bool
+	Tag          bool
+	UseMultiLine bool
+	UseEditor    bool
 }
 
 // Load loads a config toml
 func (cfg *Config) Load(file string) error {
 	_, err := os.Stat(file)
 	if err == nil {
-		_, err := toml.DecodeFile(file, cfg)
+		f, err := os.ReadFile(file)
+		err = toml.Unmarshal(f, cfg)
 		if err != nil {
 			return err
 		}
@@ -111,8 +128,10 @@ func (cfg *Config) Load(file string) error {
 		}
 	}
 	cfg.General.Column = 40
-	cfg.General.SelectCmd = "fzf"
+	cfg.General.SelectCmd = "fzf --ansi --layout=reverse --border --height=90% --pointer=* --cycle --prompt=Snippets:"
 	cfg.General.Backend = "gist"
+	cfg.General.Color = false
+	cfg.General.Format = "[$description]: $command $tags"
 
 	cfg.Gist.FileName = "pet-snippet.toml"
 
@@ -124,7 +143,9 @@ func (cfg *Config) Load(file string) error {
 
 // GetDefaultConfigDir returns the default config directory
 func GetDefaultConfigDir() (dir string, err error) {
-	if runtime.GOOS == "windows" {
+	if env, ok := os.LookupEnv("PET_CONFIG_DIR"); ok {
+		dir = env
+	} else if runtime.GOOS == "windows" {
 		dir = os.Getenv("APPDATA")
 		if dir == "" {
 			dir = filepath.Join(os.Getenv("USERPROFILE"), "Application Data", "pet")
@@ -133,7 +154,7 @@ func GetDefaultConfigDir() (dir string, err error) {
 	} else {
 		dir = filepath.Join(os.Getenv("HOME"), ".config", "pet")
 	}
-	if err := os.MkdirAll(dir, 0700); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", fmt.Errorf("cannot create directory: %v", err)
 	}
 	return dir, nil

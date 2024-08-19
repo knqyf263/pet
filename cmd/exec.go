@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
 	"github.com/spf13/cobra"
 	"gopkg.in/alessio/shellescape.v1"
@@ -32,12 +31,10 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 	command := strings.Join(commands, "; ")
-	if config.Flag.Debug {
-		fmt.Printf("Command: %s\n", command)
-	}
-	if config.Flag.Command {
-		fmt.Printf("%s: %s\n", color.YellowString("Command"), command)
-	}
+
+	// Show final command before executing it
+	fmt.Printf("> %s\n", command)
+
 	return run(command, os.Stdin, os.Stdout)
 }
 
@@ -49,6 +46,4 @@ func init() {
 		`Initial value for query`)
 	execCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
 		`Filter tag`)
-	execCmd.Flags().BoolVarP(&config.Flag.Command, "command", "c", false,
-		`Show the command with the plain text before executing`)
 }
