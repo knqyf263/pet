@@ -63,7 +63,6 @@ func filter(options []string, tag string) (commands []string, err error) {
 
 		snippetTexts[t] = s
 		if config.Flag.Color || config.Conf.General.Color {
-			t = config.Conf.General.Format
 			t = strings.Replace(format, "$command", command, 1)
 			t = strings.Replace(t, "$description", color.HiRedString(s.Description), 1)
 			t = strings.Replace(t, "$tags", color.HiCyanString(tags), 1)
@@ -107,7 +106,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 func selectFile(options []string, tag string) (snippetFile string, err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(); err != nil {
-		return snippetFile, fmt.Errorf("Load snippet failed: %v", err)
+		return snippetFile, fmt.Errorf("load snippet failed: %v", err)
 	}
 
 	if 0 < len(tag) {

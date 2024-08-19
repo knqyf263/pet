@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+
 	"github.com/kennygrant/sanitize"
 	"github.com/knqyf263/pet/config"
 	"github.com/pelletier/go-toml"
@@ -25,27 +26,40 @@ type SnippetInfo struct {
 
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
-	var files []string
-	if config.Conf.General.SnippetFile != "" {
-		files = append(files, config.Conf.General.SnippetFile)
+	var snippetFiles []string
+
+	snippetFile := config.Conf.General.SnippetFile
+	if snippetFile != "" {
+		if _, err := os.Stat(snippetFile); err == nil {
+			snippetFiles = append(snippetFiles, snippetFile)
+		} else if !os.IsNotExist(err) {
+			return fmt.Errorf("failed to load snippet file. %v", err)
+		}
 	}
 
-  for _, dir := range config.Conf.General.SnippetDirs {
-		files = append(files, getFiles(dir)...)
+	for _, dir := range config.Conf.General.SnippetDirs {
+		if _, err := os.Stat(dir); err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("snippet directory not found. %s", dir)
+			}
+			return fmt.Errorf("failed to load snippet directory. %v", err)
+		}
+		snippetFiles = append(snippetFiles, getFiles(dir)...)
 	}
 
-	for _, file := range files {
+	// Read files and load snippets
+	for _, file := range snippetFiles {
 		tmp := Snippets{}
 		f, err := os.ReadFile(file)
-    if err != nil {
-      return fmt.Errorf("failed to load snippet file. %v", err)
-    }
-    
-    err = toml.Unmarshal(f, tmp)
-    if err != nil {
-      return fmt.Errorf("failed to parse snippet file. %v", err)
-    }
-    
+		if err != nil {
+			return fmt.Errorf("failed to load snippet file. %v", err)
+		}
+
+		err = toml.Unmarshal(f, &tmp)
+		if err != nil {
+			return fmt.Errorf("failed to parse snippet file. %v", err)
+		}
+
 		for _, snippet := range tmp.Snippets {
 			snippet.Filename = file
 			snippets.Snippets = append(snippets.Snippets, snippet)
