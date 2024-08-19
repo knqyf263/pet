@@ -25,6 +25,7 @@ type Config struct {
 // GeneralConfig is a struct of general config
 type GeneralConfig struct {
 	SnippetFile string
+	SnippetDirs []string
 	Editor      string
 	Column      int
 	SelectCmd   string
@@ -88,11 +89,20 @@ func (cfg *Config) Load(file string) error {
 	_, err := os.Stat(file)
 	if err == nil {
 		f, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+
 		err = toml.Unmarshal(f, cfg)
 		if err != nil {
 			return err
 		}
+		var snippetdirs []string
 		cfg.General.SnippetFile = expandPath(cfg.General.SnippetFile)
+		for _, dir := range cfg.General.SnippetDirs {
+			snippetdirs = append(snippetdirs, expandPath(dir)) // note the = instead of :=
+		}
+		cfg.General.SnippetDirs = snippetdirs
 		return nil
 	}
 

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
+	"github.com/kennygrant/sanitize"
 	"github.com/knqyf263/pet/config"
 	"github.com/pelletier/go-toml"
 )
@@ -15,6 +17,7 @@ type Snippets struct {
 }
 
 type SnippetInfo struct {
+	Filename    string
 	Description string
 	Command     string `toml:"command,multiline"`
 	Tag         []string
@@ -23,18 +26,51 @@ type SnippetInfo struct {
 
 // Load reads toml file.
 func (snippets *Snippets) Load() error {
+	var snippetFiles []string
+
 	snippetFile := config.Conf.General.SnippetFile
-	if _, err := os.Stat(snippetFile); os.IsNotExist(err) {
-		return nil
-	}
-	f, err := os.ReadFile(snippetFile)
-	if err != nil {
-		return fmt.Errorf("failed to load snippet file. %v", err)
+	if snippetFile != "" {
+		if _, err := os.Stat(snippetFile); err == nil {
+			snippetFiles = append(snippetFiles, snippetFile)
+		} else if !os.IsNotExist(err) {
+			return fmt.Errorf("failed to load snippet file. %v", err)
+		} else {
+			return fmt.Errorf(
+				`snippet file not found. %s
+Please run 'pet configure' and provide a correct file path, or remove this
+if you only want to provide snippetdirs instead`,
+				snippetFile,
+			)
+		}
 	}
 
-	err = toml.Unmarshal(f, snippets)
-	if err != nil {
-		return fmt.Errorf("failed to parse snippet file. %v", err)
+	for _, dir := range config.Conf.General.SnippetDirs {
+		if _, err := os.Stat(dir); err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("snippet directory not found. %s", dir)
+			}
+			return fmt.Errorf("failed to load snippet directory. %v", err)
+		}
+		snippetFiles = append(snippetFiles, getFiles(dir)...)
+	}
+
+	// Read files and load snippets
+	for _, file := range snippetFiles {
+		tmp := Snippets{}
+		f, err := os.ReadFile(file)
+		if err != nil {
+			return fmt.Errorf("failed to load snippet file. %v", err)
+		}
+
+		err = toml.Unmarshal(f, &tmp)
+		if err != nil {
+			return fmt.Errorf("failed to parse snippet file. %v", err)
+		}
+
+		for _, snippet := range tmp.Snippets {
+			snippet.Filename = file
+			snippets.Snippets = append(snippets.Snippets, snippet)
+		}
 	}
 
 	snippets.Order()
@@ -43,11 +79,22 @@ func (snippets *Snippets) Load() error {
 
 // Save saves the snippets to toml file.
 func (snippets *Snippets) Save() error {
-	snippetFile := config.Conf.General.SnippetFile
+	var snippetFile string
+	var newSnippets Snippets
+	for _, snippet := range snippets.Snippets {
+		if snippet.Filename == "" {
+			snippetFile = config.Conf.General.SnippetDirs[0] + fmt.Sprintf("%s.toml", strings.ToLower(sanitize.BaseName(snippet.Description)))
+			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
+		} else if snippet.Filename == config.Conf.General.SnippetFile {
+			snippetFile = config.Conf.General.SnippetFile
+			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
+		}
+	}
 	f, err := os.Create(snippetFile)
 	if err != nil {
 		return fmt.Errorf("failed to save snippet file. err: %s", err)
 	}
+
 	defer f.Close()
 	return toml.NewEncoder(f).Encode(snippets)
 }
