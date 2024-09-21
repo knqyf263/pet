@@ -134,7 +134,26 @@ func GenerateParamsLayout(params [][2]string, command string) {
 		r := regexp.MustCompile(parameterMultipleValueRegex)
 		matches := r.FindAllStringSubmatch(parameterValue, -1)
 
-		if len(matches) > 0 {
+		if len(matches) == 1 {
+			// Extract the default values and generate multiple params view
+			// using early evaluation context
+			matchedGroup := matches[0][1]
+			parameter := matchedGroup[2 : len(matchedGroup)-2]
+
+			options, err := DynamicOptions(parameter)
+			if err != nil {
+				// fallback to default evaluation (raw)
+				options = []string{parameter}
+			}
+
+			generateMultipleParameterView(
+				g, parameterKey, options, []int{
+					leftX,
+					(maxY / 4) + (idx+1)*layoutStep,
+					rightX,
+					(maxY / 4) + 2 + (idx+1)*layoutStep},
+				true)
+		} else if len(matches) > 0 {
 			// Extract the default values and generate multiple params view
 			parameters := []string{}
 			for _, p := range matches {
