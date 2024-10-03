@@ -467,10 +467,14 @@ brew unlink pet && brew uninstall pet
 brew install knqyf263/pet/pet
 ```
 
-## RedHat, CentOS
+## Fedora, RedHat, CentOS
 Download rpm package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
 sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
+```
+Also available on the [Terra Repository](https://terra.fyralabs.com/) (3rd party)
+```
+sudo dnf install pet
 ```
 
 ## Debian, Ubuntu
