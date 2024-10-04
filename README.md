@@ -472,7 +472,7 @@ Download rpm package from [the releases page](https://github.com/knqyf263/pet/re
 ```
 sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
 ```
-Also available on the [Terra repository](https://terra.fyralabs.com/) (3rd party)
+Also available on the [Terra repository](https://terra.fyralabs.com/) (3rd party) for Fedora/Fedora-based distros
 ```
 sudo dnf install pet
 ```
