@@ -30,8 +30,9 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 	// Create a list of snippet files to load snippets from
 	var snippetFiles []string
 
-	snippetFile, err := config.ExpandPath(config.Conf.General.SnippetFile)
-	if err == nil {
+	if config.Conf.General.SnippetFile != "" {
+		snippetFile := config.ExpandPath(config.Conf.General.SnippetFile)
+
 		if _, err := os.Stat(snippetFile); err == nil {
 			snippetFiles = append(snippetFiles, config.Conf.General.SnippetFile)
 		} else if !os.IsNotExist(err) {
@@ -62,6 +63,7 @@ if you only want to provide snippetdirs instead`,
 
 			snippetFiles = append(snippetFiles, getFiles(dir)...)
 		}
+		snippetFiles = append(snippetFiles, getFiles(config.ExpandPath(dir))...)
 	}
 
 	// Read files and load snippets
