@@ -30,12 +30,11 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 	// Create a list of snippet files to load snippets from
 	var snippetFiles []string
 
-	// Load snippets from the main snippet file
-	// Raise an error if the file is not found / not configured
-	snippetFile := config.Conf.General.SnippetFile
-	if snippetFile != "" {
+	if config.Conf.General.SnippetFile != "" {
+		snippetFile := config.ExpandPath(config.Conf.General.SnippetFile)
+
 		if _, err := os.Stat(snippetFile); err == nil {
-			snippetFiles = append(snippetFiles, snippetFile)
+			snippetFiles = append(snippetFiles, config.Conf.General.SnippetFile)
 		} else if !os.IsNotExist(err) {
 			return fmt.Errorf("failed to load snippet file. %v", err)
 		} else {
@@ -43,7 +42,7 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 				`snippet file not found. %s
 Please run 'pet configure' and provide a correct file path, or remove this
 if you only want to provide snippetdirs instead`,
-				snippetFile,
+				config.Conf.General.SnippetFile,
 			)
 		}
 	}
@@ -59,12 +58,13 @@ if you only want to provide snippetdirs instead`,
 			}
 			snippetFiles = append(snippetFiles, getFiles(dir)...)
 		}
+		snippetFiles = append(snippetFiles, getFiles(config.ExpandPath(dir))...)
 	}
 
 	// Read files and load snippets
 	for _, file := range snippetFiles {
 		tmp := Snippets{}
-		f, err := os.ReadFile(file)
+		f, err := os.ReadFile(config.ExpandPath(file))
 		if err != nil {
 			return fmt.Errorf("failed to load snippet file. %v", err)
 		}
@@ -98,7 +98,8 @@ func (snippets *Snippets) Save() error {
 			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
 		}
 	}
-	f, err := os.Create(snippetFile)
+
+	f, err := os.Create(config.ExpandPath(snippetFile))
 	if err != nil {
 		return fmt.Errorf("failed to save snippet file. err: %s", err)
 	}

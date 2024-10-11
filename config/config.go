@@ -98,9 +98,8 @@ func (cfg *Config) Load(file string) error {
 			return err
 		}
 		var snippetdirs []string
-		cfg.General.SnippetFile = expandPath(cfg.General.SnippetFile)
 		for _, dir := range cfg.General.SnippetDirs {
-			snippetdirs = append(snippetdirs, expandPath(dir)) // note the = instead of :=
+			snippetdirs = append(snippetdirs, dir) // note the = instead of :=
 		}
 		cfg.General.SnippetDirs = snippetdirs
 		return nil
@@ -109,6 +108,7 @@ func (cfg *Config) Load(file string) error {
 	if !os.IsNotExist(err) {
 		return err
 	}
+
 	f, err := os.Create(file)
 	if err != nil {
 		return err
@@ -119,9 +119,10 @@ func (cfg *Config) Load(file string) error {
 		return errors.Wrap(err, "Failed to get the default config directory")
 	}
 	cfg.General.SnippetFile = filepath.Join(dir, "snippet.toml")
-	_, err = os.Create(cfg.General.SnippetFile)
+
+	_, err = os.Create(ExpandPath(cfg.General.SnippetFile))
 	if err != nil {
-		return errors.Wrap(err, "Failed to create a config file")
+		return errors.Wrap(err, "Failed to create a snippet file")
 	}
 
 	cfg.General.Editor = os.Getenv("EDITOR")
@@ -165,7 +166,7 @@ func GetDefaultConfigDir() (dir string, err error) {
 	return dir, nil
 }
 
-func expandPath(s string) string {
+func ExpandPath(s string) string {
 	if len(s) >= 2 && s[0] == '~' && os.IsPathSeparator(s[1]) {
 		if runtime.GOOS == "windows" {
 			s = filepath.Join(os.Getenv("USERPROFILE"), s[2:])

@@ -167,10 +167,11 @@ func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snipp
 
 func countSnippetLines() int {
 	// Count lines in snippet file
-	f, err := os.Open(config.Conf.General.SnippetFile)
+	f, err := os.Open(config.ExpandPath(config.Conf.General.SnippetFile))
 	if err != nil {
 		panic("Error reading snippet file")
 	}
+
 	lineCount, err := CountLines(f)
 	if err != nil {
 		panic("Error counting lines in snippet file")
