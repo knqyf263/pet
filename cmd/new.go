@@ -1,4 +1,4 @@
-package cmd
+paackage cmd
 
 import (
 	"errors"
@@ -167,7 +167,7 @@ func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snipp
 
 func countSnippetLines() int {
 	// Count lines in snippet file
-	if config.Conf.General.SnippetFile != "" {
+	if config.Conf.General.SnippetFile == "" {
 		return 0
 	}
 
