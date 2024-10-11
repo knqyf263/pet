@@ -267,6 +267,7 @@ All `toml` files will be scraped and found snippets will be added.
 
 Example1: single directory
 
+```toml
 [GHEGist]
   base_url = ""                   # GHE base URL
   upload_url = ""                 # GHE upload URL (often the same as the base URL)
@@ -275,6 +276,7 @@ Example1: single directory
   gist_id = ""                    # Gist ID
   public = false                  # public or priate
   auto_sync = false               # sync automatically when editing snippets
+```
 
 ```
 $ pet configure
