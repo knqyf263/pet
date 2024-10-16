@@ -100,8 +100,6 @@ func upload(client Client) (err error) {
 // download downloads snippets from the remote repository
 // and saves them to the main snippet file - directories ignored
 func download(content string) error {
-	snippetFile := config.ExpandPath(config.Conf.General.SnippetFile)
-
 	var snippets snippet.Snippets
 	if err := snippets.Load(false); err != nil {
 		return err

@@ -30,9 +30,8 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 	// Create a list of snippet files to load snippets from
 	var snippetFiles []string
 
-	if config.Conf.General.SnippetFile != "" {
-		snippetFile := config.ExpandPath(config.Conf.General.SnippetFile)
-
+	snippetFile, err := config.ExpandPath(config.Conf.General.SnippetFile)
+	if err == nil {
 		if _, err := os.Stat(snippetFile); err == nil {
 			snippetFiles = append(snippetFiles, config.Conf.General.SnippetFile)
 		} else if !os.IsNotExist(err) {
@@ -47,23 +46,21 @@ if you only want to provide snippetdirs instead`,
 		}
 	}
 
-	if includeDirs {
-		for _, snippetDir := range config.Conf.General.SnippetDirs {
-			dir, err := config.ExpandPath(snippetDir)
-			if err != nil {
-				return fmt.Errorf("snippet directory not found. %s", snippetDir)
-			}
+	for _, snippetDir := range config.Conf.General.SnippetDirs {
+		dir, err := config.ExpandPath(snippetDir)
+		if err != nil {
+			return fmt.Errorf("snippet directory not found. %s", snippetDir)
+		}
 
-			if _, err := os.Stat(dir); err != nil {
-				if os.IsNotExist(err) {
-					return fmt.Errorf("snippet directory not found. %s", snippetDir)
-				}
-				snippetFiles = append(snippetFiles, getFiles(dir)...)
+		if _, err := os.Stat(dir); err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("snippet directory not found. %s", snippetDir)
 			}
 
 			snippetFiles = append(snippetFiles, getFiles(dir)...)
 		}
-		snippetFiles = append(snippetFiles, getFiles(config.ExpandPath(dir))...)
+
+		snippetFiles = append(snippetFiles, getFiles(dir)...)
 	}
 
 	// Read files and load snippets
