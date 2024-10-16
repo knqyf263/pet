@@ -30,9 +30,8 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 	// Create a list of snippet files to load snippets from
 	var snippetFiles []string
 
-	if config.Conf.General.SnippetFile != "" {
-		snippetFile := config.ExpandPath(config.Conf.General.SnippetFile)
-
+	snippetFile, err := config.ExpandPath(config.Conf.General.SnippetFile)
+	if err == nil {
 		if _, err := os.Stat(snippetFile); err == nil {
 			snippetFiles = append(snippetFiles, config.Conf.General.SnippetFile)
 		} else if !os.IsNotExist(err) {
@@ -47,28 +46,35 @@ if you only want to provide snippetdirs instead`,
 		}
 	}
 
-	// Optionally load snippets from snippet directories
-	if includeDirs {
-		for _, dir := range config.Conf.General.SnippetDirs {
-			if _, err := os.Stat(dir); err != nil {
-				if os.IsNotExist(err) {
-					return fmt.Errorf("snippet directory not found. %s", dir)
-				}
-				return fmt.Errorf("failed to load snippet directory. %v", err)
+	for _, snippetDir := range config.Conf.General.SnippetDirs {
+		dir, err := config.ExpandPath(snippetDir)
+		if err != nil {
+			return fmt.Errorf("snippet directory not found. %s", snippetDir)
+		}
+
+		if _, err := os.Stat(dir); err != nil {
+			if os.IsNotExist(err) {
+				return fmt.Errorf("snippet directory not found. %s", snippetDir)
 			}
 			snippetFiles = append(snippetFiles, getFiles(dir)...)
 		}
-		snippetFiles = append(snippetFiles, getFiles(config.ExpandPath(dir))...)
+
+		snippetFiles = append(snippetFiles, getFiles(dir)...)
 	}
 
 	// Read files and load snippets
 	for _, file := range snippetFiles {
-		tmp := Snippets{}
-		f, err := os.ReadFile(config.ExpandPath(file))
+		file_path, err := config.ExpandPath(file)
 		if err != nil {
 			return fmt.Errorf("failed to load snippet file. %v", err)
 		}
 
+		f, err := os.ReadFile(file_path)
+		if err != nil {
+			return fmt.Errorf("failed to load snippet file. %v", err)
+		}
+
+		tmp := Snippets{}
 		err = toml.Unmarshal(f, &tmp)
 		if err != nil {
 			return fmt.Errorf("failed to parse snippet file. %v", err)
@@ -99,7 +105,12 @@ func (snippets *Snippets) Save() error {
 		}
 	}
 
-	f, err := os.Create(config.ExpandPath(snippetFile))
+	file_path, err := config.ExpandPath(snippetFile)
+	if err != nil {
+		return fmt.Errorf("failed to save snippet file. err: %s", err)
+	}
+
+	f, err := os.Create(file_path)
 	if err != nil {
 		return fmt.Errorf("failed to save snippet file. err: %s", err)
 	}
