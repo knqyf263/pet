@@ -182,6 +182,10 @@ func countSnippetLines() int {
 // new creates a new snippet and saves it to the main snippet file
 // then syncs the snippet file if configured to do so.
 func new(cmd *cobra.Command, args []string) (err error) {
+	return _new(os.Stdin, os.Stdout, args)
+}
+
+func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 	var filename string = ""
 	var command string
 	var description string
@@ -203,7 +207,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 			command, err = scanMultiLine(
 				color.YellowString("Command> "),
 				color.YellowString(".......> "),
-				os.Stdout, os.Stdin,
+				out, in,
 			)
 		} else if config.Flag.UseEditor {
 			// Create and save empty snippet
@@ -216,20 +220,20 @@ func new(cmd *cobra.Command, args []string) (err error) {
 			return createAndEditSnippet(newSnippet, snippets, lineCount+3)
 
 		} else {
-			command, err = scan(color.HiYellowString("Command> "), os.Stdout, os.Stdin, false)
+			command, err = scan(color.HiYellowString("Command> "), out, in, false)
 		}
 		if err != nil {
 			return err
 		}
 	}
-	description, err = scan(color.HiGreenString("Description> "), os.Stdout, os.Stdin, false)
+	description, err = scan(color.HiGreenString("Description> "), out, in, false)
 	if err != nil {
 		return err
 	}
 
 	if config.Flag.Tag {
 		var t string
-		if t, err = scan(color.HiCyanString("Tag> "), os.Stdout, os.Stdin, true); err != nil {
+		if t, err = scan(color.HiCyanString("Tag> "), out, in, true); err != nil {
 			return err
 		}
 
