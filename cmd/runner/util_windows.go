@@ -1,6 +1,6 @@
 //go:build windows
 
-package cmd
+package runner
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"github.com/knqyf263/pet/config"
 )
 
-func run(command string, r io.Reader, w io.Writer) error {
+func Run(command string, r io.Reader, w io.Writer) error {
 	var cmd *exec.Cmd
 	if len(config.Conf.General.Cmd) > 0 {
 		line := append(config.Conf.General.Cmd, command)

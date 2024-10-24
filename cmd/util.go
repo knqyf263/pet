@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/knqyf263/pet/cmd/runner"
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/dialog"
 	"github.com/knqyf263/pet/snippet"
@@ -18,7 +19,7 @@ func editFile(command, file string, startingLine int) error {
 	// Note that this works for most unix editors (nano, vi, vim, etc)
 	// TODO: Remove for other kinds of editors - this is only for UX
 	command += " +" + strconv.Itoa(startingLine) + " " + file
-	return run(command, os.Stdin, os.Stdout)
+	return runner.Run(command, os.Stdin, os.Stdout)
 }
 
 func filter(options []string, tag string) (commands []string, err error) {
@@ -74,7 +75,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 	var buf bytes.Buffer
 	selectCmd := fmt.Sprintf("%s %s",
 		config.Conf.General.SelectCmd, strings.Join(options, " "))
-	err = run(selectCmd, strings.NewReader(text), &buf)
+	err = runner.Run(selectCmd, strings.NewReader(text), &buf)
 	if err != nil {
 		return nil, nil
 	}
@@ -150,7 +151,7 @@ func selectFile(options []string, tag string) (snippetFile string, err error) {
 	var buf bytes.Buffer
 	selectCmd := fmt.Sprintf("%s %s",
 		config.Conf.General.SelectCmd, strings.Join(options, " "))
-	err = run(selectCmd, strings.NewReader(text), &buf)
+	err = runner.Run(selectCmd, strings.NewReader(text), &buf)
 	if err != nil {
 		return snippetFile, nil
 	}
