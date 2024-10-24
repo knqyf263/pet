@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
@@ -98,9 +99,12 @@ func (cfg *Config) Load(file string) error {
 			return err
 		}
 		var snippetdirs []string
-		cfg.General.SnippetFile = expandPath(cfg.General.SnippetFile)
 		for _, dir := range cfg.General.SnippetDirs {
-			snippetdirs = append(snippetdirs, expandPath(dir)) // note the = instead of :=
+			if !strings.HasSuffix(dir, "/") {
+				dir = dir + "/"
+			}
+
+			snippetdirs = append(snippetdirs, dir) // note the = instead of :=
 		}
 		cfg.General.SnippetDirs = snippetdirs
 		return nil
@@ -109,6 +113,7 @@ func (cfg *Config) Load(file string) error {
 	if !os.IsNotExist(err) {
 		return err
 	}
+
 	f, err := os.Create(file)
 	if err != nil {
 		return err
@@ -118,10 +123,16 @@ func (cfg *Config) Load(file string) error {
 	if err != nil {
 		return errors.Wrap(err, "Failed to get the default config directory")
 	}
+
 	cfg.General.SnippetFile = filepath.Join(dir, "snippet.toml")
-	_, err = os.Create(cfg.General.SnippetFile)
+	file_path, err := ExpandPath(cfg.General.SnippetFile)
 	if err != nil {
-		return errors.Wrap(err, "Failed to create a config file")
+		return errors.Wrap(err, "SnippetFile path is invalid: %v")
+	}
+
+	_, err = os.Create(file_path)
+	if err != nil {
+		return errors.Wrap(err, "Failed to create a snippet file")
 	}
 
 	cfg.General.Editor = os.Getenv("EDITOR")
@@ -132,6 +143,7 @@ func (cfg *Config) Load(file string) error {
 			cfg.General.Editor = "vim"
 		}
 	}
+
 	cfg.General.Column = 40
 	cfg.General.SelectCmd = "fzf --ansi --layout=reverse --border --height=90% --pointer=* --cycle --prompt=Snippets:"
 	cfg.General.Backend = "gist"
@@ -165,15 +177,25 @@ func GetDefaultConfigDir() (dir string, err error) {
 	return dir, nil
 }
 
-func expandPath(s string) string {
-	if len(s) >= 2 && s[0] == '~' && os.IsPathSeparator(s[1]) {
-		if runtime.GOOS == "windows" {
-			s = filepath.Join(os.Getenv("USERPROFILE"), s[2:])
-		} else {
-			s = filepath.Join(os.Getenv("HOME"), s[2:])
-		}
+// Given a path to either a file or directory, returns its absolute path format.
+// ExpandPath resolves "~/" prefix in a given system path.
+// Raise error if path is an empty string as it
+func ExpandPath(path string) (string, error) {
+	if path == "" {
+		error := errors.New("path to file/directory is not set.")
+		return path, error
 	}
-	return os.Expand(s, os.Getenv)
+
+	if strings.HasPrefix(path, "~/") {
+		homedir, err := os.UserHomeDir()
+		if err != nil {
+			return path, err
+		}
+
+		return filepath.Join(homedir, path[2:]), nil
+	}
+
+	return path, nil
 }
 
 func isCommandAvailable(name string) bool {

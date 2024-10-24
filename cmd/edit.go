@@ -39,7 +39,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if snippetFile == "" {
-		return errors.New("No sippet file seleted")
+		return errors.New("No snippet file seleted")
 	}
 
 	// file content before editing

@@ -166,11 +166,16 @@ func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snipp
 }
 
 func countSnippetLines() int {
-	// Count lines in snippet file
-	f, err := os.Open(config.Conf.General.SnippetFile)
+	filepath, err := config.ExpandPath(config.Conf.General.SnippetFile)
+	if err != nil {
+		return 0
+	}
+
+	f, err := os.Open(filepath)
 	if err != nil {
 		panic("Error reading snippet file")
 	}
+
 	lineCount, err := CountLines(f)
 	if err != nil {
 		panic("Error counting lines in snippet file")
@@ -218,10 +223,10 @@ func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 			}
 
 			return createAndEditSnippet(newSnippet, snippets, lineCount+3)
-
 		} else {
 			command, err = scan(color.HiYellowString("Command> "), out, in, false)
 		}
+
 		if err != nil {
 			return err
 		}
@@ -258,6 +263,7 @@ func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 		Command:     command,
 		Tag:         tags,
 	}
+
 	snippets.Snippets = append(snippets.Snippets, newSnippet)
 	if err = snippets.Save(); err != nil {
 		return err
