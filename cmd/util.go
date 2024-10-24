@@ -23,10 +23,11 @@ func editFile(command, file string, startingLine int) error {
 
 func filter(options []string, tag string) (commands []string, err error) {
 	var snippets snippet.Snippets
-	if err := snippets.Load(); err != nil {
+	if err := snippets.Load(true); err != nil {
 		return commands, fmt.Errorf("load snippet failed: %v", err)
 	}
 
+	// Filter the snippets by specified tag if any
 	if 0 < len(tag) {
 		var filteredSnippets snippet.Snippets
 		for _, snippet := range snippets.Snippets {
@@ -103,12 +104,16 @@ func filter(options []string, tag string) (commands []string, err error) {
 	return commands, nil
 }
 
+// selectFile returns a snippet file path from the list of snippets
+// options are simply the list of arguments to pass to the select command (ex. --query for fzf)
+// tag is used to filter the list of snippets by the tag field in the snippet
 func selectFile(options []string, tag string) (snippetFile string, err error) {
 	var snippets snippet.Snippets
-	if err := snippets.Load(); err != nil {
+	if err := snippets.Load(true); err != nil {
 		return snippetFile, fmt.Errorf("load snippet failed: %v", err)
 	}
 
+	// Filter the snippets by specified tag if any
 	if 0 < len(tag) {
 		var filteredSnippets snippet.Snippets
 		for _, snippet := range snippets.Snippets {
@@ -121,6 +126,7 @@ func selectFile(options []string, tag string) (snippetFile string, err error) {
 		snippets = filteredSnippets
 	}
 
+	// Create a map of (desc, command, tags) string to SnippetInfo
 	snippetTexts := map[string]snippet.SnippetInfo{}
 	var text string
 	for _, s := range snippets.Snippets {
@@ -140,6 +146,7 @@ func selectFile(options []string, tag string) (snippetFile string, err error) {
 		text += t + "\n"
 	}
 
+	// Build the select command with options and run it
 	var buf bytes.Buffer
 	selectCmd := fmt.Sprintf("%s %s",
 		config.Conf.General.SelectCmd, strings.Join(options, " "))
@@ -148,8 +155,8 @@ func selectFile(options []string, tag string) (snippetFile string, err error) {
 		return snippetFile, nil
 	}
 
+	// Parse the selected line and return the corresponding snippet file
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
-
 	for _, line := range lines {
 		snippetInfo := snippetTexts[line]
 		snippetFile = fmt.Sprint(snippetInfo.Filename)

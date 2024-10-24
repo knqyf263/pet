@@ -6,11 +6,9 @@ import (
 
 	"github.com/knqyf263/pet/config"
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 	"gopkg.in/alessio/shellescape.v1"
 )
-
-var delimiter string
 
 // searchCmd represents the search command
 var searchCmd = &cobra.Command{
@@ -33,7 +31,7 @@ func search(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	fmt.Print(strings.Join(commands, flag.Delimiter))
-	if terminal.IsTerminal(1) {
+	if term.IsTerminal(1) {
 		fmt.Print("\n")
 	}
 	return nil

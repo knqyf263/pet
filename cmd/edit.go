@@ -29,6 +29,8 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 		options = append(options, fmt.Sprintf("--query %s", shellescape.Quote(flag.Query)))
 	}
 
+	// If we have multiple snippet directories, we need to find the right
+	// snippet file to edit - so we need to prompt the user to select a snippet first
 	if len(config.Conf.General.SnippetDirs) > 0 {
 		snippetFile, err = selectFile(options, flag.FilterTag)
 		if err != nil {
@@ -41,21 +43,19 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	// file content before editing
-	before := fileContent(snippetFile)
-
+	contentBefore := fileContent(snippetFile)
 	err = editFile(editor, snippetFile, 0)
 	if err != nil {
 		return
 	}
+	contentAfter := fileContent(snippetFile)
 
-	// file content after editing
-	after := fileContent(snippetFile)
-
-	// return if same file content
-	if before == after {
+	// no need to try to sync if same file content
+	if contentBefore == contentAfter {
 		return nil
 	}
 
+	// sync snippet file
 	if config.Conf.Gist.AutoSync {
 		return petSync.AutoSync(snippetFile)
 	}

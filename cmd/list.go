@@ -25,7 +25,7 @@ var listCmd = &cobra.Command{
 
 func list(cmd *cobra.Command, args []string) error {
 	var snippets snippet.Snippets
-	if err := snippets.Load(); err != nil {
+	if err := snippets.Load(true); err != nil {
 		return err
 	}
 
