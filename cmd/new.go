@@ -142,8 +142,8 @@ func scanMultiLine(prompt string, secondMessage string, out io.Writer, in io.Rea
 	return "", errors.New("canceled")
 }
 
-// createAndEditSnippet creates and saves a given snippet, then opens the
-// configured editor to edit the snippet file at startLine.
+// createAndEditSnippet creates and saves a given snippet to the main snippet file
+// then opens the configured editor to edit the snippet file at startLine.
 func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snippets, startLine int) error {
 	snippets.Snippets = append(snippets.Snippets, newSnippet)
 	if err := snippets.Save(); err != nil {
@@ -179,14 +179,21 @@ func countSnippetLines() int {
 	return lineCount
 }
 
+// new creates a new snippet and saves it to the main snippet file
+// then syncs the snippet file if configured to do so.
 func new(cmd *cobra.Command, args []string) (err error) {
+	return _new(os.Stdin, os.Stdout, args)
+}
+
+func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 	var filename string = ""
 	var command string
 	var description string
 	var tags []string
 
+	// Load snippets from the main file only
 	var snippets snippet.Snippets
-	if err := snippets.Load(); err != nil {
+	if err := snippets.Load(false); err != nil {
 		return err
 	}
 
@@ -200,7 +207,7 @@ func new(cmd *cobra.Command, args []string) (err error) {
 			command, err = scanMultiLine(
 				color.YellowString("Command> "),
 				color.YellowString(".......> "),
-				os.Stdout, os.Stdin,
+				out, in,
 			)
 		} else if config.Flag.UseEditor {
 			// Create and save empty snippet
@@ -213,20 +220,20 @@ func new(cmd *cobra.Command, args []string) (err error) {
 			return createAndEditSnippet(newSnippet, snippets, lineCount+3)
 
 		} else {
-			command, err = scan(color.HiYellowString("Command> "), os.Stdout, os.Stdin, false)
+			command, err = scan(color.HiYellowString("Command> "), out, in, false)
 		}
 		if err != nil {
 			return err
 		}
 	}
-	description, err = scan(color.HiGreenString("Description> "), os.Stdout, os.Stdin, false)
+	description, err = scan(color.HiGreenString("Description> "), out, in, false)
 	if err != nil {
 		return err
 	}
 
 	if config.Flag.Tag {
 		var t string
-		if t, err = scan(color.HiCyanString("Tag> "), os.Stdout, os.Stdin, true); err != nil {
+		if t, err = scan(color.HiCyanString("Tag> "), out, in, true); err != nil {
 			return err
 		}
 

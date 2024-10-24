@@ -76,9 +76,11 @@ func NewSyncClient() (Client, error) {
 	return client, nil
 }
 
+// upload uploads snippets from the main snippet file
+// to the remote repository - directories are ignored
 func upload(client Client) (err error) {
 	var snippets snippet.Snippets
-	if err := snippets.Load(); err != nil {
+	if err := snippets.Load(false); err != nil {
 		return errors.Wrap(err, "Failed to load the local snippets")
 	}
 
@@ -95,11 +97,13 @@ func upload(client Client) (err error) {
 	return nil
 }
 
+// download downloads snippets from the remote repository
+// and saves them to the main snippet file - directories ignored
 func download(content string) error {
 	snippetFile := config.Conf.General.SnippetFile
 
 	var snippets snippet.Snippets
-	if err := snippets.Load(); err != nil {
+	if err := snippets.Load(false); err != nil {
 		return err
 	}
 	body, err := snippets.ToString()
