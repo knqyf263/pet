@@ -46,20 +46,22 @@ if you only want to provide snippetdirs instead`,
 		}
 	}
 
-	for _, snippetDir := range config.Conf.General.SnippetDirs {
-		dir, err := config.ExpandPath(snippetDir)
-		if err != nil {
-			return fmt.Errorf("snippet directory not found. %s", snippetDir)
-		}
-
-		if _, err := os.Stat(dir); err != nil {
-			if os.IsNotExist(err) {
+	if includeDirs {
+		for _, snippetDir := range config.Conf.General.SnippetDirs {
+			dir, err := config.ExpandPath(snippetDir)
+			if err != nil {
 				return fmt.Errorf("snippet directory not found. %s", snippetDir)
 			}
+
+			if _, err := os.Stat(dir); err != nil {
+				if os.IsNotExist(err) {
+					return fmt.Errorf("snippet directory not found. %s", snippetDir)
+				}
+				snippetFiles = append(snippetFiles, getFiles(dir)...)
+			}
+
 			snippetFiles = append(snippetFiles, getFiles(dir)...)
 		}
-
-		snippetFiles = append(snippetFiles, getFiles(dir)...)
 	}
 
 	// Read files and load snippets
