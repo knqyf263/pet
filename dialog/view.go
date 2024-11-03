@@ -18,6 +18,7 @@ var (
 
 type Gui interface {
 	SetView(name string, x0, y0, x1, y1 int, overlaps byte) (*gocui.View, error)
+	SetCurrentView(name string) (*gocui.View, error)
 }
 
 // createView sets up a new view with the given parameters.
@@ -180,7 +181,7 @@ func GenerateParamsLayout(params [][2]string, command string) {
 	}
 }
 
-func nextView(g *gocui.Gui) error {
+func nextView(g Gui) error {
 	next := curView + 1
 	if next > len(views)-1 {
 		next = 0
