@@ -19,6 +19,7 @@ var (
 type Gui interface {
 	SetView(name string, x0, y0, x1, y1 int, overlaps byte) (*gocui.View, error)
 	SetCurrentView(name string) (*gocui.View, error)
+	SetKeybinding(viewname string, key interface{}, mod gocui.Modifier, handler func(*gocui.Gui, *gocui.View) error) error
 }
 
 // createView sets up a new view with the given parameters.
@@ -195,7 +196,7 @@ func nextView(g Gui) error {
 	return nil
 }
 
-func initKeybindings(g *gocui.Gui) error {
+func initKeybindings(g Gui) error {
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		return err
 	}

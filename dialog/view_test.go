@@ -11,6 +11,7 @@ import (
 type mockGui struct {
 	setViewFn        func(name string, x0, y0, x1, y1 int, overlaps byte) (*gocui.View, error)
 	setCurrentViewFn func(name string) (*gocui.View, error)
+	SetKeybindingFn  func(viewname string, key interface{}, mod gocui.Modifier, handler func(*gocui.Gui, *gocui.View) error) error
 }
 
 func (m *mockGui) SetView(name string, x0, y0, x1, y1 int, overlaps byte) (*gocui.View, error) {
@@ -27,6 +28,14 @@ func (m *mockGui) SetCurrentView(name string) (*gocui.View, error) {
 	}
 
 	return &gocui.View{}, nil
+}
+
+func (m *mockGui) SetKeybinding(viewname string, key interface{}, mod gocui.Modifier, handler func(*gocui.Gui, *gocui.View) error) error {
+	if m.SetKeybindingFn != nil {
+		return m.SetKeybindingFn(viewname, key, mod, handler)
+	}
+
+	return nil
 }
 
 func TestCreateView(t *testing.T) {
@@ -198,6 +207,36 @@ func TestNextView(t *testing.T) {
 
 		if diff := deep.Equal(wantCurView, curView); diff != nil {
 			t.Fatal(diff)
+		}
+	})
+}
+
+func TestInitKeybindings(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		expectedError := error(nil)
+
+		g := &mockGui{}
+
+		err := initKeybindings(g)
+
+		if err != expectedError {
+			t.Errorf("Expected error %v, but got %v", expectedError, err)
+		}
+	})
+
+	t.Run("error - returns error if gui returns error", func(t *testing.T) {
+		expectedError := fmt.Errorf("dummy error")
+
+		g := &mockGui{
+			SetKeybindingFn: func(viewname string, key interface{}, mod gocui.Modifier, handler func(*gocui.Gui, *gocui.View) error) error {
+				return expectedError
+			},
+		}
+
+		err := initKeybindings(g)
+
+		if err != expectedError {
+			t.Errorf("Expected error %v, but got %v", expectedError, err)
 		}
 	})
 }
