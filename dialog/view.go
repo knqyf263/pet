@@ -16,8 +16,12 @@ var (
 	parameterMultipleValueRegex = `(\|_.*?_\|)`
 )
 
+type Gui interface {
+	SetView(name string, x0, y0, x1, y1 int, overlaps byte) (*gocui.View, error)
+}
+
 // createView sets up a new view with the given parameters.
-func createView(g *gocui.Gui, name string, coords [4]int, editable bool) (*gocui.View, error) {
+func createView(g Gui, name string, coords [4]int, editable bool) (*gocui.View, error) {
 	if StringInSlice(name, views) {
 		return nil, nil
 	}
