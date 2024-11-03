@@ -2,6 +2,8 @@ package snippet
 
 import (
 	"testing"
+
+	"github.com/go-test/deep"
 )
 
 func TestTomlRegEx(t *testing.T) {
@@ -34,4 +36,19 @@ func TestTomlRegEx(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGetFiles(t *testing.T) {
+	t.Run("success - returns list of toml files", func(t *testing.T) {
+		got := getFiles("testdata")
+		want := []string{
+			"testdata/01-snippet.toml",
+			"testdata/03-snippet.toml",
+			"testdata/04-subdir/05-snippet.toml",
+		}
+
+		if diff := deep.Equal(want, got); diff != nil {
+			t.Fatal(diff)
+		}
+	})
 }
