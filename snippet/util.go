@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-var tomlRegEx = regexp.MustCompile("^.+\\.(toml)$")
+var tomlRegEx = regexp.MustCompile(`^.+\.(toml)$`)
 
 func getFiles(path string) (fileList []string) {
 	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
