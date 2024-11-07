@@ -26,3 +26,8 @@ func run(command string, r io.Reader, w io.Writer) error {
 	cmd.Stdin = r
 	return cmd.Run()
 }
+
+func editFile(command, file string, startingLine int) error {
+	command += " " + file
+	return run(command, os.Stdin, os.Stdout)
+}

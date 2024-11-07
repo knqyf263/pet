@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/fatih/color"
@@ -12,13 +11,6 @@ import (
 	"github.com/knqyf263/pet/dialog"
 	"github.com/knqyf263/pet/snippet"
 )
-
-func editFile(command, file string, startingLine int) error {
-	// Note that this works for most unix editors (nano, vi, vim, etc)
-	// TODO: Remove for other kinds of editors - this is only for UX
-	command += " " + file
-	return run(command, os.Stdin, os.Stdout)
-}
 
 func filter(options []string, tag string) (commands []string, err error) {
 	var snippets snippet.Snippets
