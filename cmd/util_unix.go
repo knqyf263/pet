@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
 
 	"github.com/knqyf263/pet/config"
 )
@@ -22,4 +23,9 @@ func run(command string, r io.Reader, w io.Writer) error {
 	cmd.Stdout = w
 	cmd.Stdin = r
 	return cmd.Run()
+}
+
+func editFile(command, file string, startingLine int) error {
+	command += " +" + strconv.Itoa(startingLine) + " " + file
+	return run(command, os.Stdin, os.Stdout)
 }
