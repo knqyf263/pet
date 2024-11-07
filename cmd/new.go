@@ -169,7 +169,7 @@ func countSnippetLines() int {
 	// Count lines in snippet file
 	f, err := os.Open(config.Conf.General.SnippetFile)
 	if err != nil {
-		panic("Error reading snippet file")
+		panic("Snippet file must be specified - could not read snippet file.")
 	}
 	lineCount, err := CountLines(f)
 	if err != nil {
