@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"runtime"
 	"testing"
 )
@@ -19,45 +20,45 @@ func getUserHomeDir() string {
 
 func TestExpandPathWithTilde(t *testing.T) {
 	test_path := "~/.config/pet"
-	expectedPath := getUserHomeDir() + "/.config/pet"
+	want := filepath.Join(getUserHomeDir(), "/.config/pet")
 
-	result, err := ExpandPath(test_path)
+	got, err := ExpandPath(test_path)
 
 	if err != nil {
 		t.Errorf("Expected no error, but %v was raised", err)
 	}
 
-	if result != expectedPath {
-		t.Errorf("Expected result to be %s, but got %s", expectedPath, result)
+	if got != want {
+		t.Errorf("Expected result to be %s, but got %s", want, got)
 	}
 }
 
 func TestExpandAbsolutePath(t *testing.T) {
 	test_path := "/var/tmp/"
-	expectedPath := "/var/tmp/"
+	want := "/var/tmp/"
 
-	result, err := ExpandPath(test_path)
+	got, err := ExpandPath(test_path)
 
 	if err != nil {
 		t.Errorf("Expected no error, but %v was raised", err)
 	}
 
-	if result != expectedPath {
-		t.Errorf("Expected result to be %s, but got %s", expectedPath, result)
+	if got != want {
+		t.Errorf("Expected result to be %s, but got %s", want, got)
 	}
 }
 
 func TestExpandPathWithEmptyInput(t *testing.T) {
 	test_path := ""
-	expectedPath := ""
+	want := ""
 
-	result, err := ExpandPath(test_path)
+	got, err := ExpandPath(test_path)
 
 	if err == nil {
 		t.Errorf("Expected error to be raised, but got nil")
 	}
 
-	if result != expectedPath {
-		t.Errorf("Expected result to be empty, but got %s", result)
+	if got != want {
+		t.Errorf("Expected result to be empty, but got %s", got)
 	}
 }

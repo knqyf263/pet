@@ -33,7 +33,7 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 	snippetFile, err := config.ExpandPath(config.Conf.General.SnippetFile)
 	if err == nil {
 		if _, err := os.Stat(snippetFile); err == nil {
-			snippetFiles = append(snippetFiles, config.Conf.General.SnippetFile)
+			snippetFiles = append(snippetFiles, snippetFile)
 		} else if !os.IsNotExist(err) {
 			return fmt.Errorf("failed to load snippet file. %v", err)
 		} else {
