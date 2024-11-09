@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 
 	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
@@ -100,10 +99,6 @@ func (cfg *Config) Load(file string) error {
 		}
 		var snippetdirs []string
 		for _, dir := range cfg.General.SnippetDirs {
-			if !strings.HasSuffix(dir, "/") {
-				dir = dir + "/"
-			}
-
 			snippetdirs = append(snippetdirs, dir) // note the = instead of :=
 		}
 		cfg.General.SnippetDirs = snippetdirs
