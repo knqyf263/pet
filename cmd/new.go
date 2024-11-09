@@ -34,6 +34,7 @@ func scan(prompt string, out io.Writer, in io.ReadCloser, allowEmpty bool) (stri
 	if err != nil {
 		return "", err
 	}
+
 	defer os.Remove(f.Name()) // clean up temp file
 	tempFile := f.Name()
 
@@ -89,6 +90,7 @@ func scanMultiLine(prompt string, secondMessage string, out io.Writer, in io.Rea
 		tempDir := os.Getenv("TEMP")
 		tempFile = filepath.Join(tempDir, "pet.tmp")
 	}
+
 	l, err := readline.NewEx(&readline.Config{
 		Stdout:            out,
 		Stdin:             in,
@@ -117,6 +119,7 @@ func scanMultiLine(prompt string, secondMessage string, out io.Writer, in io.Rea
 		} else if err == io.EOF {
 			break
 		}
+
 		switch state {
 		case start:
 			if line == "" {
@@ -167,7 +170,7 @@ func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snipp
 
 func countSnippetLines() int {
 	// Count lines in snippet file
-	f, err := os.Open(config.Conf.General.SnippetFile)
+	f, err := os.Open(config.Expand(config.Conf.General.SnippetFile))
 	if err != nil {
 		panic("Snippet file must be specified - could not read snippet file.")
 	}

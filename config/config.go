@@ -87,9 +87,9 @@ type FlagConfig struct {
 
 // Load loads a config toml
 func (cfg *Config) Load(file string) error {
-	_, err := os.Stat(file)
+	_, err := os.Stat(Expand(file))
 	if err == nil {
-		f, err := os.ReadFile(file)
+		f, err := os.ReadFile(Expand(file))
 		if err != nil {
 			return err
 		}
@@ -114,7 +114,7 @@ func (cfg *Config) Load(file string) error {
 		return err
 	}
 
-	f, err := os.Create(file)
+	f, err := os.Create(Expand(file))
 	if err != nil {
 		return err
 	}
@@ -125,12 +125,7 @@ func (cfg *Config) Load(file string) error {
 	}
 
 	cfg.General.SnippetFile = filepath.Join(dir, "snippet.toml")
-	file_path, err := ExpandPath(cfg.General.SnippetFile)
-	if err != nil {
-		return errors.Wrap(err, "SnippetFile path is invalid: %v")
-	}
-
-	_, err = os.Create(file_path)
+	_, err = os.Create(Expand(cfg.General.SnippetFile))
 	if err != nil {
 		return errors.Wrap(err, "Failed to create a snippet file")
 	}
@@ -158,7 +153,7 @@ func (cfg *Config) Load(file string) error {
 	return toml.NewEncoder(f).Encode(cfg)
 }
 
-// GetDefaultConfigDir returns the default config directory
+// GetDefaultConfigDir returns the default config directory in absolute format.
 func GetDefaultConfigDir() (dir string, err error) {
 	if env, ok := os.LookupEnv("PET_CONFIG_DIR"); ok {
 		dir = env
@@ -171,32 +166,11 @@ func GetDefaultConfigDir() (dir string, err error) {
 	} else {
 		dir = filepath.Join(os.Getenv("HOME"), ".config", "pet")
 	}
+
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", fmt.Errorf("cannot create directory: %v", err)
 	}
 	return dir, nil
-}
-
-// Given a path to either a file or directory, returns its absolute path format.
-// ExpandPath resolves "~/" prefix in a given system path.
-// Raise error if path is an empty string as it
-func ExpandPath(path string) (string, error) {
-	if path == "" {
-		error := errors.New("path to file/directory is not set.")
-		return path, error
-	}
-
-	if strings.HasPrefix(path, "~") && os.IsPathSeparator(path[1]) {
-		homedir, err := os.UserHomeDir()
-		if err != nil {
-			return path, err
-		}
-
-		relativePath := path[2:]
-		return filepath.Join(homedir, relativePath), nil
-	}
-
-	return path, nil
 }
 
 func isCommandAvailable(name string) bool {

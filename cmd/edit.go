@@ -64,7 +64,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 }
 
 func fileContent(fname string) string {
-	data, _ := os.ReadFile(fname)
+	data, _ := os.ReadFile(config.Expand(fname))
 	return string(data)
 }
 

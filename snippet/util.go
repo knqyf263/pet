@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/knqyf263/pet/config"
 )
 
 func getFiles(path string) (fileList []string) {
@@ -13,12 +15,16 @@ func getFiles(path string) (fileList []string) {
 		log.Fatal(err)
 	}
 
-	err = filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		if err == nil && tomlRegEx.MatchString(f.Name()) {
-			fileList = append(fileList, path)
-		}
-		return nil
-	})
+    expandedPath := config.Expand(path)
+	err = filepath.Walk(
+        expandedPath, 
+        func(p string, f os.FileInfo, err error) error {
+            if err == nil && tomlRegEx.MatchString(f.Name()) {
+                fileList = append(fileList, p)
+            }
+            return nil
+        },
+    )
 
 	if err != nil {
 		panic(err)

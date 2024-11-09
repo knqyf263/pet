@@ -34,7 +34,7 @@ func AutoSync(file string) error {
 		return err
 	}
 
-	fi, err := os.Stat(file)
+	fi, err := os.Stat(config.Expand(file))
 	if os.IsNotExist(err) || fi.Size() == 0 {
 		return download(snippet.Content)
 	} else if err != nil {
@@ -118,10 +118,9 @@ func download(content string) error {
 
 	fmt.Println("Download success")
 
-	file_path, err := config.ExpandPath(config.Conf.General.SnippetFile)
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(file_path, []byte(content), os.ModePerm)
+	return os.WriteFile(
+        config.Expand(config.Conf.General.SnippetFile),
+        []byte(content),
+        os.ModePerm,
+    )
 }
