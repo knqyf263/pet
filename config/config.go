@@ -86,9 +86,11 @@ type FlagConfig struct {
 
 // Load loads a config toml
 func (cfg *Config) Load(file string) error {
-	_, err := os.Stat(Expand(file))
+	absFile := Expand(file)
+
+	_, err := os.Stat(absFile)
 	if err == nil {
-		f, err := os.ReadFile(Expand(file))
+		f, err := os.ReadFile(absFile)
 		if err != nil {
 			return err
 		}
@@ -97,10 +99,9 @@ func (cfg *Config) Load(file string) error {
 		if err != nil {
 			return err
 		}
+
 		var snippetdirs []string
-		for _, dir := range cfg.General.SnippetDirs {
-			snippetdirs = append(snippetdirs, dir) // note the = instead of :=
-		}
+		snippetdirs = append(snippetdirs, cfg.General.SnippetDirs...)
 		cfg.General.SnippetDirs = snippetdirs
 		return nil
 	}
@@ -109,7 +110,7 @@ func (cfg *Config) Load(file string) error {
 		return err
 	}
 
-	f, err := os.Create(Expand(file))
+	f, err := os.Create(absFile)
 	if err != nil {
 		return err
 	}
@@ -120,7 +121,7 @@ func (cfg *Config) Load(file string) error {
 	}
 
 	cfg.General.SnippetFile = filepath.Join(dir, "snippet.toml")
-	_, err = os.Create(Expand(cfg.General.SnippetFile))
+	_, err = os.Create(cfg.General.SnippetFile)
 	if err != nil {
 		return errors.Wrap(err, "Failed to create a snippet file")
 	}
@@ -148,10 +149,10 @@ func (cfg *Config) Load(file string) error {
 	return toml.NewEncoder(f).Encode(cfg)
 }
 
-// GetDefaultConfigDir returns the default config directory in absolute format.
+// GetDefaultConfigDir returns the default config directory *in absolute format*.
 func GetDefaultConfigDir() (dir string, err error) {
 	if env, ok := os.LookupEnv("PET_CONFIG_DIR"); ok {
-		dir = env
+		dir = Expand(env)
 	} else if runtime.GOOS == "windows" {
 		dir = os.Getenv("APPDATA")
 		if dir == "" {
