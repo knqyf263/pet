@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/knqyf263/pet/path"
 	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
 )
@@ -85,12 +86,10 @@ type FlagConfig struct {
 }
 
 // Load loads a config toml
-func (cfg *Config) Load(file string) error {
-	absFile := Expand(file)
-
-	_, err := os.Stat(absFile)
+func (cfg *Config) Load(filePath path.AbsolutePath) error {
+	_, err := os.Stat(filePath.Get())
 	if err == nil {
-		f, err := os.ReadFile(absFile)
+		f, err := os.ReadFile(filePath.Get())
 		if err != nil {
 			return err
 		}
@@ -110,7 +109,7 @@ func (cfg *Config) Load(file string) error {
 		return err
 	}
 
-	f, err := os.Create(absFile)
+	f, err := os.Create(filePath.Get())
 	if err != nil {
 		return err
 	}
@@ -152,7 +151,7 @@ func (cfg *Config) Load(file string) error {
 // GetDefaultConfigDir returns the default config directory *in absolute format*.
 func GetDefaultConfigDir() (dir string, err error) {
 	if env, ok := os.LookupEnv("PET_CONFIG_DIR"); ok {
-		dir = Expand(env)
+		dir = env
 	} else if runtime.GOOS == "windows" {
 		dir = os.Getenv("APPDATA")
 		if dir == "" {
@@ -166,7 +165,14 @@ func GetDefaultConfigDir() (dir string, err error) {
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", fmt.Errorf("cannot create directory: %v", err)
 	}
-	return dir, nil
+
+	// Expand the path to its absolute form
+	fullPath, err := path.NewAbsolutePath(dir)
+	if err != nil {
+		return "", err
+	}
+
+	return fullPath.Get(), nil
 }
 
 func isCommandAvailable(name string) bool {

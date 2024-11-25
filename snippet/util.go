@@ -6,28 +6,32 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 )
 
-func getFiles(path string) (fileList []string) {
-	tomlRegEx, err := regexp.Compile("^.+\\.(toml)$")
+func getFiles(dir string) (fileList []string) {
+	tomlRegEx, err := regexp.Compile(`^.+\.(toml)$`)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-    expandedPath := config.Expand(path)
+	absPath, err := path.NewAbsolutePath(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	err = filepath.Walk(
-        expandedPath, 
-        func(p string, f os.FileInfo, err error) error {
-            if err == nil && tomlRegEx.MatchString(f.Name()) {
-                fileList = append(fileList, p)
-            }
-            return nil
-        },
-    )
+		absPath.Get(),
+		func(p string, f os.FileInfo, err error) error {
+			if err == nil && tomlRegEx.MatchString(f.Name()) {
+				fileList = append(fileList, p)
+			}
+			return nil
+		},
+	)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	return fileList

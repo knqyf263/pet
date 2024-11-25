@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/dialog"
+	"github.com/knqyf263/pet/path"
 	"github.com/knqyf263/pet/snippet"
 )
 
@@ -98,7 +100,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 // selectFile returns a snippet file path from the list of snippets
 // options are simply the list of arguments to pass to the select command (ex. --query for fzf)
 // tag is used to filter the list of snippets by the tag field in the snippet
-func selectFile(options []string, tag string) (snippetFile string, err error) {
+func selectFile(options []string, tag string) (snippetFile path.AbsolutePath, err error) {
 	var snippets snippet.Snippets
 	if err := snippets.Load(true); err != nil {
 		return snippetFile, fmt.Errorf("load snippet failed: %v", err)
@@ -143,14 +145,20 @@ func selectFile(options []string, tag string) (snippetFile string, err error) {
 		config.Conf.General.SelectCmd, strings.Join(options, " "))
 	err = run(selectCmd, strings.NewReader(text), &buf)
 	if err != nil {
-		return snippetFile, nil
+		return nil, err
 	}
 
 	// Parse the selected line and return the corresponding snippet file
+	// We might have multiple lines selected, but we only care about the first one
 	lines := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
-	for _, line := range lines {
-		snippetInfo := snippetTexts[line]
-		snippetFile = fmt.Sprint(snippetInfo.Filename)
+	if len(lines) == 0 {
+		return nil, errors.New("no snippet file selected")
+	}
+
+	snippetInfo := snippetTexts[lines[0]]
+	snippetFile, err = path.NewAbsolutePath(snippetInfo.Filename)
+	if err != nil {
+		return nil, err
 	}
 	return snippetFile, nil
 }

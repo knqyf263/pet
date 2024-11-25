@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +16,8 @@ var syncCmd = &cobra.Command{
 }
 
 func sync(cmd *cobra.Command, args []string) (err error) {
-	return petSync.AutoSync(config.Conf.General.SnippetFile)
+	filePath, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	return petSync.AutoSync(filePath)
 }
 
 func init() {

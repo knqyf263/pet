@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/pkg/errors"
 )
@@ -23,7 +24,7 @@ type Snippet struct {
 }
 
 // AutoSync syncs snippets automatically
-func AutoSync(file string) error {
+func AutoSync(filePath path.AbsolutePath) error {
 	client, err := NewSyncClient()
 	if err != nil {
 		return errors.Wrap(err, "Failed to initialize API client")
@@ -34,7 +35,7 @@ func AutoSync(file string) error {
 		return err
 	}
 
-	fi, err := os.Stat(config.Expand(file))
+	fi, err := os.Stat(filePath.Get())
 	if os.IsNotExist(err) || fi.Size() == 0 {
 		return download(snippet.Content)
 	} else if err != nil {
@@ -117,10 +118,14 @@ func download(content string) error {
 	}
 
 	fmt.Println("Download success")
+	absPath, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	if err != nil {
+		return err
+	}
 
 	return os.WriteFile(
-        config.Expand(config.Conf.General.SnippetFile),
-        []byte(content),
-        os.ModePerm,
-    )
+		absPath.Get(),
+		[]byte(content),
+		os.ModePerm,
+	)
 }

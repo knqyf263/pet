@@ -9,6 +9,7 @@ import (
 
 	"github.com/kennygrant/sanitize"
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 	"github.com/pelletier/go-toml"
 )
 
@@ -30,24 +31,34 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 	// Create a list of snippet files to load snippets from
 	var snippetFiles []string
 
-    // Load snippets from the main snippet file
-    snippetFile := config.Conf.General.SnippetFile
-    if _, err := os.Stat(config.Expand(snippetFile)); err == nil {
-        snippetFiles = append(snippetFiles, snippetFile)
-    } else if !os.IsNotExist(err) {
-        return fmt.Errorf("failed to load snippet file. %v", err)
-    } else {
-        return fmt.Errorf(
-            `snippet file not found. %s
+	// Load snippets from the main snippet file
+	snippetFilePath := config.Conf.General.SnippetFile
+	absSnippetFilePath, err := path.NewAbsolutePath(snippetFilePath)
+	if err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(absSnippetFilePath.Get()); err == nil {
+		snippetFiles = append(snippetFiles, snippetFilePath)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("failed to load snippet file. %v", err)
+	} else {
+		return fmt.Errorf(
+			`snippet file not found. %s
 Please run 'pet configure' and provide a correct file path, or remove this
 if you only want to provide snippetdirs instead`,
-            snippetFile,
-        )
-    }
+			snippetFilePath,
+		)
+	}
 
 	if includeDirs {
 		for _, dir := range config.Conf.General.SnippetDirs {
-			if _, err := os.Stat(config.Expand(dir)); err != nil {
+			absDir, err := path.NewAbsolutePath(dir)
+			if err != nil {
+				return err
+			}
+
+			if _, err := os.Stat(absDir.Get()); err != nil {
 				if os.IsNotExist(err) {
 					return fmt.Errorf("snippet directory not found. %s", dir)
 				}
@@ -58,7 +69,12 @@ if you only want to provide snippetdirs instead`,
 
 	// Read files and load snippets
 	for _, file := range snippetFiles {
-		f, err := os.ReadFile(config.Expand(file))
+		absFile, err := path.NewAbsolutePath(file)
+		if err != nil {
+			return err
+		}
+
+		f, err := os.ReadFile(absFile.Get())
 		if err != nil {
 			return fmt.Errorf("failed to load snippet file. %v", err)
 		}
@@ -94,7 +110,12 @@ func (snippets *Snippets) Save() error {
 		}
 	}
 
-	f, err := os.Create(config.Expand(snippetFile))
+	absFile, err := path.NewAbsolutePath(snippetFile)
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Create(absFile.Get())
 	if err != nil {
 		return fmt.Errorf("failed to save snippet file. err: %s", err)
 	}

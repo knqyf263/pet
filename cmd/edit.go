@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -22,7 +23,10 @@ var editCmd = &cobra.Command{
 func edit(cmd *cobra.Command, args []string) (err error) {
 	flag := config.Flag
 	editor := config.Conf.General.Editor
-	snippetFile := config.Conf.General.SnippetFile
+	snippetFilePath, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	if err != nil {
+		return err
+	}
 
 	var options []string
 	if flag.Query != "" {
@@ -32,39 +36,36 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 	// If we have multiple snippet directories, we need to find the right
 	// snippet file to edit - so we need to prompt the user to select a snippet first
 	if len(config.Conf.General.SnippetDirs) > 0 {
-		snippetFile, err = selectFile(options, flag.FilterTag)
+		snippetFilePath, err = selectFile(options, flag.FilterTag)
 		if err != nil {
 			return err
 		}
 	}
-
-	if snippetFile == "" {
+	if snippetFilePath.Get() == "" {
 		return errors.New("No snippet file seleted")
 	}
 
-	// file content before editing
-	contentBefore := fileContent(snippetFile)
-	err = editFile(editor, snippetFile, 0)
+	// only sync if content has changed
+	contentBefore := fileContent(snippetFilePath)
+	err = editFile(editor, snippetFilePath, 0)
 	if err != nil {
-		return
+		return err
 	}
-	contentAfter := fileContent(snippetFile)
-
-	// no need to try to sync if same file content
+	contentAfter := fileContent(snippetFilePath)
 	if contentBefore == contentAfter {
 		return nil
 	}
 
 	// sync snippet file
 	if config.Conf.Gist.AutoSync {
-		return petSync.AutoSync(snippetFile)
+		return petSync.AutoSync(snippetFilePath)
 	}
 
 	return nil
 }
 
-func fileContent(fname string) string {
-	data, _ := os.ReadFile(config.Expand(fname))
+func fileContent(filePath path.AbsolutePath) string {
+	data, _ := os.ReadFile(filePath.Get())
 	return string(data)
 }
 
