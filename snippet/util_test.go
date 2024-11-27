@@ -2,6 +2,7 @@ package snippet
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/go-test/deep"
@@ -41,20 +42,24 @@ func TestTomlRegEx(t *testing.T) {
 
 func TestGetFiles(t *testing.T) {
 	testDataPath, _ := os.MkdirTemp("", "testdata")
-	os.Create(testDataPath + "/01-snippet.toml")
-	os.Create(testDataPath + "/02-unrelated.json")
-	os.Create(testDataPath + "/03-snippet.toml")
-	os.Mkdir(testDataPath+"/04-subdir", os.ModePerm)
-	os.Create(testDataPath + "/04-subdir/05-snippet.toml")
-	os.Create(testDataPath + "/04-subdir/06-unrelated.yaml")
+
+	os.Create(filepath.Join(testDataPath, "01-snippet.toml"))
+	os.Create(filepath.Join(testDataPath, "02-unrelated.json"))
+	os.Create(filepath.Join(testDataPath, "03-snippet.toml"))
+
+	subdir := filepath.Join(testDataPath, "04-subdir")
+	os.Mkdir(subdir, os.ModePerm)
+	os.Create(filepath.Join(subdir, "05-snippet.toml"))
+	os.Create(filepath.Join(subdir, "06-unrelated.yaml"))
+
 	defer os.RemoveAll(testDataPath)
 
-	t.Run("success - returns list of toml files", func(t *testing.T) {
+	t.Run("success - returns list of toml files in a directory", func(t *testing.T) {
 		got := getFiles(testDataPath)
 		want := []string{
-			testDataPath + "/01-snippet.toml",
-			testDataPath + "/03-snippet.toml",
-			testDataPath + "/04-subdir/05-snippet.toml",
+			filepath.Join(testDataPath, "01-snippet.toml"),
+			filepath.Join(testDataPath, "03-snippet.toml"),
+			filepath.Join(testDataPath, "04-subdir/05-snippet.toml"),
 		}
 
 		if diff := deep.Equal(want, got); diff != nil {
