@@ -1,6 +1,7 @@
 package snippet
 
 import (
+	"os"
 	"testing"
 
 	"github.com/go-test/deep"
@@ -39,6 +40,15 @@ func TestTomlRegEx(t *testing.T) {
 }
 
 func TestGetFiles(t *testing.T) {
+	os.Mkdir("testdata", os.ModePerm)
+	os.Create("testdata/01-snippet.toml")
+	os.Create("testdata/02-unrelated.json")
+	os.Create("testdata/03-snippet.toml")
+	os.Mkdir("testdata/04-subdir", os.ModePerm)
+	os.Create("testdata/04-subdir/05-snippet.toml")
+	os.Create("testdata/04-subdir/06-unrelated.yaml")
+	defer os.RemoveAll("testdata")
+
 	t.Run("success - returns list of toml files", func(t *testing.T) {
 		got := getFiles("testdata")
 		want := []string{
