@@ -40,21 +40,21 @@ func TestTomlRegEx(t *testing.T) {
 }
 
 func TestGetFiles(t *testing.T) {
-	os.Mkdir("testdata", os.ModePerm)
-	os.Create("testdata/01-snippet.toml")
-	os.Create("testdata/02-unrelated.json")
-	os.Create("testdata/03-snippet.toml")
-	os.Mkdir("testdata/04-subdir", os.ModePerm)
-	os.Create("testdata/04-subdir/05-snippet.toml")
-	os.Create("testdata/04-subdir/06-unrelated.yaml")
-	defer os.RemoveAll("testdata")
+	testDataPath, _ := os.MkdirTemp("", "testdata")
+	os.Create(testDataPath + "/01-snippet.toml")
+	os.Create(testDataPath + "/02-unrelated.json")
+	os.Create(testDataPath + "/03-snippet.toml")
+	os.Mkdir(testDataPath+"/04-subdir", os.ModePerm)
+	os.Create(testDataPath + "/04-subdir/05-snippet.toml")
+	os.Create(testDataPath + "/04-subdir/06-unrelated.yaml")
+	defer os.RemoveAll(testDataPath)
 
 	t.Run("success - returns list of toml files", func(t *testing.T) {
-		got := getFiles("testdata")
+		got := getFiles(testDataPath)
 		want := []string{
-			"testdata/01-snippet.toml",
-			"testdata/03-snippet.toml",
-			"testdata/04-subdir/05-snippet.toml",
+			testDataPath + "/01-snippet.toml",
+			testDataPath + "/03-snippet.toml",
+			testDataPath + "/04-subdir/05-snippet.toml",
 		}
 
 		if diff := deep.Equal(want, got); diff != nil {
