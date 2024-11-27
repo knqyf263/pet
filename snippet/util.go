@@ -1,19 +1,15 @@
 package snippet
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 )
 
-func getFiles(path string) (fileList []string) {
-	tomlRegEx, err := regexp.Compile("^.+\\.(toml)$")
-	if err != nil {
-		log.Fatal(err)
-	}
+var tomlRegEx = regexp.MustCompile(`^.+\.(toml)$`)
 
-	err = filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
+func getFiles(path string) (fileList []string) {
+	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
 		if err == nil && tomlRegEx.MatchString(f.Name()) {
 			fileList = append(fileList, path)
 		}

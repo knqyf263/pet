@@ -16,8 +16,14 @@ var (
 	parameterMultipleValueRegex = `(\|_.*?_\|)`
 )
 
+type Gui interface {
+	SetView(name string, x0, y0, x1, y1 int, overlaps byte) (*gocui.View, error)
+	SetCurrentView(name string) (*gocui.View, error)
+	SetKeybinding(viewname string, key interface{}, mod gocui.Modifier, handler func(*gocui.Gui, *gocui.View) error) error
+}
+
 // createView sets up a new view with the given parameters.
-func createView(g *gocui.Gui, name string, coords []int, editable bool) (*gocui.View, error) {
+func createView(g Gui, name string, coords [4]int, editable bool) (*gocui.View, error) {
 	if StringInSlice(name, views) {
 		return nil, nil
 	}
@@ -37,7 +43,7 @@ func createView(g *gocui.Gui, name string, coords []int, editable bool) (*gocui.
 	return v, nil
 }
 
-func generateSingleParameterView(g *gocui.Gui, name string, defaultParam string, coords []int, editable bool) error {
+func generateSingleParameterView(g *gocui.Gui, name string, defaultParam string, coords [4]int, editable bool) error {
 	view, err := createView(g, name, coords, editable)
 	if err != nil {
 		return err
@@ -52,7 +58,7 @@ func generateSingleParameterView(g *gocui.Gui, name string, defaultParam string,
 	return nil
 }
 
-func generateMultipleParameterView(g *gocui.Gui, name string, defaultParams []string, coords []int, editable bool) error {
+func generateMultipleParameterView(g *gocui.Gui, name string, defaultParams []string, coords [4]int, editable bool) error {
 	view, err := createView(g, name, coords, editable)
 	if err != nil {
 		return err
@@ -122,7 +128,7 @@ func GenerateParamsLayout(params [][2]string, command string) {
 	rightX := (maxX / 2) + (maxX / 3)
 
 	generateSingleParameterView(g, "Command(TAB => Select next, ENTER => Execute command):",
-		command, []int{leftX, maxY / 10, rightX, maxY/10 + 5}, false)
+		command, [4]int{leftX, maxY / 10, rightX, maxY/10 + 5}, false)
 	idx := 0
 
 	// Create a view for each param
@@ -144,7 +150,7 @@ func GenerateParamsLayout(params [][2]string, command string) {
 				parameters = append(parameters, matchedGroup)
 			}
 			generateMultipleParameterView(
-				g, parameterKey, parameters, []int{
+				g, parameterKey, parameters, [4]int{
 					leftX,
 					(maxY / 4) + (idx+1)*layoutStep,
 					rightX,
@@ -153,7 +159,7 @@ func GenerateParamsLayout(params [][2]string, command string) {
 		} else {
 			// Generate single param view using the single value
 			generateSingleParameterView(g, parameterKey, parameterValue,
-				[]int{
+				[4]int{
 					leftX,
 					(maxY / 4) + (idx+1)*layoutStep,
 					rightX,
@@ -176,7 +182,7 @@ func GenerateParamsLayout(params [][2]string, command string) {
 	}
 }
 
-func nextView(g *gocui.Gui) error {
+func nextView(g Gui) error {
 	next := curView + 1
 	if next > len(views)-1 {
 		next = 0
@@ -190,7 +196,7 @@ func nextView(g *gocui.Gui) error {
 	return nil
 }
 
-func initKeybindings(g *gocui.Gui) error {
+func initKeybindings(g Gui) error {
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		return err
 	}
