@@ -262,7 +262,7 @@ Run `pet configure`
 
 ## Multi directory and multi file setup
 
-Directories musst be specified as an array.
+Directories must be specified as an array.
 All `toml` files will be scraped and found snippets will be added.
 
 Example1: single directory

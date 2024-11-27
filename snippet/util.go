@@ -9,12 +9,10 @@ import (
 	"github.com/knqyf263/pet/path"
 )
 
-func getFiles(dir string) (fileList []string) {
-	tomlRegEx, err := regexp.Compile(`^.+\.(toml)$`)
-	if err != nil {
-		log.Fatal(err)
-	}
+var tomlRegEx = regexp.MustCompile(`^.+\.(toml)$`)
 
+// getFiles returns a list of files in the specified directory.
+func getFiles(dir string) (fileList []string) {
 	absPath, err := path.NewAbsolutePath(dir)
 	if err != nil {
 		log.Fatal(err)
