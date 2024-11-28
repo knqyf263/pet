@@ -1,12 +1,10 @@
-# pet : CLI Snippet Manager
+# Pet - CLI Snippet Manager
 
 [![GitHub release](https://img.shields.io/github/release/knqyf263/pet.svg)](https://github.com/knqyf263/pet/releases/latest)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/pet/blob/master/LICENSE)
 
 <div align="center">
 <img src="doc/logo.png" width="350">
-
-Simple command-line snippet manager.
 </div>
 
 
