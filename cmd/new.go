@@ -12,6 +12,7 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 	"github.com/knqyf263/pet/snippet"
 	petSync "github.com/knqyf263/pet/sync"
 	"github.com/spf13/cobra"
@@ -34,6 +35,7 @@ func scan(prompt string, out io.Writer, in io.ReadCloser, allowEmpty bool) (stri
 	if err != nil {
 		return "", err
 	}
+
 	defer os.Remove(f.Name()) // clean up temp file
 	tempFile := f.Name()
 
@@ -89,6 +91,7 @@ func scanMultiLine(prompt string, secondMessage string, out io.Writer, in io.Rea
 		tempDir := os.Getenv("TEMP")
 		tempFile = filepath.Join(tempDir, "pet.tmp")
 	}
+
 	l, err := readline.NewEx(&readline.Config{
 		Stdout:            out,
 		Stdin:             in,
@@ -117,6 +120,7 @@ func scanMultiLine(prompt string, secondMessage string, out io.Writer, in io.Rea
 		} else if err == io.EOF {
 			break
 		}
+
 		switch state {
 		case start:
 			if line == "" {
@@ -152,14 +156,19 @@ func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snipp
 
 	// Open snippet for editing
 	snippetFile := config.Conf.General.SnippetFile
+	snippetFilePath, err := path.NewAbsolutePath(snippetFile)
+	if err != nil {
+		return err
+	}
+
 	editor := config.Conf.General.Editor
-	err := editFile(editor, snippetFile, startLine)
+	err = editFile(editor, snippetFilePath, startLine)
 	if err != nil {
 		return err
 	}
 
 	if config.Conf.Gist.AutoSync {
-		return petSync.AutoSync(snippetFile)
+		return petSync.AutoSync(snippetFilePath)
 	}
 
 	return nil
@@ -167,10 +176,16 @@ func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snipp
 
 func countSnippetLines() int {
 	// Count lines in snippet file
-	f, err := os.Open(config.Conf.General.SnippetFile)
+	path, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	if err != nil {
+		panic(fmt.Sprintf("Error getting snippet file path: %v", err.Error()))
+	}
+
+	f, err := os.Open(path.Get())
 	if err != nil {
 		panic("Snippet file must be specified - could not read snippet file.")
 	}
+
 	lineCount, err := CountLines(f)
 	if err != nil {
 		panic("Error counting lines in snippet file")
@@ -218,10 +233,10 @@ func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 			}
 
 			return createAndEditSnippet(newSnippet, snippets, lineCount+3)
-
 		} else {
 			command, err = scan(color.HiYellowString("Command> "), out, in, false)
 		}
+
 		if err != nil {
 			return err
 		}
@@ -258,13 +273,18 @@ func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 		Command:     command,
 		Tag:         tags,
 	}
+
 	snippets.Snippets = append(snippets.Snippets, newSnippet)
 	if err = snippets.Save(); err != nil {
 		return err
 	}
 
 	if config.Conf.Gist.AutoSync {
-		return petSync.AutoSync(filename)
+		filePath, err := path.NewAbsolutePath(filename)
+		if err != nil {
+			return err
+		}
+		return petSync.AutoSync(filePath)
 	}
 
 	return nil

@@ -26,6 +26,7 @@ import (
 	"path/filepath"
 
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 	"github.com/spf13/cobra"
 )
 
@@ -79,7 +80,12 @@ func initConfig() {
 		configFile = filepath.Join(dir, "config.toml")
 	}
 
-	if err := config.Conf.Load(configFile); err != nil {
+	absPath, err := path.NewAbsolutePath(configFile)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := config.Conf.Load(absPath); err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(1)
 	}

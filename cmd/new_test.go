@@ -136,10 +136,14 @@ func TestScanMultiLine_ExitsOnTwoEmptyLines(t *testing.T) {
 
 func TestNewSnippetCreationWithSnippetDirectory(t *testing.T) {
 	// Setup temporary directory for config
-	tempDir := t.TempDir()
+	tempDir, _ := os.MkdirTemp("", "testdata")
 	tempSnippetFile := filepath.Join(tempDir, "snippet.toml")
 	tempSnippetDir1 := filepath.Join(tempDir, "snippets1")
 	tempSnippetDir2 := filepath.Join(tempDir, "snippets2")
+
+	// Clean up temp dirs, needed for windows
+	// https://github.com/golang/go/issues/51442
+	defer os.RemoveAll(tempDir)
 
 	// Create snippet directories
 	if err := os.Mkdir(tempSnippetDir1, 0755); err != nil {

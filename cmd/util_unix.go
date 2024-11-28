@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 )
 
 func run(command string, r io.Reader, w io.Writer) error {
@@ -25,7 +26,7 @@ func run(command string, r io.Reader, w io.Writer) error {
 	return cmd.Run()
 }
 
-func editFile(command, file string, startingLine int) error {
-	command += " +" + strconv.Itoa(startingLine) + " " + file
+func editFile(command string, filePath path.AbsolutePath, startingLine int) error {
+	command += " +" + strconv.Itoa(startingLine) + " " + filePath.Get()
 	return run(command, os.Stdin, os.Stdout)
 }

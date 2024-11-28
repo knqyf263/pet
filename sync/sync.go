@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 	"github.com/knqyf263/pet/snippet"
 	"github.com/pkg/errors"
 )
@@ -23,7 +24,7 @@ type Snippet struct {
 }
 
 // AutoSync syncs snippets automatically
-func AutoSync(file string) error {
+func AutoSync(filePath path.AbsolutePath) error {
 	client, err := NewSyncClient()
 	if err != nil {
 		return errors.Wrap(err, "Failed to initialize API client")
@@ -34,7 +35,7 @@ func AutoSync(file string) error {
 		return err
 	}
 
-	fi, err := os.Stat(file)
+	fi, err := os.Stat(filePath.Get())
 	if os.IsNotExist(err) || fi.Size() == 0 {
 		return download(snippet.Content)
 	} else if err != nil {
@@ -100,16 +101,16 @@ func upload(client Client) (err error) {
 // download downloads snippets from the remote repository
 // and saves them to the main snippet file - directories ignored
 func download(content string) error {
-	snippetFile := config.Conf.General.SnippetFile
-
 	var snippets snippet.Snippets
 	if err := snippets.Load(false); err != nil {
 		return err
 	}
+
 	body, err := snippets.ToString()
 	if err != nil {
 		return err
 	}
+
 	if content == body {
 		// no need to download
 		fmt.Println("Already up-to-date")
@@ -117,5 +118,14 @@ func download(content string) error {
 	}
 
 	fmt.Println("Download success")
-	return os.WriteFile(snippetFile, []byte(content), os.ModePerm)
+	absPath, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(
+		absPath.Get(),
+		[]byte(content),
+		os.ModePerm,
+	)
 }

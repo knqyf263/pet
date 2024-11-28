@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/knqyf263/pet/config"
+	"github.com/knqyf263/pet/path"
 )
 
 func run(command string, r io.Reader, w io.Writer) error {
@@ -27,7 +28,7 @@ func run(command string, r io.Reader, w io.Writer) error {
 	return cmd.Run()
 }
 
-func editFile(command, file string, startingLine int) error {
-	command += " " + file
+func editFile(command string, filePath path.AbsolutePath, startingLine int) error {
+	command += " " + filePath.Get()
 	return run(command, os.Stdin, os.Stdout)
 }

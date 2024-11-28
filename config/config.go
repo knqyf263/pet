@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/knqyf263/pet/path"
 	"github.com/pelletier/go-toml"
 	"github.com/pkg/errors"
 )
@@ -85,10 +86,10 @@ type FlagConfig struct {
 }
 
 // Load loads a config toml
-func (cfg *Config) Load(file string) error {
-	_, err := os.Stat(file)
+func (cfg *Config) Load(filePath path.AbsolutePath) error {
+	_, err := os.Stat(filePath.Get())
 	if err == nil {
-		f, err := os.ReadFile(file)
+		f, err := os.ReadFile(filePath.Get())
 		if err != nil {
 			return err
 		}
@@ -97,11 +98,9 @@ func (cfg *Config) Load(file string) error {
 		if err != nil {
 			return err
 		}
+
 		var snippetdirs []string
-		cfg.General.SnippetFile = expandPath(cfg.General.SnippetFile)
-		for _, dir := range cfg.General.SnippetDirs {
-			snippetdirs = append(snippetdirs, expandPath(dir)) // note the = instead of :=
-		}
+		snippetdirs = append(snippetdirs, cfg.General.SnippetDirs...)
 		cfg.General.SnippetDirs = snippetdirs
 		return nil
 	}
@@ -109,7 +108,8 @@ func (cfg *Config) Load(file string) error {
 	if !os.IsNotExist(err) {
 		return err
 	}
-	f, err := os.Create(file)
+
+	f, err := os.Create(filePath.Get())
 	if err != nil {
 		return err
 	}
@@ -118,10 +118,11 @@ func (cfg *Config) Load(file string) error {
 	if err != nil {
 		return errors.Wrap(err, "Failed to get the default config directory")
 	}
+
 	cfg.General.SnippetFile = filepath.Join(dir, "snippet.toml")
 	_, err = os.Create(cfg.General.SnippetFile)
 	if err != nil {
-		return errors.Wrap(err, "Failed to create a config file")
+		return errors.Wrap(err, "Failed to create a snippet file")
 	}
 
 	cfg.General.Editor = os.Getenv("EDITOR")
@@ -132,6 +133,7 @@ func (cfg *Config) Load(file string) error {
 			cfg.General.Editor = "vim"
 		}
 	}
+
 	cfg.General.Column = 40
 	cfg.General.SelectCmd = "fzf --ansi --layout=reverse --border --height=90% --pointer=* --cycle --prompt=Snippets:"
 	cfg.General.Backend = "gist"
@@ -146,7 +148,7 @@ func (cfg *Config) Load(file string) error {
 	return toml.NewEncoder(f).Encode(cfg)
 }
 
-// GetDefaultConfigDir returns the default config directory
+// GetDefaultConfigDir returns the default config directory *in absolute format*.
 func GetDefaultConfigDir() (dir string, err error) {
 	if env, ok := os.LookupEnv("PET_CONFIG_DIR"); ok {
 		dir = env
@@ -159,21 +161,18 @@ func GetDefaultConfigDir() (dir string, err error) {
 	} else {
 		dir = filepath.Join(os.Getenv("HOME"), ".config", "pet")
 	}
+
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return "", fmt.Errorf("cannot create directory: %v", err)
 	}
-	return dir, nil
-}
 
-func expandPath(s string) string {
-	if len(s) >= 2 && s[0] == '~' && os.IsPathSeparator(s[1]) {
-		if runtime.GOOS == "windows" {
-			s = filepath.Join(os.Getenv("USERPROFILE"), s[2:])
-		} else {
-			s = filepath.Join(os.Getenv("HOME"), s[2:])
-		}
+	// Expand the path to its absolute form
+	fullPath, err := path.NewAbsolutePath(dir)
+	if err != nil {
+		return "", err
 	}
-	return os.Expand(s, os.Getenv)
+
+	return fullPath.Get(), nil
 }
 
 func isCommandAvailable(name string) bool {
