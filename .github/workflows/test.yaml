@@ -11,7 +11,10 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4.1.1
 
@@ -22,3 +25,4 @@ jobs:
 
       - name: Run unit tests
         run: make test
+        shell: bash  # Use bash shell for both Ubuntu and Windows (Git Bash is used on Windows)

@@ -36,3 +36,17 @@ func TestNewAbsolutePathIsAbsolute(t *testing.T) {
 		t.Errorf("Expected result to be %s, but got %s", want, got)
 	}
 }
+
+func TestExpandAbsolutePathDoesNothing(t *testing.T) {
+	test_path := "/var/tmp"
+	want := test_path
+
+	got, err := expandPath(test_path)
+	if err != nil {
+		t.Errorf("Error occured: %s", err)
+	}
+
+	if got != want {
+		t.Errorf("Expected result to be %s, but got %s", want, got)
+	}
+}
