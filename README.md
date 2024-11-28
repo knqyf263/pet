@@ -3,34 +3,30 @@
 [![GitHub release](https://img.shields.io/github/release/knqyf263/pet.svg)](https://github.com/knqyf263/pet/releases/latest)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/pet/blob/master/LICENSE)
 
-<img src="doc/logo.png" width="150">
+<div align="center">
+<img src="assets/superpet_transparent.png" width="350">
 
-Simple command-line snippet manager, written in Go
+Simple command-line snippet manager.
+</div>
+
+
+# Motivation
+
+`pet` is a simple command-line snippet manager (inspired by [memo](https://github.com/mattn/memo)).
+
+I have a hard time remembering complex command or ones that I rarely use. Moreover, it is difficult to find them in shell history.
+
+It's time to let go of the expectation of remembering every command, and focus on productivity and finding the right commands as fast as possible. It's fun when you're 2 years in and work with 2 tools, but less so when you're a decade in and work across backend/frontend/infrastructure with tons of tools. You most probably relate to this if you're a developer.
+
+`pet` is a simple tool that allows you to save, tag, search, and execute command-line snippets easily! It's now nearly 8 years old and is used by many developers around the world.
+
+`pet` is written in Go, and therefore you can just grab the binary releases and drop it in your $PATH.
 
 <img src="doc/pet01.gif" width="700">
 
 You can use variables (`<param>` or `<param=default_value>` ) in snippets.
 
 <img src="doc/pet08.gif" width="700">
-
-
-# Abstract
-
-`pet` is written in Go, and therefore you can just grab the binary releases and drop it in your $PATH.
-
-`pet` is a simple command-line snippet manager (inspired by [memo](https://github.com/mattn/memo)).
-I always forget commands that I rarely use. Moreover, it is difficult to search them from shell history. There are many similar commands, but they are all different.
-
-e.g. 
-- `awk -F, 'NR <=2 {print $0}; NR >= 5 && NR <= 10 {print $0}' company.csv` (What I am looking for)
-- `awk -F, '$0 !~ "DNS|Protocol" {print $0}' packet.csv`
-- `awk -F, '{print $0} {if((NR-1) % 5 == 0) {print "----------"}}' test.csv`
-
-In the above case, I search by `awk` from shell history, but many commands hit.
-
-Even if I register an alias, I forget the name of alias (because I rarely use that command).
-
-So I made it possible to register snippets with description and search them easily.
 
 # TOC
 
