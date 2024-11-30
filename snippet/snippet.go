@@ -18,7 +18,7 @@ type Snippets struct {
 }
 
 type SnippetInfo struct {
-	Filename    string
+	Filename    string `toml:"-"`
 	Description string
 	Command     string `toml:"command,multiline"`
 	Tag         []string
