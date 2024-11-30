@@ -71,6 +71,25 @@ You can use variables (`<param>` or `<param=default_value>` ) in snippets.
 - Edit snippets easily (config is just a TOML file).
 - Sync snippets via Gist or GitLab Snippets automatically.
 
+# Creating a snippet
+
+You can create a snippet by running `pet new`.
+
+```
+$ pet new
+Command> echo Hello world!
+Description> print Hello world
+```
+
+To see all available arguments, run `pet new --help`.
+
+Multiline commands can be entered by using the multiline argument `pet new --multiline`
+
+You can use also use variables in snippets, these are called parameters. More information on that in the next section.
+
+You can also *tag* snippets to search for them faster. More information on that in the tag section.
+
+
 # Parameters
 There are `<n_ways>` ways of entering parameters.
 
@@ -176,12 +195,11 @@ You can share snippets via Gist.
 # Usage
 
 ```
-pet - Simple command-line snippet manager.
-
 Usage:
   pet [command]
 
 Available Commands:
+  clip        Copy the selected commands
   configure   Edit config file
   edit        Edit snippet file
   exec        Run the selected commands
@@ -195,6 +213,7 @@ Available Commands:
 Flags:
       --config string   config file (default is $HOME/.config/pet/config.toml)
       --debug           debug mode
+  -h, --help            help for pet
 
 Use "pet [command] --help" for more information about a command.
 ```
