@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strings"
 
-	"github.com/kennygrant/sanitize"
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/path"
 	"github.com/pelletier/go-toml"
@@ -97,31 +95,38 @@ if you only want to provide snippetdirs instead`,
 
 // Save saves the snippets to toml file.
 func (snippets *Snippets) Save() error {
-	var snippetFile string
-	var newSnippets Snippets
+	snippetFiles := make(map[string][]SnippetInfo)
 
+	// Need to construct a bunch of snippet files if we have multiple snippet files and then save them all
 	for _, snippet := range snippets.Snippets {
 		if snippet.Filename == "" {
-			snippetFile = config.Conf.General.SnippetDirs[0] + fmt.Sprintf("%s.toml", strings.ToLower(sanitize.BaseName(snippet.Description)))
-			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
-		} else if snippet.Filename == config.Conf.General.SnippetFile {
-			snippetFile = config.Conf.General.SnippetFile
-			newSnippets.Snippets = append(newSnippets.Snippets, snippet)
+			// No filename => just save to main snippet file
+			snippet.Filename = config.Conf.General.SnippetFile
+		}
+		snippetFiles[snippet.Filename] = append(snippetFiles[snippet.Filename], snippet)
+	}
+
+	// Save all snippet files
+	for file, snippets := range snippetFiles {
+		absFilePath, err := path.NewAbsolutePath(file)
+		if err != nil {
+			return fmt.Errorf("failed to save snippet file. err: %s", err)
+		}
+
+		// Overwrite snippet file with snippets
+		f, err := os.Create(absFilePath.Get())
+		if err != nil {
+			return fmt.Errorf("failed to save snippet file. err: %s", err)
+		}
+		defer f.Close()
+
+		err = toml.NewEncoder(f).Encode(Snippets{Snippets: snippets})
+		if err != nil {
+			return fmt.Errorf("failed to encode snippets while saving snippet file. err: %s", err)
 		}
 	}
 
-	absFile, err := path.NewAbsolutePath(snippetFile)
-	if err != nil {
-		return err
-	}
-
-	f, err := os.Create(absFile.Get())
-	if err != nil {
-		return fmt.Errorf("failed to save snippet file. err: %s", err)
-	}
-
-	defer f.Close()
-	return toml.NewEncoder(f).Encode(snippets)
+	return nil
 }
 
 // ToString returns the contents of toml file.
