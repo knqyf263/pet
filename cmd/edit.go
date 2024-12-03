@@ -42,7 +42,7 @@ func edit(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 	if snippetFilePath.Get() == "" {
-		return errors.New("No snippet file seleted")
+		return errors.New("No snippet file selected")
 	}
 
 	// only sync if content has changed
