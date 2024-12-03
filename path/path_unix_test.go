@@ -14,7 +14,7 @@ func TestExpandPathWithTilde(t *testing.T) {
 
 	got, err := expandPath(test_path)
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	if got != want {
@@ -28,7 +28,7 @@ func TestNewAbsolutePathIsAbsolute(t *testing.T) {
 
 	absPath, err := NewAbsolutePath(test_path)
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	got := absPath.Get()
@@ -43,7 +43,7 @@ func TestExpandAbsolutePathDoesNothing(t *testing.T) {
 
 	got, err := expandPath(test_path)
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	if got != want {

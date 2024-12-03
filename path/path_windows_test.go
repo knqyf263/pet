@@ -13,13 +13,13 @@ func TestExpandPathWithTilde(t *testing.T) {
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 	want := filepath.Join(homeDir, ".config", "pet")
 
 	got, err := expandPath(test_path)
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	if got != want {
@@ -31,13 +31,13 @@ func TestNewAbsolutePathIsAbsolute(t *testing.T) {
 	test_path := "~/relative/path"
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 	want := filepath.Join(homeDir, "relative", "path")
 
 	absPath, err := NewAbsolutePath(test_path)
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	got := absPath.Get()
@@ -50,18 +50,18 @@ func TestSetAbsolutePathIsAbsolute(t *testing.T) {
 	test_path := "~/relative/path"
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 	want := filepath.Join(homeDir, "relative", "path")
 
 	absPath, err := NewAbsolutePath("/whatever")
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	err = absPath.Set(test_path)
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	got := absPath.Get()
@@ -76,7 +76,7 @@ func TestExpandAbsolutePathDoesNothing(t *testing.T) {
 
 	got, err := expandPath(test_path)
 	if err != nil {
-		t.Errorf("Error occured: %s", err)
+		t.Errorf("Error occurred: %s", err)
 	}
 
 	if got != want {

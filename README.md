@@ -308,7 +308,7 @@ $ pet configure
   snippetdirs = ["/path/to/some/snippets/", "/more/snippets/"]
 ...
 ```
- If `snippetfile` setting is omitted, new snippets will be added in a seperate file to the first directory. The generated filename is time based.
+ If `snippetfile` setting is omitted, new snippets will be added in a separate file to the first directory. The generated filename is time based.
 
 Snippet files in `snippetdirs` will not be added to Gist or GitLab. You've to do version control manually.
 
