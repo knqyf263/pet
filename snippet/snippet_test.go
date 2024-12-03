@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createSnippets1() *Snippets {
+func createSnippets1(absFilePath string) *Snippets {
 	snippets := &Snippets{}
 	snippets.Snippets = []SnippetInfo{
 		{
@@ -18,20 +18,20 @@ func createSnippets1() *Snippets {
 			Command:     "echo 'Hello, World!'",
 			Tag:         []string{"test"},
 			Output:      "Hello, World!",
-			Filename:    "snippets.toml",
+			Filename:    absFilePath,
 		},
 		{
 			Description: "Test snippet 2",
 			Command:     "echo 'Hello, World 2!'",
 			Tag:         []string{"test"},
 			Output:      "Hello, World 2!",
-			Filename:    "snippets.toml",
+			Filename:    absFilePath,
 		},
 	}
 	return snippets
 }
 
-func createSnippets2() *Snippets {
+func createSnippets2(absFilePath string) *Snippets {
 	snippets := &Snippets{}
 	snippets.Snippets = []SnippetInfo{
 		{
@@ -39,20 +39,20 @@ func createSnippets2() *Snippets {
 			Command:     "echo 'Hello, World 3!'",
 			Tag:         []string{"test"},
 			Output:      "Hello, World 3!",
-			Filename:    "snippets2.toml",
+			Filename:    absFilePath,
 		},
 		{
 			Description: "Test snippet 4",
 			Command:     "echo 'Hello, World 4!'",
 			Tag:         []string{"test"},
 			Output:      "Hello, World 4!",
-			Filename:    "snippets2.toml",
+			Filename:    absFilePath,
 		},
 	}
 	return snippets
 }
 
-func createSnippets3() *Snippets {
+func createSnippets3(absFilePath string) *Snippets {
 	snippets := &Snippets{}
 	snippets.Snippets = []SnippetInfo{
 		{
@@ -60,14 +60,14 @@ func createSnippets3() *Snippets {
 			Command:     "echo 'Hello, World 5!'",
 			Tag:         []string{"test"},
 			Output:      "Hello, World 5!",
-			Filename:    "snippets3.toml",
+			Filename:    absFilePath,
 		},
 		{
 			Description: "Test snippet 6",
 			Command:     "echo 'Hello, World 6!'",
 			Tag:         []string{"test"},
 			Output:      "Hello, World 6!",
-			Filename:    "snippets3.toml",
+			Filename:    absFilePath,
 		},
 	}
 	return snippets
@@ -90,7 +90,7 @@ func TestLoad(t *testing.T) {
 	config.Conf.General.SnippetFile = filepath.Join(tempDir, "snippets.toml")
 
 	// Create file with snippets
-	testSnippets := createSnippets1()
+	testSnippets := createSnippets1(config.Conf.General.SnippetFile)
 	createSnippetFile(t, config.Conf.General.SnippetFile, testSnippets)
 
 	// Create Snippets instance and load the snippets
@@ -127,12 +127,16 @@ func TestLoadWithIncludeDirectories(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Add multiple snippet files, 2 in the directory and 1 as the main file
-	testSnippets1 := createSnippets1()
+	testSnippets1 := createSnippets1(config.Conf.General.SnippetFile)
 	createSnippetFile(t, config.Conf.General.SnippetFile, testSnippets1)
-	testSnippets2 := createSnippets2()
-	createSnippetFile(t, filepath.Join(includeDir, "snippets1.toml"), testSnippets2)
-	testSnippets3 := createSnippets3()
-	createSnippetFile(t, filepath.Join(includeDir, "snippets2.toml"), testSnippets3)
+
+	snippetFile2 := filepath.Join(includeDir, "snippets1.toml")
+	testSnippets2 := createSnippets2(snippetFile2)
+	createSnippetFile(t, snippetFile2, testSnippets2)
+
+	snippetFile3 := filepath.Join(includeDir, "snippets2.toml")
+	testSnippets3 := createSnippets3(snippetFile3)
+	createSnippetFile(t, snippetFile3, testSnippets3)
 
 	// Create Snippets instance and load the snippets
 	snippets := &Snippets{}
@@ -213,14 +217,21 @@ func TestSaveWithMultipleSnippetFiles(t *testing.T) {
 	err := os.MkdirAll(includeDir, 0755)
 	assert.NoError(t, err)
 
-	// Add multiple snippet files, 2 in the directory and 1 as the main file
-	testSnippets1 := createSnippets1()
-	createSnippetFile(t, config.Conf.General.SnippetFile, testSnippets1)
-	testSnippets2 := createSnippets2()
-	createSnippetFile(t, filepath.Join(includeDir, "snippets1.toml"), testSnippets2)
-	testSnippets3 := createSnippets3()
-	createSnippetFile(t, filepath.Join(includeDir, "snippets2.toml"), testSnippets3)
+	// Create snippets but do not create the files - only empty files
+	// are needed for this test - Save method should write the snippets
+	testSnippets1 := createSnippets1(config.Conf.General.SnippetFile)
+	os.Create(config.Conf.General.SnippetFile)
 
+	snippetFile2 := filepath.Join(includeDir, "snippets1.toml")
+	testSnippets2 := createSnippets2(snippetFile2)
+	os.Create(snippetFile2)
+
+	snippetFile3 := filepath.Join(includeDir, "snippets2.toml")
+	testSnippets3 := createSnippets3(snippetFile3)
+	os.Create(snippetFile3)
+
+	// Create snippets instance and add all snippets
+	// with filenames pointing to the respective snippet files
 	snippets := &Snippets{}
 	snippets.Snippets = append(snippets.Snippets, testSnippets1.Snippets...)
 	snippets.Snippets = append(snippets.Snippets, testSnippets2.Snippets...)
