@@ -85,7 +85,8 @@ func createSnippetFile(t *testing.T, filename string, snippets *Snippets) {
 }
 
 func TestLoad(t *testing.T) {
-	tempDir := t.TempDir()
+	tempDir, _ := os.MkdirTemp("", "testdata")
+	defer os.RemoveAll(tempDir)
 	// Mock configuration
 	config.Conf.General.SnippetFile = filepath.Join(tempDir, "snippets.toml")
 
@@ -115,7 +116,8 @@ func TestLoad(t *testing.T) {
 }
 
 func TestLoadWithIncludeDirectories(t *testing.T) {
-	tempDir := t.TempDir()
+	tempDir, _ := os.MkdirTemp("", "testdata")
+	defer os.RemoveAll(tempDir)
 	includeDir := filepath.Join(tempDir, "include1")
 
 	// Mock configuration
@@ -162,7 +164,9 @@ func TestLoadWithIncludeDirectories(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
-	tempDir := t.TempDir()
+	tempDir, _ := os.MkdirTemp("", "testdata")
+	defer os.RemoveAll(tempDir)
+
 	// Mock configuration
 	config.Conf.General.SnippetFile = filepath.Join(tempDir, "snippets.toml")
 
@@ -206,7 +210,9 @@ func TestSave(t *testing.T) {
 }
 
 func TestSaveWithMultipleSnippetFiles(t *testing.T) {
-	tempDir := t.TempDir()
+	tempDir, _ := os.MkdirTemp("", "testdata")
+	defer os.RemoveAll(tempDir)
+
 	includeDir := filepath.Join(tempDir, "include1")
 
 	// Mock configuration

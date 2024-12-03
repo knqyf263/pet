@@ -42,6 +42,7 @@ func TestTomlRegEx(t *testing.T) {
 
 func TestGetFiles(t *testing.T) {
 	testDataPath, _ := os.MkdirTemp("", "testdata")
+	defer os.RemoveAll(testDataPath)
 
 	os.Create(filepath.Join(testDataPath, "01-snippet.toml"))
 	os.Create(filepath.Join(testDataPath, "02-unrelated.json"))
@@ -51,8 +52,6 @@ func TestGetFiles(t *testing.T) {
 	os.Mkdir(subdir, os.ModePerm)
 	os.Create(filepath.Join(subdir, "05-snippet.toml"))
 	os.Create(filepath.Join(subdir, "06-unrelated.yaml"))
-
-	defer os.RemoveAll(testDataPath)
 
 	t.Run("success - returns list of toml files in a directory", func(t *testing.T) {
 		got := getFiles(testDataPath)
