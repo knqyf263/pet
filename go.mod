@@ -22,16 +22,19 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 )
 
-require (
-	github.com/kennygrant/sanitize v1.2.4
-	gopkg.in/alessio/shellescape.v1 v1.0.0-20170105083845-52074bc9df61
-)
+require gopkg.in/alessio/shellescape.v1 v1.0.0-20170105083845-52074bc9df61
 
 require (
 	github.com/awesome-gocui/gocui v1.1.0
 	github.com/go-test/deep v1.1.0
 	github.com/pelletier/go-toml v1.9.5
 	golang.org/x/term v0.15.0
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
@@ -44,6 +47,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.6.8 // indirect
 	github.com/lucasb-eyer/go-colorful v1.0.3 // indirect
 	github.com/rivo/uniseg v0.1.0 // indirect
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
