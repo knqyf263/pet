@@ -108,6 +108,24 @@ The values in this case would be :Hello \<subject=\|\_<mark>John</mark>\_\|\|\_<
 # Examples
 Some examples are shown below.
 
+## Allow to register from history when using fzf
+
+Just export this to your `.bashrc` or `.zshrc` file. This will show your history
+as default (when using fzf) and it also binds the `alt+s` key combination
+to allow you to search and save some previous used command command.
+
+```
+export FZF_CTRL_R_OPTS="
+  --reverse
+  --cycle
+  --info=right
+  --color header:italic
+  --header 'alt+s (pet new)'
+  --preview 'echo {}' --preview-window down:3:hidden:wrap 
+  --bind '?:toggle-preview'
+  --bind 'alt-s:execute(pet new --tag {2..})+abort'"
+```
+
 ## Register the previous command easily
 By adding the following config to `.bashrc` or `.zshrc`, you can easily register the previous command.
 
