@@ -164,6 +164,35 @@ func (snippets *Snippets) Order() {
 	}
 }
 
+// FilterByTags filters snippets by tags.
+func (snippets *Snippets) FilterByTags(tags []string) {
+	var filteredSnippets []SnippetInfo
+
+	for _, snippet := range snippets.Snippets {
+		if len(snippet.Tag) == 0 {
+			continue
+		}
+
+		for _, tag := range tags {
+			if contains(snippet.Tag, tag) {
+				filteredSnippets = append(filteredSnippets, snippet)
+				break
+			}
+		}
+	}
+
+	snippets.Snippets = filteredSnippets
+}
+
+func contains(tags []string, tag string) bool {
+	for _, t := range tags {
+		if t == tag {
+			return true
+		}
+	}
+	return false
+}
+
 func (snippets *Snippets) reverse() {
 	for i, j := 0, len(snippets.Snippets)-1; i < j; i, j = i+1, j-1 {
 		snippets.Snippets[i], snippets.Snippets[j] = snippets.Snippets[j], snippets.Snippets[i]
