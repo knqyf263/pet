@@ -86,5 +86,5 @@ func init() {
 	RootCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolVarP(&config.Flag.OneLine, "oneline", "", false,
 		`Display snippets in one line`)
-	listCmd.Flags().StringVar(&config.Flag.FilterTag, "t", "", "list by specified tags as comma separated values")
+	listCmd.Flags().StringVarP(&config.Flag.FilterTag, "tags", "t", "", "list by specified tags as comma separated values")
 }
