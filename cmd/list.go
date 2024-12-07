@@ -30,7 +30,7 @@ func list(cmd *cobra.Command, args []string) error {
 	}
 
 	if config.Flag.FilterTag != "" {
-		snippets.FilterByTags(strings.Split(config.Flag.FilterTag, ","))
+		snippets.Snippets = snippets.FilterByTags(strings.Split(config.Flag.FilterTag, ","))
 	}
 
 	col := config.Conf.General.Column
