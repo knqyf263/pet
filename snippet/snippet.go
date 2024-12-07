@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 
 	"github.com/knqyf263/pet/config"
@@ -165,32 +166,21 @@ func (snippets *Snippets) Order() {
 }
 
 // FilterByTags filters snippets by tags.
-func (snippets *Snippets) FilterByTags(tags []string) {
-	var filteredSnippets []SnippetInfo
-
+func (snippets *Snippets) FilterByTags(tags []string) (filteredSnippets []SnippetInfo) {
 	for _, snippet := range snippets.Snippets {
 		if len(snippet.Tag) == 0 {
 			continue
 		}
 
 		for _, tag := range tags {
-			if contains(snippet.Tag, tag) {
+			if slices.Contains(snippet.Tag, tag) {
 				filteredSnippets = append(filteredSnippets, snippet)
 				break
 			}
 		}
 	}
 
-	snippets.Snippets = filteredSnippets
-}
-
-func contains(tags []string, tag string) bool {
-	for _, t := range tags {
-		if t == tag {
-			return true
-		}
-	}
-	return false
+	return filteredSnippets
 }
 
 func (snippets *Snippets) reverse() {
