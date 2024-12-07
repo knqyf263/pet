@@ -29,6 +29,10 @@ func list(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if config.Flag.FilterTag != "" {
+		snippets.Snippets = snippets.FilterByTags(strings.Split(config.Flag.FilterTag, ","))
+	}
+
 	col := config.Conf.General.Column
 	if col == 0 {
 		col = column
@@ -82,4 +86,5 @@ func init() {
 	RootCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolVarP(&config.Flag.OneLine, "oneline", "", false,
 		`Display snippets in one line`)
+	listCmd.Flags().StringVar(&config.Flag.FilterTag, "t", "", "list by specified tags as comma separated values")
 }
