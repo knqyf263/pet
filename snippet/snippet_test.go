@@ -303,3 +303,41 @@ func TestSaveWithMultipleSnippetFiles(t *testing.T) {
 `
 	assert.Equal(t, want, string(data))
 }
+
+func TestFilterByTags(t *testing.T) {
+	snippets := &Snippets{
+		Snippets: []SnippetInfo{
+			{
+				Description: "Test snippet",
+				Command:     "echo 'Hello, World!'",
+				Tag:         []string{"test"},
+				Output:      "Hello, World!",
+			},
+			{
+				Description: "Test snippet 2",
+				Command:     "echo 'Hello, World 2!'",
+				Tag:         []string{"test", "test2"},
+				Output:      "Hello, World 2!",
+			},
+			{
+				Description: "Test snippet 3",
+				Command:     "echo 'Hello, World 3!'",
+				Tag:         []string{"test", "test3"},
+				Output:      "Hello, World 3!",
+			},
+		},
+	}
+
+	// Filter by a single tag
+	filteredSnippets := snippets.FilterByTags([]string{"test"})
+	assert.Len(t, filteredSnippets, 3)
+	assert.Equal(t, "Test snippet", filteredSnippets[0].Description)
+	assert.Equal(t, "Test snippet 2", filteredSnippets[1].Description)
+
+	// Filter by multiple tags
+	filteredSnippets = snippets.FilterByTags([]string{"test", "test2"})
+	assert.Len(t, filteredSnippets, 3)
+	assert.Equal(t, "Test snippet", filteredSnippets[0].Description)
+	assert.Equal(t, "Test snippet 2", filteredSnippets[1].Description)
+	assert.Equal(t, "Test snippet 3", filteredSnippets[2].Description)
+}
