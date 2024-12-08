@@ -467,6 +467,9 @@ Upload success
 You need to install selector command ([fzf](https://github.com/junegunn/fzf) or [peco](https://github.com/peco/peco)).  
 `homebrew` install `fzf` automatically.
 
+After you install Pet, it's HIGHLY recommended to install the shortcuts mentioned in the section on [ZSH Prev](zsh-prev-function)
+
+
 ## Binary
 Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
 
