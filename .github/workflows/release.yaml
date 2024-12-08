@@ -23,7 +23,7 @@ jobs:
       - name: Release
         uses: goreleaser/goreleaser-action@v6
         with:
-          version: v1.18.2
+          version: v2.4.8
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.PET_PAT }}
