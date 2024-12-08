@@ -66,7 +66,7 @@ You can use variables (`<param>` or `<param=default_value>` ) in snippets.
 
 - Register your command snippets easily.
 - Use variables (with one or several default values) in snippets.
-- Search snippets interactively.
+- Search snippets interactively
 - Run snippets directly.
 - Edit snippets easily (config is just a TOML file).
 - Sync snippets via Gist or GitLab Snippets automatically.
@@ -142,6 +142,8 @@ https://github.com/otms61/fish-pet
 By adding the following config to `.bashrc`, you can search snippets and output on the shell.
 This will also allow you to execute the commands yourself, which will add them to your shell history! This is basically the only way we can manipulate shell history.
 This also allows you to *chain* commands! [Example here](https://github.com/knqyf263/pet/discussions/266)
+
+You can also customize the search and list commands with options, example `-t` or `--tags`, for example to only search the subset of snippets tagged with myjob `pet search -t myjob`.
 
 ```
 cat .bashrc
