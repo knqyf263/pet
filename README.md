@@ -492,6 +492,8 @@ After you install Pet, it's HIGHLY recommended to install the shortcuts mentione
 Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
 
 ## Mac OS X / Homebrew
+
+Install [selector command](#Installation) first.
 You can use homebrew on OS X.
 ```
 brew install knqyf263/pet/pet
@@ -506,9 +508,10 @@ brew install knqyf263/pet/pet
 ```
 
 ## Fedora, RedHat, CentOS
+Install [selector command](#Installation) first.
 Download rpm package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/v0.3.0/pet_0.3.0_linux_amd64.rpm
+sudo rpm -ivh https://github.com/knqyf263/pet/releases/download/vx.x.x/pet_x.x.x_linux_amd64.rpm
 ```
 Also available on the [Terra repository](https://terra.fyralabs.com/) (3rd party) for Fedora/Fedora-based distros
 ```
@@ -516,13 +519,15 @@ sudo dnf install pet
 ```
 
 ## Debian, Ubuntu
+Install [selector command](#Installation) first.
 Download deb package from [the releases page](https://github.com/knqyf263/pet/releases)
 ```
-wget https://github.com/knqyf263/pet/releases/download/v0.3.6/pet_0.3.6_linux_amd64.deb
-dpkg -i pet_0.3.6_linux_amd64.deb
+wget https://github.com/knqyf263/pet/releases/download/vx.x.x/pet_x.x.x_linux_amd64.deb
+dpkg -i pet_x.x.x_linux_amd64.deb
 ```
 
 ## Archlinux
+Install [selector command](#Installation) first.
 Two packages are available in [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository).
 You can install the package [from source](https://aur.archlinux.org/packages/pet-git):
 ```
@@ -534,6 +539,7 @@ yaourt -S pet-bin
 ```
 
 ## Build
+Install [selector command](#Installation) first.
 
 ```
 mkdir -p $GOPATH/src/github.com/knqyf263
