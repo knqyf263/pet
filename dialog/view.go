@@ -149,8 +149,8 @@ func GenerateParamsLayout(params [][2]string, command string) {
 			// fallback to default evaluation (raw)
 			options := []string{parameter}
 
-			if has, rawcmd := hasDynamicOptions(parameter); has {
-				dynamicResult, err := DynamicOptions(rawcmd)
+			if hasDynamicOptions(parameter) {
+				dynamicResult, err := DynamicOptions(parameter)
 				if err != nil {
 					log.Fatalf("failed to get dynamic options: %v", err)
 				}

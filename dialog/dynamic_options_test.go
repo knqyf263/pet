@@ -12,7 +12,7 @@ import (
 const nameOfThisFile = "dynamic_options_test.go"
 
 func TestEvaluator(t *testing.T) {
-	param := "ls"
+	param := "$(ls)"
 
 	e, err := dialog.DynamicOptions(param)
 	if err != nil {
