@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/knqyf263/pet/cmd/runner"
 	"github.com/knqyf263/pet/config"
 	"github.com/spf13/cobra"
 	"gopkg.in/alessio/shellescape.v1"
@@ -35,7 +36,7 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 	// Show final command before executing it
 	fmt.Printf("> %s\n", command)
 
-	return run(command, os.Stdin, os.Stdout)
+	return runner.Run(command, os.Stdin, os.Stdout)
 }
 
 func init() {
