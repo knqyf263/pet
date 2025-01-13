@@ -83,6 +83,7 @@ type FlagConfig struct {
 	Tag          bool
 	UseMultiLine bool
 	UseEditor    bool
+	Silent		 bool
 }
 
 // Load loads a config toml

@@ -33,7 +33,9 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 	command := strings.Join(commands, "; ")
 
 	// Show final command before executing it
-	fmt.Printf("> %s\n", command)
+	if !flag.Silent {
+		fmt.Printf("> %s\n", command)
+	}
 
 	return run(command, os.Stdin, os.Stdout)
 }
@@ -46,4 +48,6 @@ func init() {
 		`Initial value for query`)
 	execCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
 		`Filter tag`)
+	execCmd.Flags().BoolVarP(&config.Flag.Silent, "silent", "s", false,
+		`Suppress the command output`)
 }
