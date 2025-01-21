@@ -105,6 +105,13 @@ Hello `<subject=|_John_||_Sam_||_Jane Doe = special #chars_|>`
 
 The values in this case would be :Hello \<subject=\|\_<mark>John</mark>\_\|\|\_<mark>Sam</mark>\_\|\|\_<mark>Jane Doe = special #chars</mark>\_\|\>
 
+You can also generate the multiple parameters using some external outputs.
+For this case, you'll pass just a single
+argument for this multiple definition, and the result must be splitted by
+lines(`\n`). Below you can see some examples:
+`<folderToOpen=|_$(ls -d */)_|>`; OR `<fileToOpen=|_$(fd -tf --max-depth=1 .)_|>`;
+OR even reading from a file `<what=|_$(cat $HOME/.my-options)_|>`.
+
 # Examples
 Some examples are shown below.
 

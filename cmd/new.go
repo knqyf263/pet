@@ -22,8 +22,27 @@ import (
 var newCmd = &cobra.Command{
 	Use:   "new COMMAND",
 	Short: "Create a new snippet",
-	Long:  `Create a new snippet (default: $HOME/.config/pet/snippet.toml)`,
-	RunE:  new,
+	Long: `Create a new snippet (default: $HOME/.config/pet/snippet.toml)
+Examples:
+
+1. Snippet with user input
+  Command> tar -cvzf <out=tarballName.tgz> <input=FolderOrItems>
+
+2. Snippet with multiple parameters (listing files or directories using fd)
+  Command> fd --hidden --max-depth=1 -t<type=|_f_||_d_|>
+
+3. Snippet with early evaluation (list folders in the current path and allow to select one of it)
+  Command> cd <folderToOpen=|_$(ls -d */)_|>
+
+Extra:
+  Snippet with early evaluation and config file
+  Command> echo <what=|_$(cat $HOME/.my-options)_|>
+
+  And the content of "$HOME/.my-options" can be:
+    config1
+    config2
+`,
+	RunE: new,
 }
 
 func CanceledError() error {
