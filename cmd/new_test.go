@@ -134,7 +134,7 @@ func TestScanMultiLine_ExitsOnTwoEmptyLines(t *testing.T) {
 	}
 }
 
-func TestNewSnippetCreationWithSnippetDirectory(t *testing.T) {
+func TestNew_SnippetCreationWithSnippetDirectory(t *testing.T) {
 	// Setup temporary directory for config
 	tempDir, _ := os.MkdirTemp("", "testdata")
 	tempSnippetFile := filepath.Join(tempDir, "snippet.toml")
