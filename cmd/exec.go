@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -18,7 +19,7 @@ var execCmd = &cobra.Command{
 	RunE:  execute,
 }
 
-func execute(cmd *cobra.Command, args []string) (err error) {
+func _execute(in io.ReadCloser, out io.Writer) (err error) {
 	flag := config.Flag
 
 	var options []string
@@ -34,10 +35,14 @@ func execute(cmd *cobra.Command, args []string) (err error) {
 
 	// Show final command before executing it
 	if !flag.Silent {
-		fmt.Printf("> %s\n", command)
+		fmt.Fprintf(out, "> %s\n", command)
 	}
 
-	return run(command, os.Stdin, os.Stdout)
+	return run(command, in, out)
+}
+
+func execute(cmd *cobra.Command, args []string) error {
+	return _execute(os.Stdin, os.Stdout)
 }
 
 func init() {
