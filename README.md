@@ -531,11 +531,11 @@ Install [selector command](#Installation) first.
 Two packages are available in [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository).
 You can install the package [from source](https://aur.archlinux.org/packages/pet-git):
 ```
-yaourt -S pet-git
+yay -S pet-git
 ```
 Or [from the binary](https://aur.archlinux.org/packages/pet-bin):
 ```
-yaourt -S pet-bin
+yay -S pet-bin
 ```
 
 ## Build
