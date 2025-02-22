@@ -51,8 +51,7 @@ func init() {
 		`Enable colorized output (only fzf)`)
 	execCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
 		`Initial value for query`)
-	execCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
-		`Filter tag`)
+	execCmd.Flags().StringVarP(&config.Flag.FilterTag, "tags", "t", "", "Filter by specified tags as comma separated values")
 	execCmd.Flags().BoolVarP(&config.Flag.Silent, "silent", "s", false,
 		`Suppress the command output`)
 }
