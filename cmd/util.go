@@ -23,13 +23,7 @@ func filter(options []string, tag string) (commands []string, err error) {
 	// Filter the snippets by specified tag if any
 	if 0 < len(tag) {
 		var filteredSnippets snippet.Snippets
-		for _, snippet := range snippets.Snippets {
-			for _, t := range snippet.Tag {
-				if tag == t {
-					filteredSnippets.Snippets = append(filteredSnippets.Snippets, snippet)
-				}
-			}
-		}
+		filteredSnippets.Snippets = snippets.FilterByTags(strings.Split(tag, ","))
 		snippets = filteredSnippets
 	}
 
