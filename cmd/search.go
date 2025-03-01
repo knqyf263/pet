@@ -43,8 +43,8 @@ func init() {
 		`Enable colorized output (only fzf)`)
 	searchCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
 		`Initial value for query`)
-	searchCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
-		`Filter tag`)
+	searchCmd.Flags().StringVarP(&config.Flag.FilterTag, "tags", "t", "",
+		`"Filter by specified tags as comma separated values"`)
 	searchCmd.Flags().StringVarP(&config.Flag.Delimiter, "delimiter", "d", "; ",
 		`Use delim as the command delimiter character`)
 }

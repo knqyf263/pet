@@ -45,6 +45,6 @@ func init() {
 		`Display snippets in one line`)
 	clipCmd.Flags().StringVarP(&config.Flag.Delimiter, "delimiter", "d", "; ",
 		`Use delim as the command delimiter character`)
-	clipCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
-		`Filter tag`)
+	clipCmd.Flags().StringVarP(&config.Flag.FilterTag, "tags", "t", "",
+		`"Filter by specified tags as comma separated values"`)
 }
