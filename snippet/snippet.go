@@ -31,7 +31,11 @@ func (snippets *Snippets) Load(includeDirs bool) error {
 	var snippetFiles []string
 
 	// Load snippets from the main snippet file
+	// Check for environment variable override first
 	snippetFilePath := config.Conf.General.SnippetFile
+	if envFile := os.Getenv("PET_SNIPPET_FILE"); envFile != "" {
+		snippetFilePath = envFile
+	}
 	absSnippetFilePath, err := path.NewAbsolutePath(snippetFilePath)
 	if err != nil {
 		return err
@@ -102,7 +106,12 @@ func (snippets *Snippets) Save() error {
 	for _, snippet := range snippets.Snippets {
 		if snippet.Filename == "" {
 			// No filename => just save to main snippet file
-			snippet.Filename = config.Conf.General.SnippetFile
+			// Check for environment variable override first
+			snippetFile := config.Conf.General.SnippetFile
+			if envFile := os.Getenv("PET_SNIPPET_FILE"); envFile != "" {
+				snippetFile = envFile
+			}
+			snippet.Filename = snippetFile
 		}
 		snippetFiles[snippet.Filename] = append(snippetFiles[snippet.Filename], snippet)
 	}

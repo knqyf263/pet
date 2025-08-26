@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+	
 	"github.com/knqyf263/pet/config"
 	"github.com/knqyf263/pet/path"
 	petSync "github.com/knqyf263/pet/sync"
@@ -16,7 +18,12 @@ var syncCmd = &cobra.Command{
 }
 
 func sync(cmd *cobra.Command, args []string) (err error) {
-	filePath, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	// Check for environment variable override first
+	snippetFile := config.Conf.General.SnippetFile
+	if envFile := os.Getenv("PET_SNIPPET_FILE"); envFile != "" {
+		snippetFile = envFile
+	}
+	filePath, err := path.NewAbsolutePath(snippetFile)
 	return petSync.AutoSync(filePath)
 }
 

@@ -23,7 +23,12 @@ var editCmd = &cobra.Command{
 func edit(cmd *cobra.Command, args []string) (err error) {
 	flag := config.Flag
 	editor := config.Conf.General.Editor
-	snippetFilePath, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	// Check for environment variable override first
+	snippetFile := config.Conf.General.SnippetFile
+	if envFile := os.Getenv("PET_SNIPPET_FILE"); envFile != "" {
+		snippetFile = envFile
+	}
+	snippetFilePath, err := path.NewAbsolutePath(snippetFile)
 	if err != nil {
 		return err
 	}

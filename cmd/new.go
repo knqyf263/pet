@@ -176,7 +176,12 @@ func createAndEditSnippet(newSnippet snippet.SnippetInfo, snippets snippet.Snipp
 
 func countSnippetLines() int {
 	// Count lines in snippet file
-	path, err := path.NewAbsolutePath(config.Conf.General.SnippetFile)
+	// Check for environment variable override first
+	snippetFile := config.Conf.General.SnippetFile
+	if envFile := os.Getenv("PET_SNIPPET_FILE"); envFile != "" {
+		snippetFile = envFile
+	}
+	path, err := path.NewAbsolutePath(snippetFile)
 	if err != nil {
 		panic(fmt.Sprintf("Error getting snippet file path: %v", err.Error()))
 	}
@@ -263,8 +268,13 @@ func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 		}
 	}
 
-	if config.Conf.General.SnippetFile != "" {
-		filename = config.Conf.General.SnippetFile
+	// Check for environment variable override first
+	snippetFile := config.Conf.General.SnippetFile
+	if envFile := os.Getenv("PET_SNIPPET_FILE"); envFile != "" {
+		snippetFile = envFile
+	}
+	if snippetFile != "" {
+		filename = snippetFile
 	}
 
 	newSnippet := snippet.SnippetInfo{
