@@ -7,6 +7,27 @@
 
 Add CLI-first capabilities to Pet, allowing users to execute commands directly without interactive selection. This unlocks Pet's potential for scripting and automation.
 
+## GitHub Issues Resolved by This Phase
+
+This phase will allow us to close the following issues:
+
+### ✅ Can Close After Implementation
+- **#73** - pet search [flags] <string> (positional args)
+- **#84** - Output all metadata from search (JSON output)
+- **#117** - Arguments for parameters (--param and positional args)
+- **#147** - pet exec without additional search (--first-match)
+- **#164** - Enter first match with shortcut (--first-match)
+- **#352** - Allow pet new to accept arguments via flags
+
+### ⚡ Enhances (Already Closed)
+- **#180** - Add support for `pet search <search term>` (add --exec, --list flags)
+
+### ❌ Out of Scope (Cannot Close)
+- **#146** - pet exec --last-command (needs history tracking - separate feature)
+- **#154** - Paste to prompt (needs terminal integration)
+- **#163** - Set cursor point (needs terminal integration)
+- **#178** - Transfer to prompt (needs terminal integration)
+
 ## Tasks
 
 ### New Command Flags
