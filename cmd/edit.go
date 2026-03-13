@@ -73,6 +73,6 @@ func init() {
 	RootCmd.AddCommand(editCmd)
 	editCmd.Flags().StringVarP(&config.Flag.Query, "query", "q", "",
 		`Initial value for query`)
-	editCmd.Flags().StringVarP(&config.Flag.FilterTag, "tag", "t", "",
-		`Filter tag`)
+	editCmd.Flags().StringVarP(&config.Flag.FilterTag, "tags", "t", "",
+		`"Filter by specified tags as comma separated values"`)
 }
