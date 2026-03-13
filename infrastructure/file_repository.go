@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/knqyf263/pet/domain"
 	"github.com/pelletier/go-toml"
@@ -24,6 +25,7 @@ type tomlSnippets struct {
 	Snippets []tomlSnippetInfo `toml:"Snippets"`
 }
 
+// Compile regex once at package initialization for performance
 var tomlFileRegex = regexp.MustCompile(`^.+\.(toml)$`)
 
 // FileRepository implements domain.SnippetRepository using TOML files
@@ -98,6 +100,7 @@ func (r *FileRepository) Load() ([]domain.Snippet, error) {
 // Save writes snippets to their respective files
 // Snippets are grouped by Filename and written to the appropriate file
 // Snippets with no Filename are written to the main snippet file
+// Returns error if a snippet's Filename is outside the main file and snippet directories
 func (r *FileRepository) Save(snippets []domain.Snippet) error {
 	// Group snippets by filename
 	fileGroups := make(map[string][]domain.Snippet)
@@ -106,6 +109,12 @@ func (r *FileRepository) Save(snippets []domain.Snippet) error {
 		if filename == "" {
 			filename = r.snippetFile
 		}
+
+		// Validate that the filename is in a valid location
+		if err := r.validateSnippetPath(filename); err != nil {
+			return fmt.Errorf("invalid snippet path %s: %w", filename, err)
+		}
+
 		fileGroups[filename] = append(fileGroups[filename], s)
 	}
 
@@ -193,7 +202,14 @@ func (r *FileRepository) writeTomlFile(filepath string, snippets []domain.Snippe
 func getTomlFiles(dir string) []string {
 	var files []string
 	err := filepath.Walk(dir, func(p string, f os.FileInfo, err error) error {
-		if err == nil && tomlFileRegex.MatchString(f.Name()) {
+		// If there was an error accessing this path, log it and continue
+		if err != nil {
+			log.Printf("warning: cannot access %s: %v", p, err)
+			return nil // Continue walking
+		}
+
+		// If it's a TOML file, add it
+		if tomlFileRegex.MatchString(f.Name()) {
 			files = append(files, p)
 		}
 		return nil
@@ -202,4 +218,42 @@ func getTomlFiles(dir string) []string {
 		log.Printf("warning: failed to walk directory %s: %v", dir, err)
 	}
 	return files
+}
+
+// validateSnippetPath checks if a file path is valid for saving snippets
+// Valid paths are:
+// - The main snippet file
+// - Any file within one of the snippet directories
+func (r *FileRepository) validateSnippetPath(path string) error {
+	// Get absolute paths for comparison
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return fmt.Errorf("cannot resolve absolute path: %w", err)
+	}
+
+	absMainFile, err := filepath.Abs(r.snippetFile)
+	if err != nil {
+		return fmt.Errorf("cannot resolve main snippet file path: %w", err)
+	}
+
+	// Check if it's the main snippet file
+	if absPath == absMainFile {
+		return nil
+	}
+
+	// Check if it's within any of the snippet directories
+	for _, dir := range r.snippetDirs {
+		absDir, err := filepath.Abs(dir)
+		if err != nil {
+			continue
+		}
+
+		// Check if path is within this directory
+		relPath, err := filepath.Rel(absDir, absPath)
+		if err == nil && !strings.HasPrefix(relPath, "..") {
+			return nil // Path is within this directory
+		}
+	}
+
+	return fmt.Errorf("path must be either the main snippet file or within a snippet directory")
 }

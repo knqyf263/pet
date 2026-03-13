@@ -5,11 +5,12 @@ import (
 	"strings"
 )
 
-// parameterStringRegex matches parameter placeholders: <name> or <name=default> or <name=|_val1_||_val2_|>
+// parameterRegex matches parameter placeholders: <name> or <name=default> or <name=|_val1_||_val2_|>
 // This matches most encountered patterns
 // Skips match if there is a whitespace at the end ex. <param='my >
 // Ignores <, > characters since they're used to match the pattern
-const parameterStringRegex = `<([^<>]*[^\s])>`
+// Compiled once at package initialization for performance
+var parameterRegex = regexp.MustCompile(`<([^<>]*[^\s])>`)
 
 // SnippetService provides business logic for managing snippets
 // This is pure business logic with no I/O dependencies
@@ -28,8 +29,7 @@ func NewSnippetService(repo SnippetRepository) *SnippetService {
 // Returns parameters in the order they appear (deduplicated)
 // Format: <paramName> or <paramName=defaultValue> or <paramName=|_val1_||_val2_||_val3_|>
 func (s *SnippetService) ExtractParameters(command string) []Parameter {
-	r := regexp.MustCompile(parameterStringRegex)
-	matches := r.FindAllStringSubmatch(command, -1)
+	matches := parameterRegex.FindAllStringSubmatch(command, -1)
 
 	if len(matches) == 0 {
 		return []Parameter{}
@@ -82,8 +82,7 @@ func (s *SnippetService) ExtractParameters(command string) []Parameter {
 // Format: <paramName> or <paramName=defaultValue> -> actual value
 // Returns the command with all placeholders replaced
 func (s *SnippetService) SubstituteParameters(command string, values map[string]string) string {
-	r := regexp.MustCompile(parameterStringRegex)
-	matches := r.FindAllStringSubmatch(command, -1)
+	matches := parameterRegex.FindAllStringSubmatch(command, -1)
 
 	if len(matches) == 0 {
 		return command
