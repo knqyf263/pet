@@ -22,6 +22,7 @@ type SnippetInfo struct {
 	Command     string `toml:"command,multiline"`
 	Tag         []string
 	Output      string
+	Static      *bool `toml:",omitempty"`
 }
 
 // Loads snippets from the main snippet file and all snippet

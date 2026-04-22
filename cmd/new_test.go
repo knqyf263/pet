@@ -255,3 +255,179 @@ func compareSnippets(a, b snippet.Snippets) bool {
 	}
 	return true
 }
+
+func TestNew_WithStaticFlag(t *testing.T) {
+	// Setup temporary directory for config
+	tempDir, _ := os.MkdirTemp("", "testdata")
+	tempSnippetFile := filepath.Join(tempDir, "snippet.toml")
+
+	// Clean up temp dirs
+	defer os.RemoveAll(tempDir)
+
+	// Create empty snippet file
+	_, err := os.Create(tempSnippetFile)
+	if err != nil {
+		t.Fatalf("Failed to create temp snippet file: %v", err)
+	}
+
+	// Mock configuration
+	config.Conf.General.SnippetFile = tempSnippetFile
+	config.Conf.General.SnippetDirs = []string{}
+
+	// Set the static flag to true
+	originalStatic := config.Flag.Static
+	config.Flag.Static = true
+	defer func() { config.Flag.Static = originalStatic }()
+
+	// Simulate creating a new snippet with static flag
+	args := []string{"echo hello <name>"}
+
+	// Create a buffer for output
+	var outputBuffer bytes.Buffer
+	// Create a mock ReadCloser for input (description)
+	inputReader := &MockReadCloser{strings.NewReader("test description\n")}
+
+	err = _new(inputReader, &outputBuffer, args)
+	if err != nil {
+		t.Fatalf("Failed to create new snippet: %v", err)
+	}
+
+	// Load the snippet file and check if static field is set
+	var snippets snippet.Snippets
+	loadSnippetsFromFile(t, tempSnippetFile, &snippets)
+
+	if len(snippets.Snippets) != 1 {
+		t.Fatalf("Expected 1 snippet, got %d", len(snippets.Snippets))
+	}
+
+	createdSnippet := snippets.Snippets[0]
+	if createdSnippet.Command != "echo hello <name>" {
+		t.Errorf("Expected command to be 'echo hello <name>', got '%s'", createdSnippet.Command)
+	}
+
+	if createdSnippet.Description != "test description" {
+		t.Errorf("Expected description to be 'test description', got '%s'", createdSnippet.Description)
+	}
+
+	// Check that static field is set to true
+	if createdSnippet.Static == nil {
+		t.Error("Expected Static field to be set, got nil")
+	} else if !*createdSnippet.Static {
+		t.Error("Expected Static field to be true, got false")
+	}
+}
+
+func TestNew_WithoutStaticFlag(t *testing.T) {
+	// Setup temporary directory for config
+	tempDir, _ := os.MkdirTemp("", "testdata")
+	tempSnippetFile := filepath.Join(tempDir, "snippet.toml")
+
+	// Clean up temp dirs
+	defer os.RemoveAll(tempDir)
+
+	// Create empty snippet file
+	_, err := os.Create(tempSnippetFile)
+	if err != nil {
+		t.Fatalf("Failed to create temp snippet file: %v", err)
+	}
+
+	// Mock configuration
+	config.Conf.General.SnippetFile = tempSnippetFile
+	config.Conf.General.SnippetDirs = []string{}
+
+	// Ensure the static flag is false
+	originalStatic := config.Flag.Static
+	config.Flag.Static = false
+	defer func() { config.Flag.Static = originalStatic }()
+
+	// Simulate creating a new snippet without static flag
+	args := []string{"echo hello <name>"}
+
+	// Create a buffer for output
+	var outputBuffer bytes.Buffer
+	// Create a mock ReadCloser for input (description)
+	inputReader := &MockReadCloser{strings.NewReader("test description\n")}
+
+	err = _new(inputReader, &outputBuffer, args)
+	if err != nil {
+		t.Fatalf("Failed to create new snippet: %v", err)
+	}
+
+	// Load the snippet file and check if static field is not set
+	var snippets snippet.Snippets
+	loadSnippetsFromFile(t, tempSnippetFile, &snippets)
+
+	if len(snippets.Snippets) != 1 {
+		t.Fatalf("Expected 1 snippet, got %d", len(snippets.Snippets))
+	}
+
+	createdSnippet := snippets.Snippets[0]
+	if createdSnippet.Command != "echo hello <name>" {
+		t.Errorf("Expected command to be 'echo hello <name>', got '%s'", createdSnippet.Command)
+	}
+
+	// Check that static field is nil (not set) when flag is false
+	if createdSnippet.Static != nil {
+		t.Errorf("Expected Static field to be nil when flag is false, got %v", *createdSnippet.Static)
+	}
+}
+
+func TestNew_WithStaticFlagAndEditor(t *testing.T) {
+	// Setup temporary directory for config
+	tempDir, _ := os.MkdirTemp("", "testdata")
+	tempSnippetFile := filepath.Join(tempDir, "snippet.toml")
+
+	// Clean up temp dirs
+	defer os.RemoveAll(tempDir)
+
+	// Create empty snippet file
+	_, err := os.Create(tempSnippetFile)
+	if err != nil {
+		t.Fatalf("Failed to create temp snippet file: %v", err)
+	}
+
+	// Mock configuration
+	config.Conf.General.SnippetFile = tempSnippetFile
+	config.Conf.General.SnippetDirs = []string{}
+	config.Conf.General.Editor = "echo" // Use echo as a mock editor that won't actually open
+
+	// Set flags
+	originalStatic := config.Flag.Static
+	originalUseEditor := config.Flag.UseEditor
+	config.Flag.Static = true
+	config.Flag.UseEditor = true
+	defer func() {
+		config.Flag.Static = originalStatic
+		config.Flag.UseEditor = originalUseEditor
+	}()
+
+	// Simulate creating a new snippet with static flag and editor
+	args := []string{} // No command args when using editor
+
+	// Create a buffer for output
+	var outputBuffer bytes.Buffer
+	// Create a mock ReadCloser for input
+	inputReader := &MockReadCloser{strings.NewReader("")}
+
+	err = _new(inputReader, &outputBuffer, args)
+	if err != nil {
+		t.Fatalf("Failed to create new snippet: %v", err)
+	}
+
+	// Load the snippet file and check if static field is set
+	var snippets snippet.Snippets
+	loadSnippetsFromFile(t, tempSnippetFile, &snippets)
+
+	if len(snippets.Snippets) != 1 {
+		t.Fatalf("Expected 1 snippet, got %d", len(snippets.Snippets))
+	}
+
+	createdSnippet := snippets.Snippets[0]
+
+	// Check that static field is set to true even when using editor
+	if createdSnippet.Static == nil {
+		t.Error("Expected Static field to be set, got nil")
+	} else if !*createdSnippet.Static {
+		t.Error("Expected Static field to be true, got false")
+	}
+}

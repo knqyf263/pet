@@ -90,11 +90,12 @@ You can use also use variables in snippets, these are called parameters. More in
 You can also *tag* snippets to search for them faster. More information on that in the tag section.
 
 
+
 # Parameters
 There are `<n_ways>` ways of entering parameters.
 
 They can contain default values: Hello `<subject=world>`
-defined by the equal sign. 
+defined by the equal sign.
 
 They can even contain `<content=spaces & = signs>` where the default value would be \<content=<mark>spaces & = signs</mark>\>.
 
@@ -104,6 +105,9 @@ They can also contain multiple default values:
 Hello `<subject=|_John_||_Sam_||_Jane Doe = special #chars_|>`
 
 The values in this case would be :Hello \<subject=\|\_<mark>John</mark>\_\|\|\_<mark>Sam</mark>\_\|\|\_<mark>Jane Doe = special #chars</mark>\_\|\>
+
+If you want to disable parameter expansion (i.e. treat `<...>` as literal text), you can use the `-s` or `--static` flag when creating a new snippet with `pet new`, or you can add the field `Static = true` in the snippet's definition table.
+
 
 # Examples
 Some examples are shown below.
@@ -131,7 +135,7 @@ function prev() {
 ```
 
 ### fish
-See below for details.  
+See below for details.
 https://github.com/otms61/fish-pet
 
 <img src="doc/pet02.gif" width="700">
@@ -170,7 +174,7 @@ bindkey '^s' pet-select
 ```
 
 ### fish
-See below for details.  
+See below for details.
 https://github.com/otms61/fish-pet
 
 <img src="doc/pet03.gif" width="700">
@@ -253,7 +257,7 @@ export FZF_CTRL_R_OPTS="
   --info=right
   --color header:italic
   --header 'alt+s (pet new)'
-  --preview 'echo {}' --preview-window down:3:hidden:wrap 
+  --preview 'echo {}' --preview-window down:3:hidden:wrap
   --bind '?:toggle-preview'
   --bind 'alt-s:execute(pet new --tag {2..})+abort'"
 ```
@@ -298,7 +302,7 @@ Use "pet [command] --help" for more information about a command.
 ```
 
 # Snippet
-Run `pet edit`  
+Run `pet edit`
 You can also register the output of command (but cannot search).
 
 ```
@@ -452,7 +456,7 @@ You must obtain access token.
 Go https://github.com/settings/tokens/new and create access token (only need "gist" scope).
 Set that to `access_token` in `[Gist]` or use an environment variable with the name `$PET_GITHUB_ACCESS_TOKEN`.
 
-After setting, you can upload snippets to Gist.  
+After setting, you can upload snippets to Gist.
 If `gist_id` is not set, new gist will be created.
 ```
 pet sync
@@ -541,14 +545,14 @@ Upload success
 ```
 
 # Installation
-You need to install selector command ([fzf](https://github.com/junegunn/fzf) or [peco](https://github.com/peco/peco)).  
+You need to install selector command ([fzf](https://github.com/junegunn/fzf) or [peco](https://github.com/peco/peco)).
 `homebrew` install `fzf` automatically.
 
 After you install Pet, it's HIGHLY recommended to install the shortcuts mentioned in the section on [ZSH Prev](#zsh-prev-function)
 
 
 ## Binary
-Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
+Go to [the releases page](https://github.com/knqyf263/pet/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
 ## macOS / Homebrew
 

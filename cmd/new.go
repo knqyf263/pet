@@ -30,6 +30,14 @@ func CanceledError() error {
 	return errors.New("canceled")
 }
 
+// setStaticField sets the static field on a snippet if the static flag is enabled
+func setStaticField(snippetInfo *snippet.SnippetInfo) {
+	if config.Flag.Static {
+		static := true
+		snippetInfo.Static = &static
+	}
+}
+
 func scan(prompt string, out io.Writer, in io.ReadCloser, allowEmpty bool) (string, error) {
 	f, err := os.CreateTemp("", "pet-")
 	if err != nil {
@@ -232,6 +240,9 @@ func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 				Tag:         tags,
 			}
 
+			// Set static field if static flag is used
+			setStaticField(&newSnippet)
+
 			return createAndEditSnippet(newSnippet, snippets, lineCount+3)
 		} else {
 			command, err = scan(color.HiYellowString("Command> "), out, in, false)
@@ -274,6 +285,9 @@ func _new(in io.ReadCloser, out io.Writer, args []string) (err error) {
 		Tag:         tags,
 	}
 
+	// Set static field if static flag is used
+	setStaticField(&newSnippet)
+
 	snippets.Snippets = append(snippets.Snippets, newSnippet)
 	if err = snippets.Save(); err != nil {
 		return err
@@ -298,4 +312,6 @@ func init() {
 		`Can enter multiline snippet (Double \n to quit)`)
 	newCmd.Flags().BoolVarP(&config.Flag.UseEditor, "editor", "e", false,
 		`Use editor to create snippet`)
+	newCmd.Flags().BoolVarP(&config.Flag.Static, "static", "s", false,
+		`Create snippet without parameter expansion (static = true)`)
 }
