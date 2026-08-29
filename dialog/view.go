@@ -37,6 +37,9 @@ func createView(g Gui, name string, coords [4]int, editable bool) (*gocui.View, 
 	v.Wrap = true
 	v.Autoscroll = true
 	v.Editable = editable
+	if editable {
+		v.Editor = gocui.EditorFunc(paramEditor)
+	}
 
 	views = append(views, name)
 
