@@ -26,6 +26,8 @@ You can use variables (`<param>` or `<param=default_value>` ) in snippets.
 
 <img src="doc/pet08.gif" width="700">
 
+[![Live demo by Demoshell](https://build.demoshell.com/v1/embed/badge.svg)](https://build.demoshell.com/launch?snapshot=demoshell%2Ftui%3Apet&utm_source=badge)
+
 # TOC
 
 - [Main features](#main-features)
